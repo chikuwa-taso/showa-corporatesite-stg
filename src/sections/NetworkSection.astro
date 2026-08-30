@@ -3,6 +3,7 @@ import SectionRail from '../components/SectionRail.astro';
 import LocationRow from '../components/LocationRow.astro';
 import BackgroundVideo from '../components/BackgroundVideo.astro';
 import { OFFICES, CONFIG, BRAND_ALT } from '../data/site';
+import { asset } from '../lib/asset';
 
 interface Props {
   useVideo?: boolean;
@@ -27,8 +28,8 @@ const { useVideo = CONFIG.useVideo, showMap = CONFIG.showMap } = Astro.props;
       {
         showMap && (
           <picture class="network__map">
-            <source srcset="/assets/works/japan-map.webp" type="image/webp" />
-            <img src="/assets/works/japan-map.png" alt="国内拠点" loading="lazy" decoding="async" />
+            <source srcset={asset('/assets/works/japan-map.webp')} type="image/webp" />
+            <img src={asset('/assets/works/japan-map.png')} alt="国内拠点" loading="lazy" decoding="async" />
           </picture>
         )
       }
@@ -38,8 +39,8 @@ const { useVideo = CONFIG.useVideo, showMap = CONFIG.showMap } = Astro.props;
 
     <div class="network__lockup">
       <picture>
-        <source srcset="/assets/brand/lockup-white.webp" type="image/webp" />
-        <img src="/assets/brand/lockup-white.png" alt={BRAND_ALT} loading="lazy" decoding="async" />
+        <source srcset={asset('/assets/brand/lockup-white.webp')} type="image/webp" />
+        <img src={asset('/assets/brand/lockup-white.png')} alt={BRAND_ALT} loading="lazy" decoding="async" />
       </picture>
     </div>
   </div>

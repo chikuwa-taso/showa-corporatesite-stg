@@ -1,6 +1,7 @@
 ---
 import SectionRail from '../components/SectionRail.astro';
 import { ABOUT_STATEMENT_ALT } from '../data/site';
+import { asset } from '../lib/asset';
 ---
 
 <section id="about" class="about">
@@ -9,10 +10,10 @@ import { ABOUT_STATEMENT_ALT } from '../data/site';
   <div class="about__body">
     {/* An image at the client's instruction — never re-typeset. */}
     <picture>
-      <source srcset="/assets/about/about-statement.webp" type="image/webp" />
+      <source srcset={asset('/assets/about/about-statement.webp')} type="image/webp" />
       <img
         class="about__statement"
-        src="/assets/about/about-statement.png"
+        src={asset('/assets/about/about-statement.png')}
         alt={ABOUT_STATEMENT_ALT}
         width="4551"
         height="1694"

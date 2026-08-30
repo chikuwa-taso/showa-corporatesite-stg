@@ -1,13 +1,14 @@
 ---
 import { NAV_ITEMS, BRAND_ALT } from '../data/site';
+import { asset } from '../lib/asset';
 ---
 
 <div class="header-bar">
   <header class="header">
     <a class="header__logo" href="#top">
       <picture>
-        <source srcset="/assets/brand/lockup.webp" type="image/webp" />
-        <img src="/assets/brand/lockup.png" alt={BRAND_ALT} width="1239" height="709" />
+        <source srcset={asset('/assets/brand/lockup.webp')} type="image/webp" />
+        <img src={asset('/assets/brand/lockup.png')} alt={BRAND_ALT} width="1239" height="709" />
       </picture>
     </a>
 

@@ -1,5 +1,6 @@
 ---
 import BackgroundVideo from './BackgroundVideo.astro';
+import { asset } from '../lib/asset';
 import type { WorkTile } from '../data/site';
 
 interface Props {
@@ -20,8 +21,8 @@ const { tile, duplicate = false, useVideo = true } = Astro.props;
   {
     tile.kind === 'photo' && (
       <picture>
-        <source srcset={`${tile.src}.webp`} type="image/webp" />
-        <img src={`${tile.src}.jpg`} alt={duplicate ? '' : tile.alt} loading="lazy" decoding="async" />
+        <source srcset={asset(`${tile.src}.webp`)} type="image/webp" />
+        <img src={asset(`${tile.src}.jpg`)} alt={duplicate ? '' : tile.alt} loading="lazy" decoding="async" />
       </picture>
     )
   }

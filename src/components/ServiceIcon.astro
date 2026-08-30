@@ -1,4 +1,6 @@
 ---
+import { asset } from '../lib/asset';
+
 interface Props {
   slug: string;
   label: string;
@@ -11,8 +13,8 @@ const { slug, label, showLabel = false } = Astro.props;
 {/* Brand illustrations, not UI glyphs — never recolored, never substituted. */}
 <figure class="service-icon">
   <picture>
-    <source srcset={`/assets/icons/${slug}.webp`} type="image/webp" />
-    <img src={`/assets/icons/${slug}.png`} alt={label} loading="lazy" decoding="async" />
+    <source srcset={asset(`/assets/icons/${slug}.webp`)} type="image/webp" />
+    <img src={asset(`/assets/icons/${slug}.png`)} alt={label} loading="lazy" decoding="async" />
   </picture>
   {showLabel && <figcaption>{label}</figcaption>}
 </figure>

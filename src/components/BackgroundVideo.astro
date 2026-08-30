@@ -1,4 +1,6 @@
 ---
+import { asset } from '../lib/asset';
+
 interface Props {
   /** Basename in /assets/video — resolves to .webm + .mp4 + a -poster.jpg. */
   name: string;
@@ -6,7 +8,7 @@ interface Props {
 }
 
 const { name, class: className } = Astro.props;
-const base = `/assets/video/${name}`;
+const base = asset(`/assets/video/${name}`);
 ---
 
 {/* Decorative, so aria-hidden and no audio track. Playback is driven entirely by
