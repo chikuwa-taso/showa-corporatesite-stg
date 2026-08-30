@@ -58,6 +58,9 @@ for icon in offset-printing sheetfed-printing on-demand prepress bookbinding; do
   convert_png "icons/$icon.png" "icons/$icon" 440 90  # rendered up to 220px
 done
 
+# CONTACT / RECRUIT mail button, rendered up to 132px
+convert_png icons/mail-circle.png icons/mail-circle 264 90
+
 # The one work photo is opaque, so its fallback is JPEG rather than a 1.7MB PNG.
 convert_png works/works-center.png works/works-center 1800 82
 sips -s format jpeg -s formatOptions 82 "$OUT/works/works-center.png" \

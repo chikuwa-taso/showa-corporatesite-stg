@@ -1,0 +1,124 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import SpecTable from '../components/SpecTable.astro';
+import ContactActions from '../components/ContactActions.astro';
+import {
+  RECRUIT_INTRO,
+  RECRUIT_GRADUATE_HEADING,
+  RECRUIT_GRADUATE_ROWS,
+  RECRUIT_MIDCAREER_HEADING,
+  RECRUIT_MIDCAREER_ROWS,
+  RECRUIT_MIDCAREER_NOTES,
+} from '../data/site';
+---
+
+<PageLayout
+  title="採用情報｜昭和美術印刷株式会社"
+  description="昭和美術印刷株式会社の採用情報。2027年度新卒者募集（営業職・事務職・印刷オペレーター）および中途採用の募集要項をご案内します。"
+  page="recruit"
+  sectionId="recruit"
+  railLatin="RECRUIT"
+  railJp="採用情報"
+  padTop="var(--space-9)"
+>
+  <div class="recruit">
+    <p class="recruit__intro">{RECRUIT_INTRO}</p>
+
+    <section class="recruit__block">
+      <h2 class="recruit__heading">{RECRUIT_GRADUATE_HEADING}</h2>
+      <div class="recruit__spec">
+        <div class="recruit__spec-label" aria-hidden="true">募集要項</div>
+        <SpecTable rows={RECRUIT_GRADUATE_ROWS} />
+      </div>
+    </section>
+
+    <section class="recruit__block recruit__block--mid">
+      <h2 class="recruit__heading">{RECRUIT_MIDCAREER_HEADING}</h2>
+      <SpecTable rows={RECRUIT_MIDCAREER_ROWS} fit />
+      {RECRUIT_MIDCAREER_NOTES.map((line) => <p class="recruit__note">{line}</p>)}
+    </section>
+
+    <ContactActions subject="採用に関するお問い合わせ" size="md" />
+  </div>
+</PageLayout>
+
+<style>
+  .recruit {
+    display: grid;
+    gap: var(--space-9);
+    justify-items: center;
+    padding: 0 var(--space-6);
+  }
+
+  .recruit__intro {
+    margin: 0;
+    max-width: 1180px;
+    font-family: var(--font-jp);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-light);
+    line-height: var(--lh-body);
+    letter-spacing: var(--ls-body);
+    text-wrap: pretty;
+  }
+
+  .recruit__block {
+    display: grid;
+    gap: var(--space-6);
+    width: 100%;
+    max-width: 1180px;
+    justify-items: start;
+  }
+
+  .recruit__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: var(--fw-regular);
+    line-height: 1.4;
+    letter-spacing: var(--ls-heading);
+  }
+
+  /* The vertical 「募集要項」 marker sits in the margin beside the table. */
+  .recruit__spec {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: start;
+    width: 100%;
+  }
+
+  .recruit__spec-label {
+    writing-mode: vertical-rl;
+    padding-top: var(--space-4);
+    font-family: var(--font-jp);
+    font-size: var(--fs-small);
+    font-weight: var(--fw-light);
+    line-height: 1;
+    letter-spacing: var(--ls-label);
+    white-space: nowrap;
+  }
+
+  .recruit__note {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-size: var(--fs-small);
+    font-weight: var(--fw-light);
+    line-height: 2;
+    letter-spacing: var(--ls-body);
+  }
+
+  @media (max-width: 768px) {
+    .recruit {
+      gap: var(--space-7);
+      padding: 0 var(--space-5);
+    }
+
+    .recruit__spec {
+      grid-template-columns: 1fr;
+    }
+
+    .recruit__spec-label {
+      display: none;
+    }
+  }
+</style>

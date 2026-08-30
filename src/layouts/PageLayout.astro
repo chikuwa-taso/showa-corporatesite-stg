@@ -1,0 +1,80 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SectionRail from '../components/SectionRail.astro';
+import LinkButton from '../components/LinkButton.astro';
+import { route } from '../lib/asset';
+import type { PageId } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Fixes the header's active nav item — these pages have no scroll-spy. */
+  page: PageId;
+  sectionId: string;
+  railLatin: string;
+  railJp: string;
+  /** RECRUIT opens tighter than CONTACT. */
+  padTop?: string;
+}
+
+const {
+  title,
+  description,
+  page,
+  sectionId,
+  railLatin,
+  railJp,
+  padTop = 'var(--space-10)',
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} noindex>
+  <SiteHeader activePage={page} />
+
+  <main>
+    <section id={sectionId} class="page" style={`--page-pad-top:${padTop}`}>
+      <SectionRail label={railLatin} side="left" />
+      <div class="page__body"><slot /></div>
+      <SectionRail label={railJp} side="right" />
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <LinkButton href={route('/#top')}>トップへ戻る</LinkButton>
+  </footer>
+</BaseLayout>
+
+<style>
+  .page {
+    display: grid;
+    grid-template-columns: var(--rail-col) 1fr var(--rail-col);
+    padding: var(--page-pad-top) 0 var(--space-10);
+  }
+
+  .page__body {
+    min-width: 0;
+  }
+
+  .page-footer {
+    display: flex;
+    justify-content: center;
+    padding: 0 0 var(--space-10);
+    background: var(--surface-page);
+  }
+
+  @media (max-width: 768px) {
+    .page {
+      grid-template-columns: 1fr;
+      padding: var(--space-9) 0;
+    }
+
+    .page :global(.rail) {
+      display: none;
+    }
+
+    .page-footer {
+      padding: 0 var(--space-5) var(--space-9);
+    }
+  }
+</style>

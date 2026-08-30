@@ -1,0 +1,110 @@
+---
+import type { RecruitRow, RecruitCell } from '../data/site';
+
+interface Props {
+  rows: RecruitRow[];
+  /** The mid-career table sizes to its content rather than filling the column. */
+  fit?: boolean;
+  class?: string;
+}
+
+const { rows, fit = false, class: className } = Astro.props;
+
+/** Folds `sameLine` cells onto the line before them. */
+function toLines(cells: RecruitCell[]): RecruitCell[][] {
+  const lines: RecruitCell[][] = [];
+  for (const cell of cells) {
+    if (cell.sameLine && lines.length > 0) lines[lines.length - 1]!.push(cell);
+    else lines.push([cell]);
+  }
+  return lines;
+}
+---
+
+<div class="spec-scroll">
+  <table class:list={['spec', fit && 'spec--fit', className]}>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr>
+            <th scope="row">{row.label}</th>
+            <td>
+              {toLines(row.cells).map((line) => (
+                <div class="spec__line">
+                  {line.map((cell) =>
+                    cell.small ? <span class="spec__small">{cell.text}</span> : <span>{cell.text}</span>,
+                  )}
+                </div>
+              ))}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  /* The table keeps its own scroller so a narrow screen never pushes the page
+     sideways — the brand has no icon to build a disclosure control from. */
+  .spec-scroll {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .spec {
+    border-collapse: collapse;
+    width: 100%;
+    border: var(--radius-hair) solid var(--ink-900);
+    font-family: var(--font-jp);
+    font-size: var(--fs-small);
+    font-weight: var(--fw-light);
+    line-height: 2;
+    letter-spacing: var(--ls-body);
+    text-align: left;
+  }
+
+  .spec--fit {
+    width: auto;
+  }
+
+  .spec th,
+  .spec td {
+    border: var(--radius-hair) solid var(--ink-900);
+    padding: var(--space-3) var(--space-5);
+    vertical-align: top;
+  }
+
+  .spec th {
+    width: 220px;
+    font-weight: var(--fw-light);
+  }
+
+  .spec--fit th,
+  .spec--fit td {
+    padding: var(--space-4) var(--space-7);
+  }
+
+  .spec__line + .spec__line {
+    margin-top: var(--space-2);
+  }
+
+  .spec__small {
+    font-size: var(--fs-label);
+  }
+
+  @media (max-width: 768px) {
+    .spec {
+      min-width: 560px;
+    }
+
+    .spec th {
+      width: 140px;
+    }
+
+    .spec th,
+    .spec td {
+      padding: var(--space-3) var(--space-4);
+    }
+  }
+</style>

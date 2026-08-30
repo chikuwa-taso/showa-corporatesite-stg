@@ -1,0 +1,96 @@
+---
+import { asset } from '../lib/asset';
+import { CONTACT_EMAIL, CONTACT_TEL, CONTACT_TEL_HREF } from '../data/site';
+
+interface Props {
+  /** Prefills the mail client's subject line. */
+  subject: string;
+  /** CONTACT runs these large and fluid; RECRUIT runs a fixed, smaller set. */
+  size?: 'lg' | 'md';
+}
+
+const { subject, size = 'lg' } = Astro.props;
+const mailHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`;
+---
+
+<div class:list={['actions', `actions--${size}`]}>
+  <a class="actions__mail" href={mailHref} aria-label="メールでお問い合わせ">
+    <picture>
+      <source srcset={asset('/assets/icons/mail-circle.webp')} type="image/webp" />
+      <img src={asset('/assets/icons/mail-circle.png')} alt="メールでお問い合わせ" />
+    </picture>
+  </a>
+
+  <span class="actions__or" aria-hidden="true">OR</span>
+
+  <a class="actions__tel" href={CONTACT_TEL_HREF}>TEL　{CONTACT_TEL}</a>
+</div>
+
+<style>
+  .actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .actions--lg {
+    gap: clamp(var(--space-5), 3.4vw, var(--space-8));
+  }
+
+  .actions--md {
+    justify-content: center;
+    gap: var(--space-7);
+  }
+
+  .actions__mail {
+    display: block;
+    line-height: 0;
+  }
+
+  .actions__mail img {
+    display: block;
+  }
+
+  .actions--lg .actions__mail img {
+    width: clamp(88px, 11vw, 132px);
+    height: clamp(88px, 11vw, 132px);
+  }
+
+  .actions--md .actions__mail img {
+    width: 88px;
+    height: 88px;
+  }
+
+  .actions__or,
+  .actions__tel {
+    font-weight: var(--fw-light);
+    line-height: 1;
+    color: var(--text-body);
+  }
+
+  /* Adapter Mono, as in the header nav — the tracking is tuned for it. */
+  .actions--lg .actions__or,
+  .actions--lg .actions__tel,
+  .actions--md .actions__tel {
+    font-family: var(--font-nav);
+    letter-spacing: var(--ls-nav-mono);
+  }
+
+  .actions--lg .actions__or {
+    font-size: clamp(18px, 2.2vw, 32px);
+  }
+
+  .actions--lg .actions__tel {
+    font-size: clamp(24px, 3.4vw, 44px);
+  }
+
+  .actions--md .actions__or {
+    font-family: var(--font-latin);
+    font-size: var(--fs-h3);
+    letter-spacing: var(--ls-heading);
+  }
+
+  .actions--md .actions__tel {
+    font-size: clamp(20px, 2.6vw, 32px);
+  }
+</style>

@@ -1,0 +1,73 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import ContactActions from '../components/ContactActions.astro';
+import { CONTACT_INTRO, CONTACT_NOTES } from '../data/site';
+---
+
+<PageLayout
+  title="お問い合わせ｜昭和美術印刷株式会社"
+  description="昭和美術印刷株式会社へのご質問・お見積り・資料請求などのお問い合わせ。メールまたはお電話（0776-53-5353）で承ります。"
+  page="contact"
+  sectionId="contact"
+  railLatin="CONTACT"
+  railJp="お問い合わせ"
+>
+  <div class="contact">
+    <div class="contact__intro">
+      {CONTACT_INTRO.map((line) => <p>{line}</p>)}
+    </div>
+
+    <ContactActions subject="お問い合わせ" />
+
+    <div class="contact__notes">
+      {CONTACT_NOTES.map((line) => <p>{line}</p>)}
+    </div>
+  </div>
+</PageLayout>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--space-10);
+    justify-items: start;
+    max-width: 1180px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+  }
+
+  .contact__intro {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .contact__notes {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .contact p {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: var(--fw-light);
+    letter-spacing: var(--ls-body);
+    text-wrap: pretty;
+  }
+
+  .contact__intro p {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+  }
+
+  .contact__notes p {
+    font-size: var(--fs-small);
+    line-height: 2;
+  }
+
+  @media (max-width: 768px) {
+    .contact {
+      gap: var(--space-9);
+      padding: 0 var(--space-5);
+    }
+  }
+</style>

@@ -1,24 +1,42 @@
 ---
-import { NAV_ITEMS, BRAND_ALT } from '../data/site';
-import { asset } from '../lib/asset';
+import { NAV_ITEMS, BRAND_ALT, type PageId } from '../data/site';
+import { asset, route } from '../lib/asset';
+
+interface Props {
+  /**
+   * Set on the standalone pages, where the active item is fixed. Left unset on
+   * the LP, whose active item follows the scroll instead.
+   */
+  activePage?: PageId;
+}
+
+const { activePage } = Astro.props;
 ---
 
 <div class="header-bar">
   <header class="header">
-    <a class="header__logo" href="#top">
+    <a class="header__logo" href={route('/#top')}>
       <picture>
         <source srcset={asset('/assets/brand/lockup.webp')} type="image/webp" />
         <img src={asset('/assets/brand/lockup.png')} alt={BRAND_ALT} width="1239" height="709" />
       </picture>
     </a>
 
-    <nav class="nav" aria-label="セクション">
+    <nav class="nav" aria-label="サイト内ナビゲーション">
       {
-        NAV_ITEMS.map((item) => (
-          <a class="nav__link" href={item.href} data-spy-for={item.section}>
-            {item.label}
-          </a>
-        ))
+        NAV_ITEMS.map((item) => {
+          const isActive = activePage !== undefined && item.page === activePage;
+          return (
+            <a
+              class:list={['nav__link', isActive && 'is-active']}
+              href={route(item.href)}
+              aria-current={isActive ? 'page' : undefined}
+              data-spy-for={activePage === undefined ? item.section : undefined}
+            >
+              {item.label}
+            </a>
+          );
+        })
       }
     </nav>
   </header>
