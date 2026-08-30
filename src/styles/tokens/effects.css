@@ -1,0 +1,14 @@
+:root{
+--radius-none:0px;--radius-hair:1px;
+--hairline:1px solid var(--ink-900); /* @kind other */
+--hairline-soft:1px solid var(--ink-100); /* @kind other */
+--stroke-icon:2px; /* @kind spacing */
+--shadow-none:none;--shadow-lift:0 2px 24px rgba(10,10,10,.06);
+--ease-brand:cubic-bezier(.22,.61,.36,1); /* @kind other */
+--dur-fast:180ms; /* @kind other */
+--dur-base:400ms; /* @kind other */
+--dur-slow:900ms; /* @kind other */
+--hover-opacity:.55; /* @kind other */
+--press-opacity:.35; /* @kind other */
+--overlay-scrim:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,0)); /* @kind color */
+}

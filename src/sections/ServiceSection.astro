@@ -1,0 +1,69 @@
+---
+import SectionRail from '../components/SectionRail.astro';
+import ServiceIcon from '../components/ServiceIcon.astro';
+import { SERVICE_ROWS, CONFIG } from '../data/site';
+
+interface Props {
+  /** 100–220 per the handoff. Overrides the --icon-size token for this section. */
+  iconSize?: number;
+  showLabels?: boolean;
+}
+
+const { iconSize = CONFIG.iconSize, showLabels = CONFIG.serviceLabels } = Astro.props;
+---
+
+<section id="service" class="service" style={`--icon-size:${iconSize}px`}>
+  <SectionRail label="SERVICE" side="left" />
+
+  <div class="service__body">
+    {
+      SERVICE_ROWS.map((row) => (
+        <div class="service__row">
+          {row.map((service) => (
+            <ServiceIcon slug={service.slug} label={service.label} showLabel={showLabels} />
+          ))}
+        </div>
+      ))
+    }
+  </div>
+
+  <SectionRail label="印刷方式" side="right" />
+</section>
+
+<style>
+  .service {
+    display: grid;
+    grid-template-columns: var(--rail-col) 1fr var(--rail-col);
+    padding: var(--section-pad-y) 0;
+  }
+
+  .service__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--service-stack-gap);
+    align-items: center;
+  }
+
+  .service__row {
+    display: flex;
+    gap: var(--service-row-gap);
+    align-items: flex-end;
+  }
+
+  @media (max-width: 768px) {
+    .service {
+      grid-template-columns: 1fr;
+    }
+
+    .service :global(.rail) {
+      display: none;
+    }
+
+    /* The 3 + 2 rows would overflow a phone, so both wrap and centre instead. */
+    .service__row {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0 var(--space-5);
+    }
+  }
+</style>

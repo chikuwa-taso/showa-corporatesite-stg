@@ -1,0 +1,52 @@
+/* LP-level tokens. Values the handoff fixes for this page rather than for the
+   design system as a whole — every band height, duration and tweakable flag
+   lives here so one edit propagates through every section. */
+:root {
+  /* Fixed header. --header-h drives the header spacer, the scroll-padding for
+     anchor jumps, and the scroll-spy's activation line. */
+  --header-h: clamp(64px, 6.5vw, 88px);
+  --header-gutter: clamp(16px, 2.4vw, 40px);
+  --header-nav-gap: clamp(14px, 1.7vw, 32px);
+  --logo-w: clamp(112px, 11vw, 152px);
+  --ls-nav-mono: 0.14em; /* Adapter Mono is already wide, so below --ls-nav */
+
+  /* Band heights */
+  --band-hero-h: 56vw;
+  --marquee-h: 30vw;
+
+  /* WORKS marquee */
+  --marquee-duration: 52s;
+  --tile-ratio-wide: 1.503 / 1;
+  --tile-ratio-square: 1 / 1;
+
+  /* SERVICE pictograms. Handoff range 100–220px; the client last previewed 220. */
+  --icon-size: 150px;
+  --icon-aspect: 0.78; /* drawn on a 1705×1330 canvas */
+  --service-row-gap: var(--space-10);
+  --service-stack-gap: var(--space-9);
+
+  /* Rail column width incl. its inner offset, shared by ABOUT/SERVICE/NETWORK */
+  --rail-col: calc(var(--rail-width) + var(--space-2));
+
+  /* Section padding — --space-11 by design, tightened on narrow screens below. */
+  --section-pad-y: var(--space-11);
+}
+
+/* No mobile layout was designed; this follows the brand's composition rules —
+   rails drop away, the 3+2 and two-column grids stack, and the nav stays a plain
+   row (the brand has no hamburger, chevrons or arrows to build a menu from). */
+@media (max-width: 768px) {
+  :root {
+    /* The header stacks into a logo row plus a nav row, so the spacer,
+       scroll-padding and scroll-spy line all need the taller measure.
+       12 pad + 64 logo + 12 gap + 20 nav row + 12 pad. */
+    --header-h: 120px;
+    --band-hero-h: 72vw;
+    --marquee-h: 56vw;
+    --section-pad-y: var(--space-9);
+    --icon-size: 108px;
+    --service-row-gap: var(--space-7);
+    --service-stack-gap: var(--space-7);
+    --rail-col: 0px;
+  }
+}

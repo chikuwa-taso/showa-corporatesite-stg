@@ -1,0 +1,47 @@
+---
+interface Props {
+  /** Latin name pins left, Japanese name pins right — the brand's rail rule. */
+  label: string;
+  side?: 'left' | 'right';
+  tone?: 'ink' | 'inverse';
+  class?: string;
+}
+
+const { label, side = 'left', tone = 'ink', class: className } = Astro.props;
+---
+
+<div class:list={['rail', `rail--${side}`, `rail--${tone}`, className]}>
+  <span class="rail__label">{label}</span>
+</div>
+
+<style>
+  .rail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rail--left {
+    padding-left: var(--space-2);
+  }
+
+  .rail--right {
+    padding-right: var(--space-2);
+  }
+
+  .rail__label {
+    writing-mode: vertical-rl;
+    font-family: var(--font-latin);
+    font-size: var(--fs-label);
+    font-weight: var(--fw-light);
+    line-height: 1;
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--text-body);
+    white-space: nowrap;
+  }
+
+  .rail--inverse .rail__label {
+    color: var(--text-inverse);
+  }
+</style>

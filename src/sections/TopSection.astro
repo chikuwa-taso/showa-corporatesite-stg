@@ -1,0 +1,26 @@
+---
+import BackgroundVideo from '../components/BackgroundVideo.astro';
+import { CONFIG } from '../data/site';
+
+interface Props {
+  useVideo?: boolean;
+}
+
+const { useVideo = CONFIG.useVideo } = Astro.props;
+---
+
+{/* Brand impression only — no type, no scrim, no overlay. */}
+<section id="top" class="top">
+  {useVideo && <BackgroundVideo name="material-a" />}
+</section>
+
+<style>
+  .top {
+    position: relative;
+    width: 100%;
+    height: var(--band-hero-h);
+    overflow: hidden;
+    /* Stands in whenever the video is off, still loading, or reduced-motion. */
+    background: var(--gradient-fire);
+  }
+</style>

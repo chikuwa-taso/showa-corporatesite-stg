@@ -1,0 +1,47 @@
+---
+{/* Both destinations are placeholders — wire to the real recruit and contact
+    pages once the client supplies them. */}
+const CTAS = [
+  { label: '採用情報', href: '#contact' },
+  { label: 'お問い合わせ', href: '#contact' },
+];
+---
+
+<footer id="contact" class="contact">
+  {CTAS.map((cta) => <a class="contact__cta" href={cta.href}>{cta.label}</a>)}
+</footer>
+
+<style>
+  .contact {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-9);
+    padding: var(--space-9) 0 var(--space-10);
+    background: var(--surface-page);
+  }
+
+  .contact__cta {
+    display: inline-block;
+    padding: 0 var(--space-8) var(--space-4);
+    font-family: var(--font-jp);
+    font-size: var(--fs-h3);
+    font-weight: var(--fw-regular);
+    line-height: 1.4;
+    letter-spacing: var(--ls-heading);
+    color: var(--text-body);
+    border-bottom: var(--radius-hair) solid var(--border-hairline);
+  }
+
+  @media (max-width: 768px) {
+    .contact {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-7);
+      padding: var(--space-9) var(--space-5) var(--space-9);
+    }
+
+    .contact__cta {
+      padding: 0 var(--space-6) var(--space-3);
+    }
+  }
+</style>

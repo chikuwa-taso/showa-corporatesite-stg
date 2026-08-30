@@ -1,0 +1,124 @@
+---
+import { NAV_ITEMS, BRAND_ALT } from '../data/site';
+---
+
+<div class="header-bar">
+  <header class="header">
+    <a class="header__logo" href="#top">
+      <picture>
+        <source srcset="/assets/brand/lockup.webp" type="image/webp" />
+        <img src="/assets/brand/lockup.png" alt={BRAND_ALT} width="1239" height="709" />
+      </picture>
+    </a>
+
+    <nav class="nav" aria-label="セクション">
+      {
+        NAV_ITEMS.map((item) => (
+          <a class="nav__link" href={item.href} data-spy-for={item.section}>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </header>
+</div>
+
+<div class="header-spacer"></div>
+
+<style>
+  .header-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: var(--surface-page);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding: 16px var(--header-gutter) 14px;
+  }
+
+  /* Keeps the fixed header from covering the top of the page. */
+  .header-spacer {
+    height: var(--header-h);
+  }
+
+  .header__logo {
+    flex: none;
+    width: var(--logo-w);
+    line-height: 0;
+    display: block;
+  }
+
+  .header__logo img {
+    width: 100%;
+    height: auto;
+  }
+
+  .nav {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--header-nav-gap);
+  }
+
+  .nav__link {
+    font-family: var(--font-nav);
+    font-size: var(--fs-label);
+    font-weight: var(--fw-light);
+    line-height: 1;
+    letter-spacing: var(--ls-nav-mono);
+    text-transform: uppercase;
+    color: var(--text-body);
+    opacity: 0.88;
+    /* Transparent when inactive so the underline never shifts the layout. */
+    border-bottom: var(--radius-hair) solid transparent;
+    padding-bottom: var(--space-1);
+    white-space: nowrap;
+  }
+
+  .nav__link.is-active {
+    opacity: 1;
+    border-bottom-color: currentColor;
+  }
+
+  .nav__link:hover {
+    opacity: var(--hover-opacity);
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+    }
+
+    .header__logo {
+      margin-left: var(--header-gutter);
+    }
+
+    /* Seven items never fit a phone row. They stay one row that scrolls, since
+       the brand supplies no icon to build a menu toggle from. */
+    .nav {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      gap: var(--space-5);
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 0 var(--header-gutter) var(--space-1);
+    }
+
+    .nav::-webkit-scrollbar {
+      display: none;
+    }
+  }
+</style>

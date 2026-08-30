@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import TopSection from '../sections/TopSection.astro';
+import AboutSection from '../sections/AboutSection.astro';
+import WorksSection from '../sections/WorksSection.astro';
+import ServiceSection from '../sections/ServiceSection.astro';
+import NetworkSection from '../sections/NetworkSection.astro';
+import ContactSection from '../sections/ContactSection.astro';
+---
+
+<BaseLayout
+  title="昭和美術印刷株式会社｜印刷と技術のショーワ"
+  description="福井の商業印刷会社、昭和美術印刷株式会社。オフセット印刷・枚葉印刷・オンデマンド・プリプレス・製本折加工。職人の目と最新の技術で、日本のいい印刷を支えます。"
+>
+  <SiteHeader />
+
+  <main>
+    <TopSection />
+    <AboutSection />
+    <WorksSection />
+    <ServiceSection />
+    <NetworkSection />
+  </main>
+
+  <ContactSection />
+
+  {/* Marks the bottom of the page for the scroll-spy's CONTACT fallback. It needs
+      real height — a zero-height element lands exactly on the viewport's bottom
+      edge, and an empty intersection rect never counts as intersecting. The
+      negative margin keeps it from lengthening the page. */}
+  <div class="spy-sentinel" data-spy-sentinel aria-hidden="true"></div>
+</BaseLayout>
+
+<style>
+  .spy-sentinel {
+    height: 1px;
+    margin-top: -1px;
+  }
+</style>
+
+<script>
+  import { initScrollSpy } from '../scripts/scroll-spy';
+  import { initBackgroundVideo } from '../scripts/background-video';
+
+  initScrollSpy();
+  initBackgroundVideo();
+</script>

@@ -1,0 +1,60 @@
+---
+import SectionRail from '../components/SectionRail.astro';
+import { ABOUT_STATEMENT_ALT } from '../data/site';
+---
+
+<section id="about" class="about">
+  <SectionRail label="ABOUT" side="left" />
+
+  <div class="about__body">
+    {/* An image at the client's instruction — never re-typeset. */}
+    <picture>
+      <source srcset="/assets/about/about-statement.webp" type="image/webp" />
+      <img
+        class="about__statement"
+        src="/assets/about/about-statement.png"
+        alt={ABOUT_STATEMENT_ALT}
+        width="4551"
+        height="1694"
+        loading="lazy"
+        decoding="async"
+      />
+    </picture>
+  </div>
+
+  <SectionRail label="会社概要" side="right" />
+</section>
+
+<style>
+  .about {
+    display: grid;
+    grid-template-columns: var(--rail-col) 1fr var(--rail-col);
+    padding: var(--section-pad-y) 0;
+  }
+
+  .about__body {
+    display: flex;
+    justify-content: center;
+    padding: 0 var(--space-6);
+  }
+
+  .about__statement {
+    width: 100%;
+    max-width: 1000px;
+    height: auto;
+  }
+
+  @media (max-width: 768px) {
+    .about {
+      grid-template-columns: 1fr;
+    }
+
+    .about :global(.rail) {
+      display: none;
+    }
+
+    .about__body {
+      padding: 0 var(--space-5);
+    }
+  }
+</style>

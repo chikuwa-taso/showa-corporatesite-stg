@@ -1,0 +1,39 @@
+---
+interface Props {
+  /** Basename in /assets/video — resolves to .webm + .mp4 + a -poster.jpg. */
+  name: string;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+const base = `/assets/video/${name}`;
+---
+
+{/* Decorative, so aria-hidden and no audio track. Playback is driven entirely by
+    the island: it sets `muted` as a property (the attribute alone is not enough
+    in every engine, and unmuted autoplay is blocked), plays only while onscreen,
+    and never starts under prefers-reduced-motion. Without JS the poster frame
+    stands in over the band's gradient. */}
+<video
+  class:list={['bg-video', className]}
+  data-bg-video
+  poster={`${base}-poster.jpg`}
+  data-webm={`${base}.webm`}
+  data-mp4={`${base}.mp4`}
+  muted
+  loop
+  playsinline
+  preload="none"
+  aria-hidden="true"
+  tabindex="-1"
+></video>
+
+<style>
+  .bg-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>

@@ -1,0 +1,20 @@
+:root{
+/* ink + paper */
+--ink-900:#0a0a0a;--ink-700:#333333;--ink-500:#6b6b6b;--ink-300:#b3b3b3;--ink-100:#e5e5e5;
+--paper:#ffffff;--paper-warm:#fbfaf7;
+/* fire — hero gradient (熱／印刷インキ) */
+--fire-vermilion:#fe4101;--fire-red:#fb4806;--fire-amber:#fbaa00;--fire-yellow:#ffaf03;--fire-sand:#d09342;
+/* water — network gradient (刷／広がり) */
+--water-indigo:#341ce4;--water-blue:#1f5be0;--water-cyan:#009cd9;--water-teal:#005872;
+/* paperstock accents seen in WORKS imagery */
+--stock-kraft:#f8da9c;--stock-clay:#ddbea2;--stock-slate:#325992;
+/* semantic */
+--text-body:var(--ink-900);--text-muted:var(--ink-500);--text-inverse:var(--paper);
+--surface-page:var(--paper);--surface-card:var(--paper);--surface-inverse:var(--ink-900);
+--border-hairline:var(--ink-900);--border-soft:var(--ink-100);
+--accent-primary:var(--fire-vermilion);--accent-secondary:var(--water-blue);
+/* signature gradients */
+--gradient-fire:linear-gradient(107deg,#005872 0%,#d09342 22%,#ffaf03 42%,#fbaa00 58%,#fe4101 80%,#fb4806 100%); /* @kind color */
+--gradient-water:linear-gradient(115deg,#341ce4 0%,#1f5be0 38%,#0e7ad2 62%,#009cd9 100%); /* @kind color */
+--gradient-fire-soft:linear-gradient(115deg,#ddbea2 0%,#f8da9c 55%,#d09342 100%); /* @kind color */
+}

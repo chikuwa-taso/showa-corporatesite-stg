@@ -1,0 +1,65 @@
+---
+import { mapHref, type Office } from '../data/site';
+
+interface Props {
+  office: Office;
+}
+
+const { office } = Astro.props;
+---
+
+<div class="location">
+  <div class="location__name">{office.name}</div>
+  <div>
+    <div class="location__line">
+      {office.postal}　{office.address}
+      <a class="location__map" href={mapHref(office)} target="_blank" rel="noopener noreferrer">
+        MAP<span class="visually-hidden">（{office.name} — 新しいタブで開きます）</span>
+      </a>
+    </div>
+    <div class="location__line">
+      <span>TEL {office.tel}</span>{office.fax && <span>　FAX {office.fax}</span>}
+    </div>
+  </div>
+</div>
+
+<style>
+  .location {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    column-gap: var(--space-5);
+  }
+
+  .location__name,
+  .location__line {
+    font-family: var(--font-jp);
+    font-size: var(--fs-small);
+    font-weight: var(--fw-light);
+    line-height: 2;
+    letter-spacing: var(--ls-body);
+    color: var(--text-inverse);
+  }
+
+  .location__map {
+    margin-left: var(--space-2);
+    border-bottom: var(--radius-hair) solid var(--text-inverse);
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    .location {
+      grid-template-columns: 1fr;
+      row-gap: var(--space-1);
+    }
+  }
+</style>

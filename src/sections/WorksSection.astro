@@ -1,0 +1,76 @@
+---
+import SectionRail from '../components/SectionRail.astro';
+import WorkTile from '../components/WorkTile.astro';
+import { WORK_TILES, CONFIG } from '../data/site';
+
+interface Props {
+  useVideo?: boolean;
+}
+
+const { useVideo = CONFIG.useVideo } = Astro.props;
+---
+
+<section id="works" class="works">
+  <SectionRail label="WORKS" side="left" />
+
+  <div class="works__viewport">
+    <div class="works__track">
+      {WORK_TILES.map((tile) => <WorkTile tile={tile} useVideo={useVideo} />)}
+      {/* Exact duplicate — the -50% translate lands on this copy's start. */}
+      {WORK_TILES.map((tile) => <WorkTile tile={tile} useVideo={useVideo} duplicate />)}
+    </div>
+  </div>
+
+  <SectionRail label="実績" side="right" />
+</section>
+
+<style>
+  .works {
+    display: grid;
+    grid-template-columns: var(--rail-width) minmax(0, 1fr) var(--rail-width);
+    align-items: stretch;
+    background: var(--surface-page);
+  }
+
+  .works__viewport {
+    position: relative;
+    overflow: hidden;
+    height: var(--marquee-h);
+  }
+
+  .works__track {
+    display: flex;
+    width: max-content;
+    height: 100%;
+    animation: works-marquee var(--marquee-duration) linear infinite;
+  }
+
+  .works__viewport:hover .works__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes works-marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .works__track {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .works {
+      grid-template-columns: 1fr;
+    }
+
+    .works :global(.rail) {
+      display: none;
+    }
+  }
+</style>

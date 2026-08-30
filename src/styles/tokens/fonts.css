@@ -1,0 +1,9 @@
+/* Verbatim from the design system, minus its @import — the Google Fonts and
+   Adobe Fonts stylesheets are <link>ed from the document head instead, so they
+   fetch in parallel with the CSS rather than after it. */
+:root{--font-jp:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;--font-display:"Zen Kaku Gothic New","Noto Sans JP",sans-serif;--font-latin:"Zen Kaku Gothic New","Noto Sans JP",sans-serif}
+
+/* Client-specified face for the header nav. Adobe Fonts kits are domain-locked:
+   the production domain must be added to the web project or this silently falls
+   back to a system monospace. */
+:root{--font-nav:'adapter-mono-pe-variable','adapter-mono-pe',ui-monospace,monospace}

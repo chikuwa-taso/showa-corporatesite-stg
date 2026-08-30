@@ -1,0 +1,52 @@
+---
+import BackgroundVideo from './BackgroundVideo.astro';
+import type { WorkTile } from '../data/site';
+
+interface Props {
+  tile: WorkTile;
+  /** The duplicated half of the marquee is decorative to assistive tech. */
+  duplicate?: boolean;
+  useVideo?: boolean;
+}
+
+const { tile, duplicate = false, useVideo = true } = Astro.props;
+---
+
+<div
+  class:list={['tile', `tile--${tile.ratio}`]}
+  style={tile.kind === 'photo' ? undefined : `background:${tile.fill}`}
+  aria-hidden={duplicate ? 'true' : undefined}
+>
+  {
+    tile.kind === 'photo' && (
+      <picture>
+        <source srcset={`${tile.src}.webp`} type="image/webp" />
+        <img src={`${tile.src}.jpg`} alt={duplicate ? '' : tile.alt} loading="lazy" decoding="async" />
+      </picture>
+    )
+  }
+  {tile.kind === 'video' && useVideo && <BackgroundVideo name={tile.name} />}
+</div>
+
+<style>
+  .tile {
+    position: relative;
+    flex: none;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .tile--wide {
+    aspect-ratio: var(--tile-ratio-wide);
+  }
+
+  .tile--square {
+    aspect-ratio: var(--tile-ratio-square);
+  }
+
+  .tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
