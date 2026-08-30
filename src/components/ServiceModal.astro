@@ -1,0 +1,280 @@
+---
+import LinkButton from './LinkButton.astro';
+import SectionRail from './SectionRail.astro';
+import { asset, route } from '../lib/asset';
+import { FACILITY_HREF, type Service } from '../data/site';
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+const titleId = `service-modal-${service.slug}-title`;
+---
+
+{/*
+  A native <dialog>: Esc, the focus trap and the inert background come free, and
+  the top layer puts it over the page without a z-index race. It starts below the
+  fixed header and leaves ::backdrop transparent, so the header stays crisp the
+  way the comp draws it while everything under the popup dims to the scrim.
+
+  The client supplied each panel as one flat composite with the title and copy
+  burnt into the photo. Only the photo is used; the words are set live so they
+  stay legible on a phone, selectable, and reachable by a screen reader.
+*/}
+<dialog class="modal" id={`service-modal-${service.slug}`} aria-labelledby={titleId}>
+  {/* The section's own rails sit behind the scrim and go faint with everything
+      else, but the comp keeps them crisp — so the popup carries its own pair on
+      the same grid the section uses, landing them in exactly the same place. */}
+  <SectionRail label="SERVICE" side="left" />
+
+  <div class="modal__composition">
+    <picture class="modal__photo">
+      <source srcset={asset(`/assets/service/${service.slug}.webp`)} type="image/webp" />
+      {/* Lazy inside a closed dialog costs nothing until it opens; the icon
+          warms it on hover so the panel is rarely caught mid-load. */}
+      <img
+        src={asset(`/assets/service/${service.slug}.jpg`)}
+        alt={service.photoAlt}
+        loading="lazy"
+        decoding="async"
+      />
+    </picture>
+
+    <p class="modal__body">{service.body}</p>
+
+    <h2 class="modal__title" id={titleId}>
+      {
+        service.titleLines.map((line, i) => (
+          <>
+            {i > 0 && <br />}
+            {line}
+          </>
+        ))
+      }
+    </h2>
+
+    {/* The tracking sits on an inner span so its trailing space can be pulled
+        back off the end — otherwise the underline overhangs the last glyph by a
+        full character, and the supplied asset has the rule flush with the text. */}
+    <LinkButton class="modal__facility" href={route(FACILITY_HREF)}>
+      <span class="modal__facility-label">設備一覧</span>
+    </LinkButton>
+
+    <button class="modal__close" type="button" data-modal-close autofocus aria-label="閉じる">
+      <picture>
+        <source srcset={asset('/assets/icons/close.webp')} type="image/webp" />
+        <img src={asset('/assets/icons/close.png')} alt="" loading="lazy" decoding="async" />
+      </picture>
+    </button>
+  </div>
+
+  <SectionRail label="印刷技術" side="right" />
+</dialog>
+
+<style>
+  .modal {
+    position: fixed;
+    inset: var(--header-h) 0 0 0;
+    /* Same three-column frame as the SERVICE section, so the popup's rails land
+       on top of the ones showing faintly through the scrim. */
+    display: grid;
+    grid-template-columns: var(--rail-col) 1fr var(--rail-col);
+    /* A dialog is width:fit-content and centred by default; override so it can
+       fill the space under the header. */
+    max-width: none;
+    max-height: none;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--popup-scrim);
+    color: var(--text-body);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .modal::backdrop {
+    /* The scrim lives on the dialog itself, which starts below the header —
+       dimming the backdrop too would take the header down with it. */
+    background: transparent;
+  }
+
+  .modal:not([open]) {
+    display: none;
+  }
+
+  .modal__composition {
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: auto auto auto; /* photo | copy | heading */
+    grid-template-rows: auto auto; /* content | actions */
+    column-gap: var(--popup-col-gap);
+    justify-content: center;
+    align-content: center;
+    min-height: 100%;
+    padding: var(--space-7) var(--space-5);
+  }
+
+  .modal__photo {
+    grid-column: 1;
+    /* Spanning both rows is what lets 設備一覧 and × sit level with the photo's
+       bottom edge rather than below the shorter column of copy. */
+    grid-row: 1 / 3;
+    align-self: start;
+    width: var(--popup-photo-w);
+    aspect-ratio: var(--popup-photo-ratio);
+  }
+
+  .modal__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .modal__body {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    writing-mode: var(--writing-vertical);
+    /* In vertical writing the inline axis runs down the page, so inline-size is
+       the column's run and the copy wraps into the next column at this height. */
+    inline-size: var(--popup-body-run);
+    font-family: var(--font-jp);
+    font-size: var(--popup-body-size);
+    font-weight: var(--fw-light);
+    line-height: var(--lh-body);
+    letter-spacing: var(--ls-body);
+  }
+
+  .modal__title {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    /* Hangs the heading above the photo's top edge. In em, so it stays in step
+       with the type rather than with whatever the column happens to be wide. */
+    margin: calc(-1 * var(--popup-title-rise)) 0 0;
+    writing-mode: var(--writing-vertical);
+    font-family: var(--font-display);
+    font-size: var(--popup-title-size);
+    font-weight: var(--fw-regular);
+    line-height: var(--lh-tight);
+    letter-spacing: var(--ls-body);
+  }
+
+  /* LinkButton's root carries its own component id, which Astro's scoping will
+     not match from here — the same reason NETWORK's rail needs :global. */
+  .modal__composition :global(.modal__facility) {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    align-self: end;
+    margin-bottom: calc(-1 * var(--popup-actions-drop));
+    /* Proportions off 設備一覧ボタン.png: no side padding, so the rule ends up
+       the width of the word, and a gap of 0.79 of the cap height above it. */
+    padding: 0 0 0.79em;
+    font-size: var(--popup-facility-size);
+    white-space: nowrap;
+  }
+
+  .modal__facility-label {
+    letter-spacing: var(--popup-facility-tracking);
+    margin-inline-end: calc(-1 * var(--popup-facility-tracking));
+  }
+
+  .modal__close {
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: center;
+    align-self: end;
+    /* Sits on the 設備一覧 label rather than its rule, as the comp has it. */
+    margin-bottom: calc(var(--space-4) - var(--popup-actions-drop));
+    width: calc(var(--popup-title-size) * 0.76); /* comp: 2.03vw against the title's 2.66vw */
+    padding: var(--space-3);
+    box-sizing: content-box;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .modal__close img {
+    display: block;
+    width: 100%;
+  }
+
+  .modal__close:hover {
+    opacity: var(--hover-opacity);
+  }
+
+  .modal__close:active {
+    opacity: var(--press-opacity);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .modal[open] {
+      animation: modal-in var(--dur-fast) var(--ease-brand);
+    }
+  }
+
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .modal {
+      grid-template-columns: 1fr;
+    }
+
+    .modal :global(.rail) {
+      display: none;
+    }
+
+    /* Stacked: photo, then the heading and copy side by side as one vertical
+       block, then the actions. The rows keep their reading order. */
+    .modal__composition {
+      grid-column: 1;
+      grid-template-columns: auto auto;
+      grid-template-rows: auto auto auto;
+      row-gap: var(--space-6);
+      justify-content: center;
+      padding: var(--space-6) var(--space-5);
+    }
+
+    .modal__photo {
+      grid-column: 1 / 3;
+      grid-row: 1;
+    }
+
+    .modal__body {
+      grid-column: 1;
+      grid-row: 2;
+      justify-self: end;
+    }
+
+    .modal__title {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    /* :global for the same reason as the desktop rule — this is LinkButton's
+       root element, which carries LinkButton's component id and not this one's. */
+    .modal__composition :global(.modal__facility) {
+      grid-column: 1;
+      grid-row: 3;
+      justify-self: end;
+      align-self: center;
+      margin-bottom: 0;
+    }
+
+    .modal__close {
+      grid-column: 2;
+      grid-row: 3;
+      justify-self: start;
+      align-self: center;
+      margin-bottom: 0;
+    }
+  }
+</style>

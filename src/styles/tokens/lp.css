@@ -3,11 +3,20 @@
    lives here so one edit propagates through every section. */
 :root {
   /* Fixed header. --header-h drives the header spacer, the scroll-padding for
-     anchor jumps, and the scroll-spy's activation line. */
-  --header-h: clamp(64px, 6.5vw, 88px);
+     anchor jumps, the scroll-spy's activation line, and where the SERVICE popup
+     starts — so it has to be the header's true height, not an approximation of
+     it. The logo sets that height, so it is derived rather than guessed: a
+     hand-set clamp here drifted 28px short of the rendered header, which let the
+     popup's scrim cover the lockup and put anchor jumps under the nav. */
   --header-gutter: clamp(16px, 2.4vw, 40px);
   --header-nav-gap: clamp(14px, 1.7vw, 32px);
   --logo-w: clamp(112px, 11vw, 152px);
+  --logo-aspect: 1.7476; /* the lockup is 1239x709 */
+  --header-pad-top: 16px;
+  --header-pad-bottom: 14px;
+  --header-h: calc(
+    var(--header-pad-top) + var(--header-pad-bottom) + var(--logo-w) / var(--logo-aspect)
+  );
   --ls-nav-mono: 0.14em; /* Adapter Mono is already wide, so below --ls-nav */
 
   /* Band heights */
@@ -35,6 +44,29 @@
   --service-row-gap: var(--space-10);
   --service-stack-gap: var(--space-9);
 
+  /* SERVICE popup. Proportions read off the client's comp, which is drawn on a
+     7681px-wide board — every length here is that measurement over 7681, so the
+     composition holds its shape at any width. */
+  --popup-photo-w: 44.7vw; /* comp: 3432 / 7681 */
+  --popup-photo-ratio: 1.7409 / 1; /* the crop the pipeline produces */
+  --popup-col-gap: 3.4vw;
+  --popup-title-size: clamp(30px, 2.66vw, 52px); /* comp: 204 / 7681 */
+  --popup-body-size: clamp(15px, 1.43vw, 28px); /* comp: 110 / 7681 */
+  /* Column run before the copy wraps. Every body string is 30–34 characters, so
+     this is what turns each of them into the comp's three columns. */
+  --popup-body-run: 14em;
+  /* The heading starts above the photo rather than level with it. In em of the
+     heading, which is what the comp's 7.5%-of-board rise works out to. */
+  --popup-title-rise: 1.59em;
+  /* 設備一覧, off the supplied button asset: cap height 1.93vw against the
+     comp's board, tracked far wider than any of the shared label tokens. */
+  --popup-facility-size: clamp(18px, 1.93vw, 34px);
+  --popup-facility-tracking: 0.5em;
+  --popup-actions-drop: 2.9vh; /* 設備一覧's rule clears the photo's bottom edge */
+  /* Near-opaque, so the pictograms behind read as a watermark at ~6%. Measured
+     off the comp, where the ink under the scrim sits at tone 242 of 255. */
+  --popup-scrim: rgba(255, 255, 255, 0.94);
+
   /* Rail column width incl. its inner offset, shared by ABOUT/SERVICE/NETWORK */
   --rail-col: calc(var(--rail-width) + var(--space-2));
 
@@ -57,5 +89,15 @@
     --service-row-gap: var(--space-7);
     --service-stack-gap: var(--space-7);
     --rail-col: 0px;
+
+    /* The popup stacks, so the photo takes the width instead of a share of it
+       and the heading no longer hangs above anything. */
+    --popup-photo-w: calc(100vw - 2 * var(--space-5));
+    --popup-col-gap: var(--space-6);
+    --popup-title-size: clamp(26px, 7vw, 38px);
+    --popup-body-size: clamp(14px, 3.7vw, 18px);
+    --popup-facility-size: clamp(16px, 4.4vw, 22px);
+    --popup-title-rise: 0em;
+    --popup-actions-drop: 0px;
   }
 }

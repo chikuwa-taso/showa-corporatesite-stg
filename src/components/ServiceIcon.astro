@@ -8,14 +8,24 @@ interface Props {
 }
 
 const { slug, label, showLabel = false } = Astro.props;
+const modalId = `service-modal-${slug}`;
 ---
 
 {/* Brand illustrations, not UI glyphs — never recolored, never substituted. */}
 <figure class="service-icon">
-  <picture>
-    <source srcset={asset(`/assets/icons/${slug}.webp`)} type="image/webp" />
-    <img src={asset(`/assets/icons/${slug}.png`)} alt={label} loading="lazy" decoding="async" />
-  </picture>
+  <button
+    class="service-icon__trigger"
+    type="button"
+    data-modal-open={modalId}
+    aria-haspopup="dialog"
+    aria-controls={modalId}
+  >
+    <picture>
+      <source srcset={asset(`/assets/icons/${slug}.webp`)} type="image/webp" />
+      <img src={asset(`/assets/icons/${slug}.png`)} alt={label} loading="lazy" decoding="async" />
+    </picture>
+    <span class="visually-hidden">の詳細を開く</span>
+  </button>
   {showLabel && <figcaption>{label}</figcaption>}
 </figure>
 
@@ -28,10 +38,34 @@ const { slug, label, showLabel = false } = Astro.props;
     gap: var(--space-5);
   }
 
+  .service-icon__trigger {
+    display: block;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: inherit;
+  }
+
   .service-icon img {
+    display: block;
     width: var(--icon-size);
     height: calc(var(--icon-size) * var(--icon-aspect));
     object-fit: contain;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .service-icon__trigger {
+      transition: opacity var(--dur-fast) var(--ease-brand);
+    }
+  }
+
+  .service-icon__trigger:hover {
+    opacity: var(--hover-opacity);
+  }
+
+  .service-icon__trigger:active {
+    opacity: var(--press-opacity);
   }
 
   .service-icon figcaption {

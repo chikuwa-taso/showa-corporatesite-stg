@@ -50,6 +50,26 @@ a:active {
   outline-offset: var(--space-1);
 }
 
+/* Reaches a screen reader without taking any space. Used where a control's
+   picture carries the meaning and its name still has to be spoken. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Set while a dialog is open: a <dialog> makes the page inert but does not stop
+   it scrolling underneath. */
+html.has-modal,
+html.has-modal body {
+  overflow: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

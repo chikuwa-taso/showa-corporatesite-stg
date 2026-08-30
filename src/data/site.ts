@@ -79,20 +79,72 @@ export function mapHref(office: Office): string {
 
 export type Service = {
   slug: string;
+  /** Icon alt text and optional caption. Always `titleLines` joined. */
   label: string;
+  /**
+   * The popup heading, one entry per column. Vertical text runs right to left,
+   * so the first line is the rightmost column — the order the comp sets them in.
+   */
+  titleLines: string[];
+  /** Set as live text, not the burnt-in copy from the supplied composites. */
+  body: string;
+  photoAlt: string;
 };
 
+/**
+ * Names follow the client's icon key (昭和美術印刷LP素材). Note 「オフリン印刷」:
+ * the trade contraction for web-offset, not オフセット印刷 — the two are
+ * different presses and the key is explicit about which icon is which.
+ */
 export const SERVICE_ROWS: Service[][] = [
   [
-    { slug: 'offset-printing', label: 'オフセット印刷' },
-    { slug: 'sheetfed-printing', label: '枚葉印刷' },
-    { slug: 'on-demand', label: 'オンデマンド' },
+    {
+      slug: 'offset-printing',
+      label: 'オフリン印刷',
+      titleLines: ['オフリン', '印刷'],
+      body: '新聞やカタログなどの大量の印刷物を高速かつ効率的に印刷する部門',
+      photoAlt: 'オフリン輪転機で刷り出される印刷物を見守るオペレーター',
+    },
+    {
+      slug: 'sheetfed-printing',
+      label: '枚葉印刷',
+      titleLines: ['枚葉印刷'],
+      body: '紙を一枚ずつ印刷する。小ロット多品種や高品質なカラー印刷に適した部門。',
+      photoAlt: '枚葉印刷機から刷り上がった用紙を抜き取って検品する様子',
+    },
+    {
+      slug: 'on-demand',
+      label: 'オンデマンド',
+      titleLines: ['オンデマンド'],
+      body: '小ロット・短納期に対応するデジタル印刷を行う部門。即時印刷が可能。',
+      photoAlt: 'オンデマンド印刷で出力した印刷物を手で仕分けする様子',
+    },
   ],
   [
-    { slug: 'prepress', label: 'プリプレス' },
-    { slug: 'bookbinding', label: '製本折加工' },
+    {
+      slug: 'prepress',
+      label: 'プリプレス',
+      titleLines: ['プリプレス'],
+      body: 'データ制作・色調整・CTP出力など、品質を左右する準備作業を行う部門。',
+      photoAlt: 'CTPセッターに刷版をセットするオペレーターの手元',
+    },
+    {
+      slug: 'bookbinding',
+      label: '製本折加工',
+      titleLines: ['製本', '折加工'],
+      body: '断裁・折り・綴じ・表紙、製品として仕上げる加工工程を担当する部門。',
+      photoAlt: '折り機の上を連続して流れていく折り加工中の印刷物',
+    },
   ],
 ];
+
+/**
+ * The 設備一覧 button inside each SERVICE popup. The comp's nav carries a
+ * FACILITY entry that this site has no section for, so the link parks on
+ * CONTACT — the same interim the RECRUIT links use. One constant, so pointing
+ * all five popups at the real page later is a one-line change.
+ */
+export const FACILITY_HREF = '/contact';
 
 export type TileRatio = 'photo' | 'wide' | 'square';
 

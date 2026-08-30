@@ -1,7 +1,10 @@
 ---
 import SectionRail from '../components/SectionRail.astro';
 import ServiceIcon from '../components/ServiceIcon.astro';
+import ServiceModal from '../components/ServiceModal.astro';
 import { SERVICE_ROWS, CONFIG } from '../data/site';
+
+const services = SERVICE_ROWS.flat();
 
 interface Props {
   /**
@@ -33,6 +36,10 @@ const { iconSize = CONFIG.iconSize, showLabels = CONFIG.serviceLabels } = Astro.
   <SectionRail label="印刷方式" side="right" />
 </section>
 
+{/* Outside the section's grid — each one is fixed to the viewport when open, and
+    keeping them out of the icon rows leaves that layout to the icons. */}
+{services.map((service) => <ServiceModal service={service} />)}
+
 <style>
   .service {
     display: grid;
@@ -60,6 +67,13 @@ const { iconSize = CONFIG.iconSize, showLabels = CONFIG.serviceLabels } = Astro.
     display: flex;
     gap: var(--service-row-gap);
     align-items: flex-end;
+  }
+
+  /* An open popup draws its own rails, and these would otherwise read faintly
+     through the scrim a little off from them — one label printed twice. The
+     pictograms are meant to show through; a second set of rails is not. */
+  :global(html.has-modal) .service :global(.rail) {
+    visibility: hidden;
   }
 
   @media (max-width: 768px) {
