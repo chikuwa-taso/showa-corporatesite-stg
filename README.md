@@ -40,9 +40,14 @@ src/
 | `useVideo` | `true` | `false` で全バンドの動画をフラットなグラデーションに差し替え |
 | `showMap` | `true` | NETWORK の日本地図線画 |
 | `serviceLabels` | `false` | SERVICE ピクトグラムのキャプション |
-| `iconSize` | `150` | ピクトグラムの幅（100–220）。`--icon-size` を上書き |
+| `iconSize` | `300` | ピクトグラムの幅の上限。`--icon-size-base` を上書き |
 
 バンド高さ・マーキー速度・ヘッダー高さなどは `src/styles/tokens/lp.css` の変数を触る。
+
+`iconSize` は上限値で、実際の描画サイズは SERVICE 側で算出する。3列並びの1行目が
+レールの内側に収まらない幅ではアイコンが縮み、横スクロールは発生しない
+（1366px以上で300px、1280pxで291px、900pxで164px）。768px以下では
+`--icon-mobile-scale`（0.72）を掛けた値になる（300px → 216px）。
 
 ## アセット
 

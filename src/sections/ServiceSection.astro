@@ -4,7 +4,10 @@ import ServiceIcon from '../components/ServiceIcon.astro';
 import { SERVICE_ROWS, CONFIG } from '../data/site';
 
 interface Props {
-  /** 100–220 per the handoff. Overrides the --icon-size token for this section. */
+  /**
+   * Requested pictogram width. The rendered size shrinks below this whenever
+   * the 3-up row would otherwise overflow, so it is a ceiling, not a promise.
+   */
   iconSize?: number;
   showLabels?: boolean;
 }
@@ -12,7 +15,7 @@ interface Props {
 const { iconSize = CONFIG.iconSize, showLabels = CONFIG.serviceLabels } = Astro.props;
 ---
 
-<section id="service" class="service" style={`--icon-size:${iconSize}px`}>
+<section id="service" class="service" style={`--icon-size-base:${iconSize}px`}>
   <SectionRail label="SERVICE" side="left" />
 
   <div class="service__body">
@@ -35,6 +38,15 @@ const { iconSize = CONFIG.iconSize, showLabels = CONFIG.serviceLabels } = Astro.
     display: grid;
     grid-template-columns: var(--rail-col) 1fr var(--rail-col);
     padding: var(--section-pad-y) 0;
+
+    /* Row 1 is the binding one: three pictograms plus two gaps have to sit
+       inside the rails. Past that width the icons give way, so the page never
+       scrolls sideways. Declared here, not on :root, so the section's inline
+       --icon-size-base (the prop) is the value that gets substituted. */
+    --icon-size: min(
+      var(--icon-size-base),
+      calc((100vw - 2 * var(--rail-col) - 2 * var(--service-row-gap)) / 3)
+    );
   }
 
   .service__body {
@@ -59,7 +71,15 @@ const { iconSize = CONFIG.iconSize, showLabels = CONFIG.serviceLabels } = Astro.
       display: none;
     }
 
-    /* The 3 + 2 rows would overflow a phone, so both wrap and centre instead. */
+    /* The 3 + 2 rows would overflow a phone, so both wrap and centre instead —
+       which makes the gutter, not the 3-up row, the constraint on size. */
+    .service {
+      --icon-size: min(
+        calc(var(--icon-size-base) * var(--icon-mobile-scale)),
+        calc(100vw - 2 * var(--space-5))
+      );
+    }
+
     .service__row {
       flex-wrap: wrap;
       justify-content: center;

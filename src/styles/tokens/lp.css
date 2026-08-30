@@ -22,8 +22,15 @@
   --tile-ratio-wide: 1.503 / 1;
   --tile-ratio-square: 1 / 1;
 
-  /* SERVICE pictograms. Handoff range 100–220px; the client last previewed 220. */
-  --icon-size: 150px;
+  /* SERVICE pictograms. The requested size — ServiceSection derives the size
+     actually rendered from this, shrinking it when the 3-up row would not fit.
+     The handoff quoted a 100–220 range around a 150 default; 300 is the
+     client's later call to run them at double. */
+  --icon-size-base: 300px;
+  /* Narrow screens take a fraction of the base rather than their own size, so
+     the iconSize prop keeps driving both. 0.72 preserves the handoff's
+     150 → 108 relationship. */
+  --icon-mobile-scale: 0.72;
   --icon-aspect: 0.78; /* drawn on a 1705×1330 canvas */
   --service-row-gap: var(--space-10);
   --service-stack-gap: var(--space-9);
@@ -47,7 +54,6 @@
     --band-hero-h: 72vw;
     --marquee-h: 56vw;
     --section-pad-y: var(--space-9);
-    --icon-size: 108px;
     --service-row-gap: var(--space-7);
     --service-stack-gap: var(--space-7);
     --rail-col: 0px;

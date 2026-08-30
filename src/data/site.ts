@@ -145,8 +145,12 @@ export const CONFIG = {
   showMap: true,
   /** Captions under the SERVICE pictograms. */
   serviceLabels: false,
-  /** 100–220. Overrides --icon-size; the client last previewed 220. */
-  iconSize: 150,
+  /**
+   * Pictogram width in px, as a ceiling — SERVICE shrinks it when the 3-up row
+   * would overflow. The handoff quoted 100–220 around a 150 default; the client
+   * then asked for double, so this sits at 300.
+   */
+  iconSize: 300,
 };
 
 export const ABOUT_STATEMENT_ALT =
