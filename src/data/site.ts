@@ -101,7 +101,7 @@ export const SERVICE_ROWS: Service[][] = [
     {
       slug: 'offset-printing',
       label: 'オフリン印刷',
-      titleLines: ['オフリン', '印刷'],
+      titleLines: ['オフリン印刷'],
       body: '新聞やカタログなどの大量の印刷物を高速かつ効率的に印刷する部門',
       photoAlt: 'オフリン輪転機で刷り出される印刷物を見守るオペレーター',
     },
