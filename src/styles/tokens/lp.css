@@ -55,9 +55,10 @@
   /* Column run before the copy wraps. Every body string is 30–34 characters, so
      this is what turns each of them into the comp's three columns. */
   --popup-body-run: 14em;
-  /* The heading starts above the photo rather than level with it. In em of the
-     heading, which is what the comp's 7.5%-of-board rise works out to. */
-  --popup-title-rise: 1.59em;
+  /* How far the heading sits above the grid row. Multiplied out against the
+     heading's own size rather than left in em, because the photo is aligned to
+     the same line and em there would resolve against the photo's font size. */
+  --popup-title-rise: calc(1.59 * var(--popup-title-size));
   /* 設備一覧, off the supplied button asset: cap height 1.93vw against the
      comp's board, tracked far wider than any of the shared label tokens. */
   --popup-facility-size: clamp(18px, 1.93vw, 34px);
@@ -97,7 +98,7 @@
     --popup-title-size: clamp(26px, 7vw, 38px);
     --popup-body-size: clamp(14px, 3.7vw, 18px);
     --popup-facility-size: clamp(16px, 4.4vw, 22px);
-    --popup-title-rise: 0em;
+    --popup-title-rise: 0px;
     --popup-actions-drop: 0px;
   }
 }

@@ -123,6 +123,9 @@ const titleId = `service-modal-${service.slug}-title`;
        bottom edge rather than below the shorter column of copy. */
     grid-row: 1 / 3;
     align-self: start;
+    /* Top edge level with the heading, which hangs above the row by the same
+       amount — the heading is the line everything in this panel starts from. */
+    margin-top: calc(-1 * var(--popup-title-rise));
     width: var(--popup-photo-w);
     aspect-ratio: var(--popup-photo-ratio);
   }
@@ -188,8 +191,9 @@ const titleId = `service-modal-${service.slug}-title`;
     grid-row: 2;
     justify-self: center;
     align-self: end;
-    /* Sits on the 設備一覧 label rather than its rule, as the comp has it. */
-    margin-bottom: calc(var(--space-4) - var(--popup-actions-drop));
+    /* Bottom edge level with 設備一覧's rule. The glyph is what has to line up,
+       so the button's hit-area padding is discounted from the offset. */
+    margin-bottom: calc(-1 * (var(--popup-actions-drop) + var(--space-3)));
     width: calc(var(--popup-title-size) * 0.76); /* comp: 2.03vw against the title's 2.66vw */
     padding: var(--space-3);
     box-sizing: content-box;
@@ -261,20 +265,18 @@ const titleId = `service-modal-${service.slug}-title`;
 
     /* :global for the same reason as the desktop rule — this is LinkButton's
        root element, which carries LinkButton's component id and not this one's. */
+    /* align-self and the offsets stay as they are on desktop, so the × keeps
+       sitting on 設備一覧's rule here too — only the grid placement changes. */
     .modal__composition :global(.modal__facility) {
       grid-column: 1;
       grid-row: 3;
       justify-self: end;
-      align-self: center;
-      margin-bottom: 0;
     }
 
     .modal__close {
       grid-column: 2;
       grid-row: 3;
       justify-self: start;
-      align-self: center;
-      margin-bottom: 0;
     }
   }
 </style>
