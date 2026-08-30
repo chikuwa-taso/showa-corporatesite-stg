@@ -22,7 +22,17 @@ const { tile, duplicate = false, useVideo = true } = Astro.props;
     tile.kind === 'photo' && (
       <picture>
         <source srcset={asset(`${tile.src}.webp`)} type="image/webp" />
-        <img src={asset(`${tile.src}.jpg`)} alt={duplicate ? '' : tile.alt} loading="lazy" decoding="async" />
+        {/* The marquee slides tiles in sideways rather than scrolling them into
+            view, and a lazy image resolves too late to fill its slot — hence the
+            eager first half. The duplicates reuse those same URLs, so they come
+            straight from cache and can stay lazy. */}
+        <img
+          src={asset(`${tile.src}.jpg`)}
+          alt={duplicate ? '' : tile.alt}
+          loading={duplicate ? 'lazy' : 'eager'}
+          fetchpriority="low"
+          decoding="async"
+        />
       </picture>
     )
   }
@@ -35,6 +45,10 @@ const { tile, duplicate = false, useVideo = true } = Astro.props;
     flex: none;
     height: 100%;
     overflow: hidden;
+  }
+
+  .tile--photo {
+    aspect-ratio: var(--tile-ratio-photo);
   }
 
   .tile--wide {

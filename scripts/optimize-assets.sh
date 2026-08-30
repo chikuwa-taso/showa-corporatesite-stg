@@ -35,8 +35,9 @@ encode_video () {
 }
 
 encode_video material-a 1600 900 30 44  # TOP hero, full-bleed
-encode_video material-b 1600 900 30 34  # NETWORK band + one WORKS tile
-encode_video material-c 1280 720 31 35  # WORKS tile only
+encode_video material-b 1600 900 30 34  # NETWORK band
+# material-c is unreferenced since the WORKS strip moved to the client's own
+# photography. Re-add an encode_video line here if a video tile returns.
 
 # ---------- images ----------
 # Widths are 2x the largest size the layout renders each asset at.
@@ -51,6 +52,17 @@ convert_png () {
 
 convert_png about/about-statement.png about/about-statement 2000 84  # max-width 1000px
 convert_png works/japan-map.png       works/japan-map       760  88  # max-width 380px
+
+# WORKS strip. These come from the client's 昭和美術印刷LP＿ワークス＿JPG folder
+# rather than the handoff bundle, so point $1 at whichever holds them.
+for work in oshigoto-book ski-jam europe-ken tamuraya; do
+  if [ -f "$SRC/works/$work.jpg" ]; then
+    echo "image: works/$work.jpg (1600px)"
+    cwebp -quiet -q 82 -resize 1600 0 "$SRC/works/$work.jpg" -o "$OUT/works/$work.webp"
+    sips -s format jpeg -s formatOptions 82 --resampleWidth 1600 \
+      "$SRC/works/$work.jpg" --out "$OUT/works/$work.jpg" >/dev/null
+  fi
+done
 convert_png brand/lockup.png          brand/lockup          456  92  # header, max 152px
 convert_png brand/lockup-white.png    brand/lockup-white    840  92  # NETWORK, 420px
 
@@ -60,12 +72,6 @@ done
 
 # CONTACT / RECRUIT mail button, rendered up to 132px
 convert_png icons/mail-circle.png icons/mail-circle 264 90
-
-# The one work photo is opaque, so its fallback is JPEG rather than a 1.7MB PNG.
-convert_png works/works-center.png works/works-center 1800 82
-sips -s format jpeg -s formatOptions 82 "$OUT/works/works-center.png" \
-  --out "$OUT/works/works-center.jpg" >/dev/null
-rm "$OUT/works/works-center.png"
 
 cp "$SRC/brand/logo.svg" "$OUT/brand/logo.svg"  # favicon / OG
 

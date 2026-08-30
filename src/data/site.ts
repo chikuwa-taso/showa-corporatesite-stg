@@ -94,26 +94,47 @@ export const SERVICE_ROWS: Service[][] = [
   ],
 ];
 
+export type TileRatio = 'photo' | 'wide' | 'square';
+
 export type WorkTile =
-  | { kind: 'photo'; ratio: 'wide' | 'square'; src: string; alt: string }
+  | { kind: 'photo'; ratio: TileRatio; src: string; alt: string }
   /** `fill` shows through whenever the video is off, loading, or reduced-motion. */
-  | { kind: 'video'; ratio: 'wide' | 'square'; name: string; fill: string }
-  | { kind: 'fill'; ratio: 'wide' | 'square'; fill: string };
+  | { kind: 'video'; ratio: TileRatio; name: string; fill: string }
+  | { kind: 'fill'; ratio: TileRatio; fill: string };
 
 /**
  * One half of the marquee. The track renders this list twice so the -50% loop is
  * seamless — edit the list, not the duplication.
  *
- * Tiles 2–6 are design-system stand-ins pending real work photography. When it
- * arrives, keep the alternating wide / square rhythm.
+ * The client's own work photography, which replaced the design-system gradient
+ * and video stand-ins. All four share one 1.421:1 crop, so the strip runs on a
+ * single ratio rather than the stand-ins' alternating wide / square rhythm.
  */
 export const WORK_TILES: WorkTile[] = [
-  { kind: 'photo', ratio: 'wide', src: '/assets/works/works-center', alt: 'パッケージ印刷' },
-  { kind: 'fill', ratio: 'square', fill: 'var(--gradient-fire-soft)' },
-  { kind: 'video', ratio: 'wide', name: 'material-c', fill: 'var(--gradient-fire)' },
-  { kind: 'fill', ratio: 'square', fill: 'var(--gradient-water)' },
-  { kind: 'video', ratio: 'wide', name: 'material-b', fill: 'var(--gradient-water)' },
-  { kind: 'fill', ratio: 'square', fill: 'var(--stock-kraft)' },
+  {
+    kind: 'photo',
+    ratio: 'photo',
+    src: '/assets/works/oshigoto-book',
+    alt: '福井県のおしごと本 パンフレット',
+  },
+  {
+    kind: 'photo',
+    ratio: 'photo',
+    src: '/assets/works/ski-jam',
+    alt: 'スキージャム勝山 チラシ・リフト券・リストバンド',
+  },
+  {
+    kind: 'photo',
+    ratio: 'photo',
+    src: '/assets/works/europe-ken',
+    alt: 'ヨーロッパ軒 特製ソースのパッケージと包装紙',
+  },
+  {
+    kind: 'photo',
+    ratio: 'photo',
+    src: '/assets/works/tamuraya',
+    alt: '越前田村屋 食品パッケージと手提げ袋',
+  },
 ];
 
 /** The handoff's tweak flags, surfaced here so they can be flipped in one place. */
