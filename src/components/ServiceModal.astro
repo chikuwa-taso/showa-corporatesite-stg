@@ -20,7 +20,8 @@ const titleId = `service-modal-${service.slug}-title`;
 
   The client supplied each panel as one flat composite with the title and copy
   burnt into the photo. Only the photo is used; the words are set live so they
-  stay legible on a phone, selectable, and reachable by a screen reader.
+  stay legible on a phone, selectable, and reachable by a screen reader — but
+  with the comp's exact sizes, tracking and column breaks (see lp.css).
 */}
 <dialog class="modal" id={`service-modal-${service.slug}`} aria-labelledby={titleId}>
   {/* The section's own rails sit behind the scrim and go faint with everything
@@ -41,9 +42,22 @@ const titleId = `service-modal-${service.slug}-title`;
       />
     </picture>
 
-    <p class="modal__body">{service.body}</p>
+    <p class="modal__body">
+      {
+        service.bodyLines.map((line, i) => (
+          <>
+            {i > 0 && <br />}
+            {line}
+          </>
+        ))
+      }
+    </p>
 
-    <h2 class="modal__title" id={titleId}>
+    <h2
+      class="modal__title"
+      id={titleId}
+      style={service.titleTrack ? `--popup-title-track:${service.titleTrack}` : undefined}
+    >
       {
         service.titleLines.map((line, i) => (
           <>
@@ -54,19 +68,28 @@ const titleId = `service-modal-${service.slug}-title`;
       }
     </h2>
 
-    {/* The tracking sits on an inner span so its trailing space can be pulled
-        back off the end — otherwise the underline overhangs the last glyph by a
-        full character, and the supplied asset has the rule flush with the text. */}
-    <LinkButton class="modal__facility" href={route(FACILITY_HREF)}>
-      <span class="modal__facility-label">設備一覧</span>
-    </LinkButton>
+    {/* 設備一覧 and × travel as one unit anchored to the heading's first
+        column: the comp centres × on that column and holds the rule's right
+        edge 372px left of its centre, whether the heading is one column or two.
+        The anchor is a zero-size grid item at the heading track's end, so the
+        unit can hang leftward across the gap without widening the track. */}
+    <div class="modal__actions">
+      <div class="modal__actions-inner">
+        {/* The tracking sits on an inner span so its trailing space can be
+            pulled back off the end — otherwise the underline overhangs the last
+            glyph by a full character, and the comp has the rule flush. */}
+        <LinkButton class="modal__facility" href={route(FACILITY_HREF)}>
+          <span class="modal__facility-label">設備一覧</span>
+        </LinkButton>
 
-    <button class="modal__close" type="button" data-modal-close autofocus aria-label="閉じる">
-      <picture>
-        <source srcset={asset('/assets/icons/close.webp')} type="image/webp" />
-        <img src={asset('/assets/icons/close.png')} alt="" loading="lazy" decoding="async" />
-      </picture>
-    </button>
+        <button class="modal__close" type="button" data-modal-close autofocus aria-label="閉じる">
+          <picture>
+            <source srcset={asset('/assets/icons/close.webp')} type="image/webp" />
+            <img src={asset('/assets/icons/close.png')} alt="" loading="lazy" decoding="async" />
+          </picture>
+        </button>
+      </div>
+    </div>
   </div>
 
   <SectionRail label="印刷技術" side="right" />
@@ -109,8 +132,8 @@ const titleId = `service-modal-${service.slug}-title`;
     grid-column: 2;
     display: grid;
     grid-template-columns: auto auto auto; /* photo | copy | heading */
-    grid-template-rows: auto auto; /* content | actions */
-    column-gap: var(--popup-col-gap);
+    grid-template-rows: auto auto; /* content | actions anchor */
+    column-gap: var(--popup-gap-copy-title);
     justify-content: center;
     align-content: center;
     min-height: 100%;
@@ -119,13 +142,11 @@ const titleId = `service-modal-${service.slug}-title`;
 
   .modal__photo {
     grid-column: 1;
-    /* Spanning both rows is what lets 設備一覧 and × sit level with the photo's
-       bottom edge rather than below the shorter column of copy. */
-    grid-row: 1 / 3;
+    grid-row: 1;
     align-self: start;
-    /* Top edge level with the heading, which hangs above the row by the same
-       amount — the heading is the line everything in this panel starts from. */
-    margin-top: calc(-1 * var(--popup-title-rise));
+    /* The photo→copy gap is wider than the copy→heading gap, and grid has one
+       column-gap — the difference rides on the photo. */
+    margin-inline-end: calc(var(--popup-gap-photo-copy) - var(--popup-gap-copy-title));
     width: var(--popup-photo-w);
     aspect-ratio: var(--popup-photo-ratio);
   }
@@ -136,66 +157,83 @@ const titleId = `service-modal-${service.slug}-title`;
     object-fit: cover;
   }
 
+  /* Comp alignment: the copy's first character tops the photo's top edge — in
+     vertical writing the inline axis is vertical, so there is no leading above
+     the first glyph and plain start alignment lands it exactly. */
   .modal__body {
     grid-column: 2;
     grid-row: 1;
     margin: 0;
     writing-mode: var(--writing-vertical);
-    /* In vertical writing the inline axis runs down the page, so inline-size is
-       the column's run and the copy wraps into the next column at this height. */
-    inline-size: var(--popup-body-run);
+    /* The comp sets C, T, P upright, one per em box, not rotated. */
+    text-orientation: upright;
     font-family: var(--font-jp);
     font-size: var(--popup-body-size);
     font-weight: var(--fw-light);
-    line-height: var(--lh-body);
-    letter-spacing: var(--ls-body);
+    line-height: var(--popup-body-line);
+    letter-spacing: var(--popup-body-track);
   }
 
   .modal__title {
     grid-column: 3;
     grid-row: 1;
     align-self: start;
-    /* Hangs the heading above the photo's top edge. In em, so it stays in step
-       with the type rather than with whatever the column happens to be wide. */
+    /* Hangs the heading's em-box top above the photo's top edge, per the comp. */
     margin: calc(-1 * var(--popup-title-rise)) 0 0;
     writing-mode: var(--writing-vertical);
     font-family: var(--font-display);
     font-size: var(--popup-title-size);
     font-weight: var(--fw-regular);
-    line-height: var(--lh-tight);
-    letter-spacing: var(--ls-body);
+    line-height: var(--popup-title-line);
+    letter-spacing: var(--popup-title-track);
+  }
+
+  /* The zero-size anchor: end of the heading track, bottom of the photo row. */
+  .modal__actions {
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: end;
+    position: relative;
+    width: 0;
+    height: 0;
+  }
+
+  /* Offsets in em of the heading, straight from the comp (values ÷ 221px em):
+     × centres on the heading's first column (line-height/2 = 0.94em in, half a
+     glyph back = 0.59em to its right edge); the flex gap of 1.33em then puts
+     the rule's right edge 372px left of the × centre; the whole unit's bottom
+     sits --popup-actions-drop below the photo's bottom edge. */
+  .modal__actions-inner {
+    position: absolute;
+    right: calc(0.59 * var(--popup-title-size));
+    bottom: calc(-1 * var(--popup-actions-drop));
+    display: flex;
+    align-items: flex-end;
+    column-gap: calc(1.33 * var(--popup-title-size));
   }
 
   /* LinkButton's root carries its own component id, which Astro's scoping will
      not match from here — the same reason NETWORK's rail needs :global. */
-  .modal__composition :global(.modal__facility) {
-    grid-column: 2;
-    grid-row: 2;
-    justify-self: end;
-    align-self: end;
-    margin-bottom: calc(-1 * var(--popup-actions-drop));
-    /* Proportions off 設備一覧ボタン.png: no side padding, so the rule ends up
-       the width of the word, and a gap of 0.79 of the cap height above it. */
-    padding: 0 0 0.79em;
+  .modal__actions-inner :global(.modal__facility) {
+    padding: 0 0 0.55em; /* comp: rule top 90px under the ink */
+    border-bottom-width: 0.13em; /* comp: 19px rule */
     font-size: var(--popup-facility-size);
+    font-weight: var(--fw-regular);
+    line-height: 1;
     white-space: nowrap;
   }
 
   .modal__facility-label {
-    letter-spacing: var(--popup-facility-tracking);
-    margin-inline-end: calc(-1 * var(--popup-facility-tracking));
+    letter-spacing: var(--popup-facility-track);
+    margin-inline-end: calc(-1 * var(--popup-facility-track));
   }
 
   .modal__close {
-    grid-column: 3;
-    grid-row: 2;
-    justify-self: center;
-    align-self: end;
-    /* Bottom edge level with 設備一覧's rule. The glyph is what has to line up,
-       so the button's hit-area padding is discounted from the offset. */
-    margin-bottom: calc(-1 * (var(--popup-actions-drop) + var(--space-3)));
-    width: calc(var(--popup-title-size) * 0.76); /* comp: 2.03vw against the title's 2.66vw */
-    padding: var(--space-3);
+    width: calc(var(--popup-title-size) * 0.71); /* comp: 156px glyph */
+    /* Hit area beyond the glyph, cancelled out of layout so the glyph's own
+       edges are what the offsets above position. */
+    padding: var(--space-2);
+    margin: calc(-1 * var(--space-2));
     box-sizing: content-box;
     background: none;
     border: 0;
@@ -237,11 +275,12 @@ const titleId = `service-modal-${service.slug}-title`;
     }
 
     /* Stacked: photo, then the heading and copy side by side as one vertical
-       block, then the actions. The rows keep their reading order. */
+       block, then the actions row. The rows keep their reading order. */
     .modal__composition {
       grid-column: 1;
       grid-template-columns: auto auto;
       grid-template-rows: auto auto auto;
+      column-gap: var(--space-6);
       row-gap: var(--space-6);
       justify-content: center;
       padding: var(--space-6) var(--space-5);
@@ -250,6 +289,7 @@ const titleId = `service-modal-${service.slug}-title`;
     .modal__photo {
       grid-column: 1 / 3;
       grid-row: 1;
+      margin-inline-end: 0;
     }
 
     .modal__body {
@@ -263,20 +303,18 @@ const titleId = `service-modal-${service.slug}-title`;
       grid-row: 2;
     }
 
-    /* :global for the same reason as the desktop rule — this is LinkButton's
-       root element, which carries LinkButton's component id and not this one's. */
-    /* align-self and the offsets stay as they are on desktop, so the × keeps
-       sitting on 設備一覧's rule here too — only the grid placement changes. */
-    .modal__composition :global(.modal__facility) {
-      grid-column: 1;
+    /* The anchor trick stands down: the actions become an ordinary centred row. */
+    .modal__actions {
+      grid-column: 1 / 3;
       grid-row: 3;
-      justify-self: end;
+      justify-self: center;
+      width: auto;
+      height: auto;
     }
 
-    .modal__close {
-      grid-column: 2;
-      grid-row: 3;
-      justify-self: start;
+    .modal__actions-inner {
+      position: static;
+      column-gap: var(--space-7);
     }
   }
 </style>

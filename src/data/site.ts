@@ -86,8 +86,18 @@ export type Service = {
    * so the first line is the rightmost column — the order the comp sets them in.
    */
   titleLines: string[];
-  /** Set as live text, not the burnt-in copy from the supplied composites. */
-  body: string;
+  /**
+   * Heading tracking override. The comp runs every heading at the shared
+   * --popup-title-track except オンデマンド, which is set tighter to keep its
+   * six characters near the height of the other headings.
+   */
+  titleTrack?: string;
+  /**
+   * Body copy, one entry per vertical column with the comp's breaks — live text
+   * rather than the burnt-in copy of the supplied composites, so it stays
+   * selectable and readable, but wrapped exactly where the comp wraps it.
+   */
+  bodyLines: string[];
   photoAlt: string;
 };
 
@@ -101,22 +111,26 @@ export const SERVICE_ROWS: Service[][] = [
     {
       slug: 'offset-printing',
       label: 'オフリン印刷',
-      titleLines: ['オフリン印刷'],
-      body: '新聞やカタログなどの大量の印刷物を高速かつ効率的に印刷する部門',
+      // Two columns per the comp (the panel comps supplied 2026-09-01 show
+      // オフリン｜印刷) — re-split after the one-column hand edit, which dated
+      // from before the heading carried the comp's tracking and column pitch.
+      titleLines: ['オフリン', '印刷'],
+      bodyLines: ['新聞やカタログなどの', '大量の印刷物を高速かつ', '効率的に印刷する部門'],
       photoAlt: 'オフリン輪転機で刷り出される印刷物を見守るオペレーター',
     },
     {
       slug: 'sheetfed-printing',
       label: '枚葉印刷',
       titleLines: ['枚葉印刷'],
-      body: '紙を一枚ずつ印刷する。小ロット多品種や高品質なカラー印刷に適した部門。',
+      bodyLines: ['紙を一枚ずつ印刷する。', '小ロット多品種や高品質な', 'カラー印刷に適した部門。'],
       photoAlt: '枚葉印刷機から刷り上がった用紙を抜き取って検品する様子',
     },
     {
       slug: 'on-demand',
       label: 'オンデマンド',
       titleLines: ['オンデマンド'],
-      body: '小ロット・短納期に対応するデジタル印刷を行う部門。即時印刷が可能。',
+      titleTrack: '0.16em', // comp pitch 257px against 325px elsewhere
+      bodyLines: ['小ロット・短納期に', '対応するデジタル印刷を', '行う部門。即時印刷が可能。'],
       photoAlt: 'オンデマンド印刷で出力した印刷物を手で仕分けする様子',
     },
   ],
@@ -125,14 +139,17 @@ export const SERVICE_ROWS: Service[][] = [
       slug: 'prepress',
       label: 'プリプレス',
       titleLines: ['プリプレス'],
-      body: 'データ制作・色調整・CTP出力など、品質を左右する準備作業を行う部門。',
+      // ＣＴＰ is fullwidth on purpose: upright-in-vertical is what the comp
+      // sets, and halfwidth Latin in Adapter Mono has no vertical metrics — the
+      // browser synthesises a ~2.5em advance and the column overshoots the photo.
+      bodyLines: ['データ制作・色調整・', 'ＣＴＰ出力など、品質を左右', 'する準備作業を行う部門。'],
       photoAlt: 'CTPセッターに刷版をセットするオペレーターの手元',
     },
     {
       slug: 'bookbinding',
       label: '製本折加工',
       titleLines: ['製本', '折加工'],
-      body: '断裁・折り・綴じ・表紙、製品として仕上げる加工工程を担当する部門。',
+      bodyLines: ['断裁・折り・綴じ・表紙、', '製品として仕上げる', '加工工程を担当する部門。'],
       photoAlt: '折り機の上を連続して流れていく折り加工中の印刷物',
     },
   ],

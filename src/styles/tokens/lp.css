@@ -44,26 +44,37 @@
   --service-row-gap: var(--space-10);
   --service-stack-gap: var(--space-9);
 
-  /* SERVICE popup. Proportions read off the client's comp, which is drawn on a
-     7681px-wide board — every length here is that measurement over 7681, so the
-     composition holds its shape at any width. */
-  --popup-photo-w: 44.7vw; /* comp: 3432 / 7681 */
+  /* SERVICE popup. Every measure below is read off the client's comp, drawn on
+     a 7681px-wide board: comp px ÷ 7681 → vw, so the composition holds at any
+     width. Type sizes come from ink measurements divided by the face's actual
+     ink ratio (印 fills 0.905em in Zen Kaku Gothic Antique), tracking from the
+     measured character pitch, line-height from the measured column pitch — not
+     from the shared --ls-* / --lh-* tokens, which the comp does not follow. */
+  --popup-photo-w: 44.68vw; /* 3432 / 7681 */
   --popup-photo-ratio: 1.7409 / 1; /* the crop the pipeline produces */
-  --popup-col-gap: 3.4vw;
-  --popup-title-size: clamp(30px, 2.66vw, 52px); /* comp: 204 / 7681 */
-  --popup-body-size: clamp(15px, 1.43vw, 28px); /* comp: 110 / 7681 */
-  /* Column run before the copy wraps. Every body string is 30–34 characters, so
-     this is what turns each of them into the comp's three columns. */
-  --popup-body-run: 14em;
-  /* How far the heading sits above the grid row. Multiplied out against the
-     heading's own size rather than left in em, because the photo is aligned to
-     the same line and em there would resolve against the photo's font size. */
-  --popup-title-rise: calc(1.59 * var(--popup-title-size));
-  /* 設備一覧, off the supplied button asset: cap height 1.93vw against the
-     comp's board, tracked far wider than any of the shared label tokens. */
-  --popup-facility-size: clamp(18px, 1.93vw, 34px);
-  --popup-facility-tracking: 0.5em;
-  --popup-actions-drop: 2.9vh; /* 設備一覧's rule clears the photo's bottom edge */
+  /* 見出し: ink 201px → em 221px. Char pitch 325px → 0.47em tracking (オンデマンド
+     alone runs tighter and overrides per-panel). Column pitch 415px → 1.88. */
+  --popup-title-size: clamp(32px, 2.877vw, 56px);
+  --popup-title-track: 0.47em;
+  --popup-title-line: 1.88;
+  /* The heading hangs above the photo: its em-box top sits 337px above the
+     photo's top edge in the comp (ink at −327 plus 枚's 10px top bearing). */
+  --popup-title-rise: calc(1.53 * var(--popup-title-size));
+  /* 本文: kanji ink 78px → em 87px. Char pitch 136px → 0.56em tracking; column
+     pitch 276px → line-height 3.17. Column breaks are fixed (bodyLines). */
+  --popup-body-size: clamp(13px, 1.133vw, 22px);
+  --popup-body-track: 0.56em;
+  --popup-body-line: 3.17;
+  /* CSS box gaps = the comp's ink gaps minus the half-leading each text box
+     carries on its sides ((line-height − 1) / 2 plus glyph side bearing). */
+  --popup-gap-copy-title: 1.36vw; /* ink gap 318px − 101 − 114 */
+  --popup-gap-photo-copy: 3.38vw; /* ink gap 361px − 101, applied on the photo */
+  /* 設備一覧: ink 126px → em 146px; char pitch 186px → 0.27em. The rule is
+     19px → 0.13em thick, its top 90px below the ink (padding 0.55em). */
+  --popup-facility-size: clamp(15px, 1.9vw, 37px);
+  --popup-facility-track: 0.27em;
+  /* The rule's bottom edge runs 126px below the photo's bottom edge. */
+  --popup-actions-drop: 1.64vw;
   /* Near-opaque, so the pictograms behind read as a watermark at ~6%. Measured
      off the comp, where the ink under the scrim sits at tone 242 of 255. */
   --popup-scrim: rgba(255, 255, 255, 0.94);
@@ -92,9 +103,9 @@
     --rail-col: 0px;
 
     /* The popup stacks, so the photo takes the width instead of a share of it
-       and the heading no longer hangs above anything. */
+       and the heading no longer hangs above anything. Tracking and line-height
+       stay in em, so the comp's texture carries down unchanged. */
     --popup-photo-w: calc(100vw - 2 * var(--space-5));
-    --popup-col-gap: var(--space-6);
     --popup-title-size: clamp(26px, 7vw, 38px);
     --popup-body-size: clamp(14px, 3.7vw, 18px);
     --popup-facility-size: clamp(16px, 4.4vw, 22px);
