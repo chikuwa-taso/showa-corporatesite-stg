@@ -28,12 +28,16 @@ const { title, description, noindex = false } = Astro.props;
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* Only the two weights the site actually sets. Japanese webfont CSS is
+        enormous — every extra weight is roughly another 115KB of render-blocking
+        stylesheet — so add one here only when something starts using it. */}
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@200;300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@300;400&display=swap"
     />
-    {/* Adobe Fonts kit for the header nav. Domain-locked — the production host
-        must be added to the web project or this falls back to system monospace. */}
+    {/* Adobe Fonts kit carrying Adapter Mono PE Variable, which sets all Latin.
+        Domain-locked — the production host must be added to the web project or
+        this falls back to system monospace. */}
     <link rel="stylesheet" href="https://use.typekit.net/pxu0snp.css" />
   </head>
 

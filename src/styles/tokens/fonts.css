@@ -1,9 +1,28 @@
-/* Verbatim from the design system, minus its @import — the Google Fonts and
-   Adobe Fonts stylesheets are <link>ed from the document head instead, so they
-   fetch in parallel with the CSS rather than after it. */
-:root{--font-jp:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;--font-display:"Zen Kaku Gothic New","Noto Sans JP",sans-serif;--font-latin:"Zen Kaku Gothic New","Noto Sans JP",sans-serif}
+/* The design system's other token files are verbatim; this one is not. Its
+   @import was dropped so the Google Fonts and Adobe Fonts stylesheets can be
+   <link>ed from the document head and fetch in parallel with the CSS, and the
+   families below are the client's, replacing the system's Noto Sans JP and Zen
+   Kaku Gothic New.
 
-/* Client-specified face for the header nav. Adobe Fonts kits are domain-locked:
-   the production domain must be added to the web project or this silently falls
-   back to a system monospace. */
-:root{--font-nav:'adapter-mono-pe-variable','adapter-mono-pe',ui-monospace,monospace}
+   Two faces: Adapter Mono PE Variable sets the Latin, Zen Kaku Gothic Antique
+   sets the Japanese. Every stack names the Latin face first — it carries no kana
+   or kanji, so a mixed run like「CTP出力」falls through to the Japanese face for
+   the characters Adapter cannot set. One font-family, two faces, no per-span
+   markup. Order matters: nothing generic may sit between the two, or the
+   Japanese would be resolved by the fallback instead of by Zen Kaku Gothic
+   Antique. */
+:root {
+  --font-jp:
+    'adapter-mono-pe-variable', 'adapter-mono-pe', 'Zen Kaku Gothic Antique',
+    'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  --font-display: var(--font-jp);
+  --font-latin: var(--font-jp);
+}
+
+/* The header nav and the CONTACT buttons are Latin only, so they keep a
+   monospace fallback rather than dropping to a Japanese sans if the Adobe kit
+   ever fails to load. Adobe Fonts kits are domain-locked: the production domain
+   must be added to the web project. */
+:root {
+  --font-nav: 'adapter-mono-pe-variable', 'adapter-mono-pe', ui-monospace, monospace;
+}
