@@ -8,9 +8,9 @@ const CTAS = [
 ];
 ---
 
-{/* The band mirrors the header: the same white above and below its content, and
-    the same side gutters. The buttons stay centred as a pair, sized down a step
-    so they sit in that shallower band without crowding it. */}
+{/* The band mirrors the header: the same height, the same side gutters. The
+    buttons stay centred as a pair, sized down a step so they sit in that
+    shallower band without crowding it. */}
 <footer id="contact" class="contact">
   {CTAS.map((cta) => <LinkButton class="contact__cta" href={cta.href}>{cta.label}</LinkButton>)}
 </footer>
@@ -19,7 +19,12 @@ const CTAS = [
   .contact {
     display: flex;
     justify-content: center;
-    align-items: flex-end;
+    align-items: center;
+    /* The white band is the same depth as the header's — --header-h is what the
+       header spacer uses, so the two bands measure the same at every width. The
+       padding is the floor, for when stacking makes the content the taller of
+       the two. */
+    min-height: var(--header-h);
     gap: var(--footer-cta-gap);
     padding: var(--header-pad-top) var(--header-gutter) var(--header-pad-bottom);
     background: var(--surface-page);
@@ -41,7 +46,9 @@ const CTAS = [
     .contact {
       flex-direction: column;
       align-items: center;
-      gap: var(--space-6);
+      /* Tight enough that the two stacked rows still fit inside --header-h, so
+         the band's own height is what sets the depth here too. */
+      gap: var(--space-5);
       padding: var(--header-pad-top) var(--space-5) var(--header-pad-bottom);
     }
   }
