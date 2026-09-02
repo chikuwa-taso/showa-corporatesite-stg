@@ -8,10 +8,9 @@ const CTAS = [
 ];
 ---
 
-{/* The pair spans the header's content box — same gutters, so the first button's
-    left edge lines up with the logo and the second's right edge with the nav.
-    The buttons scale to fill it, keeping the proportions they had when they were
-    a centred cluster (button : gap : button). */}
+{/* The band mirrors the header: the same white above and below its content, and
+    the same side gutters. The buttons stay centred as a pair, sized down a step
+    so they sit in that shallower band without crowding it. */}
 <footer id="contact" class="contact">
   {CTAS.map((cta) => <LinkButton class="contact__cta" href={cta.href}>{cta.label}</LinkButton>)}
 </footer>
@@ -19,38 +18,31 @@ const CTAS = [
 <style>
   .contact {
     display: flex;
-    /* The solved em already makes the pair exactly fill this box, so this is
-       identical to centring — but if a label is ever edited without re-deriving
-       --footer-cta-span, the edges stay put and only the gap drifts. */
-    justify-content: space-between;
+    justify-content: center;
     align-items: flex-end;
     gap: var(--footer-cta-gap);
-    padding: var(--space-9) var(--header-gutter) var(--space-10);
+    padding: var(--header-pad-top) var(--header-gutter) var(--header-pad-bottom);
     background: var(--surface-page);
-    /* The em every measure below is expressed in. */
-    font-size: var(--footer-cta-size);
   }
 
   /* LinkButton's root carries its own component id, so this component's scope
      will not reach it — the same reason NETWORK's rail needs :global. */
   .contact :global(.contact__cta) {
-    font-size: 1em;
-    padding: 0 var(--footer-cta-pad-x) var(--footer-cta-pad-b);
+    font-size: var(--footer-cta-size);
+    /* The button's own padding is what sets the gap down to its rule; keeping it
+       proportional to the type stops the band growing back. */
+    padding: 0 2.9em 0.7em;
     white-space: nowrap;
   }
 
   @media (max-width: 768px) {
-    /* Stacked, so nothing has to span anything — back to the button's own size. */
+    /* Stacked into two rows, as the header is — and on the same vertical
+       measure, so the two bands still read as a pair. */
     .contact {
       flex-direction: column;
       align-items: center;
-      gap: var(--space-7);
-      padding: var(--space-9) var(--space-5);
-      font-size: var(--fs-h3);
-    }
-
-    .contact :global(.contact__cta) {
-      padding: 0 var(--space-6) var(--space-3);
+      gap: var(--space-6);
+      padding: var(--header-pad-top) var(--space-5) var(--header-pad-bottom);
     }
   }
 </style>

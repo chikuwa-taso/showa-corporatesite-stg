@@ -119,7 +119,9 @@ const { activePage } = Astro.props;
       flex-direction: column;
       align-items: stretch;
       gap: var(--space-3);
-      padding: var(--space-3) 0;
+      /* The gutter moves onto the children so the nav can scroll edge to edge;
+         the vertical measure stays on the tokens, which the footer mirrors. */
+      padding: var(--header-pad-top) 0 var(--header-pad-bottom);
     }
 
     .header__logo {

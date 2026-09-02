@@ -99,16 +99,11 @@
   /* Both section names centre 5% in from their edge, as in WORKS. */
   --network-rail-inset: 5%;
 
-  /* Footer CTAs. The pair spans exactly the header's content box, so the two
-     buttons and the gap between them are all sized in em and the em is solved
-     back from that width. 27.6 is what the pair currently measures in em:
-     4 × 2.909 padding + 4.364 gap + 4.64 (採用情報) + 6.96 (お問い合わせ),
-     the labels at --ls-heading. Change a label and this needs re-deriving. */
-  --footer-cta-span: 27.6;
-  --footer-cta-size: calc((100vw - 2 * var(--header-gutter)) / var(--footer-cta-span));
-  --footer-cta-pad-x: 2.909em; /* 64px against the old 22px button */
-  --footer-cta-pad-b: 0.727em; /* 16px */
-  --footer-cta-gap: 4.364em; /* 96px */
+  /* Footer CTAs. The band is the header's mirror: the same white above and below
+     its content, and the same side gutters. That leaves little room, so the
+     buttons run a step down from --fs-h3 rather than at their page size. */
+  --footer-cta-size: clamp(15px, 1.45vw, 20px);
+  --footer-cta-gap: clamp(var(--space-6), 6vw, var(--space-9));
 
   /* Rail column width incl. its inner offset, shared by ABOUT/SERVICE/NETWORK */
   --rail-col: calc(var(--rail-width) + var(--space-2));
@@ -126,6 +121,9 @@
        scroll-padding and scroll-spy line all need the taller measure.
        12 pad + 64 logo + 12 gap + 20 nav row + 12 pad. */
     --header-h: 120px;
+    /* Both rows get the same 12px, and the footer band mirrors it. */
+    --header-pad-top: var(--space-3);
+    --header-pad-bottom: var(--space-3);
     --band-hero-h: 72vw;
     --marquee-h: 56vw;
     --section-pad-y: var(--space-9);
