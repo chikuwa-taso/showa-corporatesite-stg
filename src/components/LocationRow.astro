@@ -1,5 +1,5 @@
 ---
-import { mapHref, type Office } from '../data/site';
+import type { Office } from '../data/site';
 
 interface Props {
   office: Office;
@@ -8,15 +8,13 @@ interface Props {
 const { office } = Astro.props;
 ---
 
+{/* The 拠点 comp drops the MAP link that the earlier full-site comp carried, so
+    the address is plain text here. mapHref() in data/site.ts still builds the
+    Maps URL if it is ever wanted back. */}
 <div class="location">
   <div class="location__name">{office.name}</div>
   <div>
-    <div class="location__line">
-      {office.postal}　{office.address}
-      <a class="location__map" href={mapHref(office)} target="_blank" rel="noopener noreferrer">
-        MAP<span class="visually-hidden">（{office.name} — 新しいタブで開きます）</span>
-      </a>
-    </div>
+    <div class="location__line">{office.postal}　{office.address}</div>
     <div class="location__line">
       <span>TEL {office.tel}</span>{office.fax && <span>　FAX {office.fax}</span>}
     </div>
@@ -26,34 +24,18 @@ const { office } = Astro.props;
 <style>
   .location {
     display: grid;
-    grid-template-columns: 160px 1fr;
-    column-gap: var(--space-5);
+    /* Comp: the name sits at 46.67vw and the detail column opens at 59.76vw. */
+    grid-template-columns: var(--network-name-col) 1fr;
   }
 
   .location__name,
   .location__line {
     font-family: var(--font-jp);
-    font-size: var(--fs-small);
+    font-size: var(--network-text);
     font-weight: var(--fw-medium);
-    line-height: 2;
+    line-height: var(--network-line);
     letter-spacing: var(--ls-body);
     color: var(--text-inverse);
-  }
-
-  .location__map {
-    margin-left: var(--space-2);
-    border-bottom: var(--radius-hair) solid var(--text-inverse);
-  }
-
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 
   @media (max-width: 768px) {

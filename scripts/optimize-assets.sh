@@ -10,8 +10,9 @@ set -euo pipefail
 
 SRC="${1:?usage: optimize-assets.sh <path to design_handoff_showa_lp> [popup-material-dir]}/assets"
 POPUP_SRC="${2:-}"
+NETWORK_COMP="${3:-}"
 OUT="$(cd "$(dirname "$0")/.." && pwd)/public/assets"
-mkdir -p "$OUT"/{video,brand,about,works,icons,service}
+mkdir -p "$OUT"/{video,brand,about,works,icons,service,network}
 
 # ---------- video ----------
 # Decorative loops: audio stripped, downscaled, plus a WebM and a poster frame.
@@ -59,7 +60,8 @@ convert_png () {
 }
 
 convert_png about/about-statement.png about/about-statement 2000 84  # max-width 1000px
-convert_png works/japan-map.png       works/japan-map       760  88  # max-width 380px
+# works/japan-map.png is superseded by the annotated map lifted out of 拠点.jpg
+# below — the handoff's plain outline is no longer placed anywhere.
 
 # WORKS strip. These come from the client's 昭和美術印刷LP＿ワークス＿JPG folder
 # rather than the handoff bundle, so point $1 at whichever holds them.
@@ -118,6 +120,37 @@ if [ -n "$POPUP_SRC" ]; then
   ffmpeg -y -v error -i "$POPUP_SRC/閉じるボタン.png" \
     -vf "crop=156:157:193:166,scale=128:-2:flags=lanczos" "$OUT/icons/close.png"
   cwebp -quiet -q 90 "$OUT/icons/close.png" -o "$OUT/icons/close.webp"
+fi
+
+# ---------- NETWORK map ----------
+# The annotated map (outline, leader lines and the five place names) only exists
+# burnt into the section comp 拠点.jpg, so it is matted out of it. The artwork is
+# neutral white over a saturated blue ground, so the minimum of R/G/B separates
+# them cleanly — the ground's 99th percentile is 78 and the ink's 1st is 222.
+if [ -n "$NETWORK_COMP" ]; then
+  echo "network: japan-map"
+  python3 - "$NETWORK_COMP" "$OUT/network/japan-map.png" <<'PY'
+import sys
+from PIL import Image
+Image.MAX_IMAGE_PIXELS = None
+src, dest = sys.argv[1], sys.argv[2]
+M = 8  # a hair of margin so anti-aliased glyph edges are not clipped
+BOX = (992 - M, 688 - M, 2763 + M, 2978 + M)  # ink bounds measured on the comp
+crop = Image.open(src).convert("RGB").crop(BOX)
+w, h = crop.size
+rp, gp, bp = [c.load() for c in crop.split()]
+mask = Image.new("L", (w, h))
+mp = mask.load()
+LO, HI = 90, 235
+for y in range(h):
+    for x in range(w):
+        v = min(rp[x, y], gp[x, y], bp[x, y])
+        mp[x, y] = 0 if v <= LO else 255 if v >= HI else int((v - LO) * 255 / (HI - LO))
+art = Image.new("RGB", (w, h), (255, 255, 255))
+art.putalpha(mask)
+art.resize((1400, round(1400 * h / w)), Image.LANCZOS).save(dest, optimize=True)
+PY
+  cwebp -quiet -q 90 -alpha_q 100 "$OUT/network/japan-map.png" -o "$OUT/network/japan-map.webp"
 fi
 
 echo

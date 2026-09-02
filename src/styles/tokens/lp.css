@@ -83,6 +83,22 @@
      off the comp, where the ink under the scrim sits at tone 242 of 255. */
   --popup-scrim: rgba(255, 255, 255, 0.94);
 
+  /* NETWORK. Read off 拠点.jpg, a 7681px-wide board: comp px ÷ 7681 → vw, so the
+     composition keeps its shape at any width. Map, divider and address list all
+     start on the same line and run the same height. */
+  --network-map-left: 12.91vw; /* 992 / 7681 */
+  --network-map-w: 23.05vw; /* 1770 wide … */
+  --network-map-ratio: 0.7733; /* … over 2289 tall */
+  --network-divider-x: 41.28vw; /* 3171 */
+  --network-list-left: 46.67vw; /* 3585 */
+  --network-list-right: 10.71vw; /* 6858 → 823 from the right edge */
+  --network-name-col: 13.09vw; /* name at 46.67, detail column opens at 59.76 */
+  --network-text: clamp(11px, 0.877vw, 17px); /* ink 61px ÷ 0.905 face ratio */
+  --network-line: 2.34; /* 157px line pitch against a 67px em */
+  --network-office-gap: 2.62vw; /* 201px between one office and the next */
+  /* Both section names centre 5% in from their edge, as in WORKS. */
+  --network-rail-inset: 5%;
+
   /* Rail column width incl. its inner offset, shared by ABOUT/SERVICE/NETWORK */
   --rail-col: calc(var(--rail-width) + var(--space-2));
 
