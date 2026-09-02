@@ -8,25 +8,49 @@ const CTAS = [
 ];
 ---
 
+{/* The pair spans the header's content box — same gutters, so the first button's
+    left edge lines up with the logo and the second's right edge with the nav.
+    The buttons scale to fill it, keeping the proportions they had when they were
+    a centred cluster (button : gap : button). */}
 <footer id="contact" class="contact">
-  {CTAS.map((cta) => <LinkButton href={cta.href}>{cta.label}</LinkButton>)}
+  {CTAS.map((cta) => <LinkButton class="contact__cta" href={cta.href}>{cta.label}</LinkButton>)}
 </footer>
 
 <style>
   .contact {
     display: flex;
-    justify-content: center;
-    gap: var(--space-9);
-    padding: var(--space-9) 0 var(--space-10);
+    /* The solved em already makes the pair exactly fill this box, so this is
+       identical to centring — but if a label is ever edited without re-deriving
+       --footer-cta-span, the edges stay put and only the gap drifts. */
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--footer-cta-gap);
+    padding: var(--space-9) var(--header-gutter) var(--space-10);
     background: var(--surface-page);
+    /* The em every measure below is expressed in. */
+    font-size: var(--footer-cta-size);
+  }
+
+  /* LinkButton's root carries its own component id, so this component's scope
+     will not reach it — the same reason NETWORK's rail needs :global. */
+  .contact :global(.contact__cta) {
+    font-size: 1em;
+    padding: 0 var(--footer-cta-pad-x) var(--footer-cta-pad-b);
+    white-space: nowrap;
   }
 
   @media (max-width: 768px) {
+    /* Stacked, so nothing has to span anything — back to the button's own size. */
     .contact {
       flex-direction: column;
       align-items: center;
       gap: var(--space-7);
       padding: var(--space-9) var(--space-5);
+      font-size: var(--fs-h3);
+    }
+
+    .contact :global(.contact__cta) {
+      padding: 0 var(--space-6) var(--space-3);
     }
   }
 </style>

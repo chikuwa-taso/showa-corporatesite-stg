@@ -99,6 +99,17 @@
   /* Both section names centre 5% in from their edge, as in WORKS. */
   --network-rail-inset: 5%;
 
+  /* Footer CTAs. The pair spans exactly the header's content box, so the two
+     buttons and the gap between them are all sized in em and the em is solved
+     back from that width. 27.6 is what the pair currently measures in em:
+     4 × 2.909 padding + 4.364 gap + 4.64 (採用情報) + 6.96 (お問い合わせ),
+     the labels at --ls-heading. Change a label and this needs re-deriving. */
+  --footer-cta-span: 27.6;
+  --footer-cta-size: calc((100vw - 2 * var(--header-gutter)) / var(--footer-cta-span));
+  --footer-cta-pad-x: 2.909em; /* 64px against the old 22px button */
+  --footer-cta-pad-b: 0.727em; /* 16px */
+  --footer-cta-gap: 4.364em; /* 96px */
+
   /* Rail column width incl. its inner offset, shared by ABOUT/SERVICE/NETWORK */
   --rail-col: calc(var(--rail-width) + var(--space-2));
 
