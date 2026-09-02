@@ -3,7 +3,7 @@ export const SECTION_IDS = ['top', 'about', 'works', 'service', 'network', 'cont
 export type SectionId = (typeof SECTION_IDS)[number];
 
 /** Standalone pages alongside the LP. */
-export type PageId = 'recruit' | 'contact';
+export type PageId = 'facility' | 'recruit' | 'contact';
 
 export type NavItem = {
   label: string;
@@ -22,6 +22,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'ABOUT', href: '/#about', section: 'about', page: null },
   { label: 'WORKS', href: '/#works', section: 'works', page: null },
   { label: 'SERVICE', href: '/#service', section: 'service', page: null },
+  { label: 'FACILITIES', href: '/facility', section: null, page: 'facility' },
   { label: 'NETWORK', href: '/#network', section: 'network', page: null },
   { label: 'RECRUIT', href: '/recruit', section: null, page: 'recruit' },
   { label: 'CONTACT', href: '/contact', section: 'contact', page: 'contact' },
@@ -155,13 +156,8 @@ export const SERVICE_ROWS: Service[][] = [
   ],
 ];
 
-/**
- * The 設備一覧 button inside each SERVICE popup. The comp's nav carries a
- * FACILITY entry that this site has no section for, so the link parks on
- * CONTACT — the same interim the RECRUIT links use. One constant, so pointing
- * all five popups at the real page later is a one-line change.
- */
-export const FACILITY_HREF = '/contact';
+/** The 設備一覧 button inside each SERVICE popup, and the FACILITIES nav item. */
+export const FACILITY_HREF = '/facility';
 
 export type TileRatio = 'photo' | 'wide' | 'square';
 

@@ -105,6 +105,39 @@
   --footer-cta-size: clamp(15px, 1.45vw, 20px);
   --footer-cta-gap: clamp(var(--space-6), 6vw, var(--space-9));
 
+  /* 設備一覧. The comp is a black board, 7681px wide, and sets its headings in a
+     Mincho — the only place on the site that departs from the gothic, so the
+     face is named here rather than in fonts.css. Sizes are comp px ÷ 7681 → vw,
+     floored so nothing collapses on a phone. */
+  --fac-ground: #000;
+  --fac-ink: #fff;
+  --fac-hair: 1px;
+  --fac-font-display: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  --fac-title-size: clamp(21px, 1.62vw, 34px);
+  --fac-title-track: 0.18em;
+  --fac-title-gap: clamp(16px, 1.3vw, 28px);
+  --fac-body-size: clamp(13px, 0.79vw, 17px);
+  --fac-body-track: 0.1em;
+  --fac-spec-size: clamp(14px, 0.95vw, 21px);
+  --fac-spec-track: 0.08em;
+  --fac-spec-gap: clamp(12px, 0.95vw, 22px);
+  --fac-spec-note-gap: 0.35em;
+  --fac-spec-rule-gap: clamp(10px, 0.9vw, 20px);
+  --fac-spec-rule-min: clamp(28px, 4vw, 90px);
+  --fac-note-size: clamp(10px, 0.6vw, 13px);
+  --fac-note-track: 0.04em;
+  --fac-caption-size: clamp(12px, 0.72vw, 16px);
+  --fac-chip-size: clamp(13px, 0.86vw, 19px);
+  --fac-chip-track: 0.1em;
+  --fac-chip-pad: 0.3em 0.55em 0.34em;
+  --fac-chip-gap: clamp(10px, 0.9vw, 20px);
+  --fac-shot-gap: clamp(10px, 0.8vw, 18px);
+  --fac-plus-size: clamp(18px, 1.5vw, 32px);
+  --fac-bracket-len: clamp(20px, 1.9vw, 42px);
+  --fac-bracket-pad: clamp(20px, 2vw, 44px) clamp(24px, 2.4vw, 52px);
+  --fac-gutter: clamp(20px, 4.7vw, 90px);
+  --fac-row-gap: clamp(56px, 7vw, 150px);
+
   /* Rail column width incl. its inner offset, shared by ABOUT/SERVICE/NETWORK */
   --rail-col: calc(var(--rail-width) + var(--space-2));
 

@@ -1,0 +1,115 @@
+---
+import type { SpecItem } from '../data/facility';
+
+interface Props {
+  items: SpecItem[];
+  /** The comp prints a trailing 「ほか」 under the sheet-fed list. */
+  tail?: string;
+}
+
+const { items, tail } = Astro.props;
+---
+
+<ul class="specs">
+  {
+    items.map((item) => (
+      <li class="specs__item">
+        <p class="specs__line">
+          <span class="specs__name">{item.name}</span>
+          {item.format && (
+            <>
+              {/* The rule stretches to fill whatever is left between the two,
+                  which is how the comp sets the ones that carry a sheet size. */}
+              <span class="specs__rule" aria-hidden="true" />
+              <span class="specs__format">{item.format}</span>
+            </>
+          )}
+        </p>
+        {item.notes?.map((note) => <p class="specs__note">{note}</p>)}
+      </li>
+    ))
+  }
+  {tail && <li class="specs__tail">{tail}</li>}
+</ul>
+
+<style>
+  .specs {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--fac-ink);
+  }
+
+  .specs__item + .specs__item {
+    margin-top: var(--fac-spec-gap);
+  }
+
+  .specs__line {
+    display: flex;
+    align-items: center;
+    gap: var(--fac-spec-rule-gap);
+    margin: 0;
+    font-family: var(--fac-font-display);
+    font-size: var(--fac-spec-size);
+    font-weight: var(--fw-regular);
+    line-height: 1.5;
+    letter-spacing: var(--fac-spec-track);
+  }
+
+  /* The ○ the comp sets before every machine. A drawn ring rather than the
+     character, so its weight matches the hairlines around it. */
+  .specs__name::before {
+    content: '';
+    display: inline-block;
+    width: 0.72em;
+    height: 0.72em;
+    margin-right: 0.6em;
+    border: var(--fac-hair) solid var(--fac-ink);
+    border-radius: 50%;
+    vertical-align: 0.02em;
+  }
+
+  .specs__name {
+    white-space: nowrap;
+  }
+
+  .specs__rule {
+    flex: 1 1 auto;
+    min-width: var(--fac-spec-rule-min);
+    height: var(--fac-hair);
+    background: var(--fac-ink);
+  }
+
+  .specs__format {
+    white-space: nowrap;
+  }
+
+  .specs__note {
+    margin: var(--fac-spec-note-gap) 0 0;
+    font-family: var(--font-jp);
+    font-size: var(--fac-note-size);
+    font-weight: var(--fw-medium);
+    line-height: 1.6;
+    letter-spacing: var(--fac-note-track);
+  }
+
+  .specs__tail {
+    margin-top: var(--fac-spec-gap);
+    font-family: var(--fac-font-display);
+    font-size: var(--fac-spec-size);
+    letter-spacing: var(--fac-spec-track);
+  }
+
+  @media (max-width: 768px) {
+    /* The sheet size drops under the name rather than stretching a rule across
+       a phone's width. */
+    .specs__line {
+      flex-wrap: wrap;
+      gap: 0 var(--space-3);
+    }
+
+    .specs__rule {
+      display: none;
+    }
+  }
+</style>

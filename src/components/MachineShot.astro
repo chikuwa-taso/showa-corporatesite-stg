@@ -1,0 +1,123 @@
+---
+import { asset } from '../lib/asset';
+import type { Machine } from '../data/facility';
+
+interface Props {
+  machine: Machine;
+  /** Where the chip and caption sit against the photograph. */
+  captionSide?: 'above' | 'below';
+  /** The comp pairs GX40RP with a second unit across a 「＋」. */
+  partner?: string;
+}
+
+const { machine, captionSide = 'above', partner } = Astro.props;
+---
+
+<figure class:list={['machine', `machine--${captionSide}`]}>
+  <figcaption class="machine__caption">
+    {machine.chip && <span class="machine__chip">{machine.chip}</span>}
+
+    <span class="machine__text">
+      {
+        machine.caption.map((line, i) => (
+          <>
+            {i > 0 && <br />}
+            {line}
+          </>
+        ))
+      }
+      {machine.note && <span class="machine__note">{machine.note}</span>}
+    </span>
+
+    {
+      partner && (
+        <>
+          <span class="machine__plus" aria-hidden="true">
+            ＋
+          </span>
+          <span class="machine__partner">{partner}</span>
+        </>
+      )
+    }
+  </figcaption>
+
+  <picture class="machine__shot">
+    <source srcset={asset(`/assets/facility/${machine.src}.webp`)} type="image/webp" />
+    {/* Cut out of the comp, which is pure black behind every machine — so the
+        crop needs no matte, its ground already matches the page. */}
+    <img
+      src={asset(`/assets/facility/${machine.src}.jpg`)}
+      alt={machine.alt}
+      loading="lazy"
+      decoding="async"
+    />
+  </picture>
+</figure>
+
+<style>
+  .machine {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--fac-shot-gap);
+    color: var(--fac-ink);
+  }
+
+  .machine--below {
+    flex-direction: column-reverse;
+  }
+
+  .machine__caption {
+    display: flex;
+    align-items: center;
+    gap: var(--fac-chip-gap);
+    flex-wrap: wrap;
+  }
+
+  /* The comp's white chip: black type knocked out of a white block. */
+  .machine__chip {
+    flex: none;
+    padding: var(--fac-chip-pad);
+    background: var(--fac-ink);
+    color: var(--fac-ground);
+    font-family: var(--font-jp);
+    font-size: var(--fac-chip-size);
+    font-weight: var(--fw-medium);
+    line-height: 1.15;
+    letter-spacing: var(--fac-chip-track);
+    white-space: nowrap;
+  }
+
+  .machine__text {
+    font-family: var(--fac-font-display);
+    font-size: var(--fac-caption-size);
+    line-height: 1.5;
+    letter-spacing: var(--fac-body-track);
+  }
+
+  .machine__note {
+    display: block;
+    font-family: var(--font-jp);
+    font-size: var(--fac-note-size);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--fac-note-track);
+  }
+
+  .machine__plus {
+    font-family: var(--fac-font-display);
+    font-size: var(--fac-plus-size);
+    line-height: 1;
+  }
+
+  .machine__partner {
+    font-family: var(--fac-font-display);
+    font-size: var(--fac-caption-size);
+    letter-spacing: var(--fac-title-track);
+    white-space: nowrap;
+  }
+
+  .machine__shot img {
+    width: 100%;
+    height: auto;
+  }
+</style>

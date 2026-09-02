@@ -38,6 +38,12 @@ const { title, description, noindex = false } = Astro.props;
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@500&display=swap"
     />
+    {/* 設備一覧 only — the comp sets that page's headings and model numbers in a
+        Mincho, the one place the site leaves the gothic. */}
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400&display=swap"
+    />
     {/* Adobe Fonts kit carrying Adapter Mono PE Variable, which sets all Latin.
         Domain-locked — the production host must be added to the web project or
         this falls back to system monospace. */}

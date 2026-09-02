@@ -1,0 +1,275 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import LinkButton from '../components/LinkButton.astro';
+import SectionRail from '../components/SectionRail.astro';
+import { route } from '../lib/asset';
+import DeptHeading from '../components/DeptHeading.astro';
+import SpecList from '../components/SpecList.astro';
+import MachineShot from '../components/MachineShot.astro';
+import {
+  DEPT_OFFSET,
+  SPECS_OFFSET,
+  MACHINES_OFFSET,
+  MACHINE_CTP,
+  DEPT_PREPRESS,
+  DEPT_ONDEMAND,
+  SPECS_PREPRESS,
+  DEPT_SHEETFED,
+  DEPT_BINDING,
+  SPECS_SHEETFED,
+  SPECS_SHEETFED_TAIL,
+  MACHINES_SHEETFED,
+  MACHINES_FINISHING,
+  FINISHING_CHIP,
+  GX40RP_PARTNER,
+} from '../data/facility';
+---
+
+<BaseLayout
+  title="設備一覧｜昭和美術印刷株式会社"
+  description="昭和美術印刷の保有設備。オフリン輪転機、枚葉オフセット、CTP・プリプレス、オンデマンド、製本・加工の各設備を掲載しています。"
+  noindex
+>
+  <SiteHeader activePage="facility" />
+
+  {/* The one black page on the site — the comp sets the whole spread on it, so
+      the ground and the ink swap rather than the sections carrying their own. */}
+  <main class="facility">
+    <SectionRail label="EQUIPMENT" side="left" tone="inverse" class="facility__rail facility__rail--left" />
+    <SectionRail label="設備一覧" side="right" tone="inverse" class="facility__rail facility__rail--right" />
+
+    <div class="facility__inner">
+      {/* ---- オフリン印刷部門 ---- */}
+      <section class="fac-row fac-row--split">
+        <DeptHeading dept={DEPT_OFFSET} />
+        <SpecList items={SPECS_OFFSET} />
+      </section>
+
+      <section class="fac-row fac-row--presses">
+        <div class="fac-press fac-press--b2">
+          <MachineShot machine={MACHINES_OFFSET[1]!} />
+        </div>
+        <div class="fac-press fac-press--a1">
+          <MachineShot machine={MACHINES_OFFSET[0]!} />
+        </div>
+      </section>
+
+      {/* ---- プリプレス / オンデマンド / CTP ---- */}
+      <section class="fac-row fac-row--prepress">
+        <div class="fac-depts">
+          <DeptHeading dept={DEPT_PREPRESS} />
+          <DeptHeading dept={DEPT_ONDEMAND} />
+        </div>
+        <div class="fac-ctp">
+          <MachineShot machine={MACHINE_CTP} captionSide="below" />
+          <SpecList items={SPECS_PREPRESS} />
+        </div>
+      </section>
+
+      {/* ---- 枚葉印刷 / 製本・加工 ---- */}
+      <section class="fac-row fac-row--split fac-row--reverse">
+        <SpecList items={SPECS_SHEETFED} tail={SPECS_SHEETFED_TAIL} />
+        <div class="fac-depts">
+          <DeptHeading dept={DEPT_SHEETFED} />
+          <DeptHeading dept={DEPT_BINDING} />
+        </div>
+      </section>
+
+      <section class="fac-row fac-stack">
+        <MachineShot machine={MACHINES_SHEETFED[0]!} partner={GX40RP_PARTNER} />
+        <MachineShot machine={MACHINES_SHEETFED[1]!} captionSide="below" />
+        <div class="fac-pair">
+          <MachineShot machine={MACHINES_SHEETFED[2]!} captionSide="below" />
+          <MachineShot machine={MACHINES_SHEETFED[3]!} captionSide="below" />
+        </div>
+      </section>
+
+      {/* ---- 紙折機ほかの仕上げ設備 ---- */}
+      <section class="fac-row fac-finishing">
+        <span class="fac-finishing__chip">{FINISHING_CHIP}</span>
+        <div class="fac-finishing__row">
+          {MACHINES_FINISHING.map((m) => <MachineShot machine={m} captionSide="below" />)}
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <LinkButton href={route('/#top')}>トップへ戻る</LinkButton>
+  </footer>
+</BaseLayout>
+
+<style>
+  .facility {
+    position: relative;
+    background: var(--fac-ground);
+    color: var(--fac-ink);
+    padding: var(--section-pad-y) 0;
+  }
+
+  .page-footer {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-9) 0 var(--space-10);
+    background: var(--surface-page);
+  }
+
+  /* Same 5% inset the WORKS and NETWORK rails use. */
+  .facility :global(.facility__rail) {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 10%;
+    padding: 0;
+    z-index: 1;
+  }
+
+  .facility :global(.facility__rail--left) {
+    left: 0;
+  }
+
+  .facility :global(.facility__rail--right) {
+    right: 0;
+  }
+
+  .facility__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fac-row-gap);
+    padding: 0 var(--fac-gutter);
+  }
+
+  .fac-row {
+    margin: 0;
+  }
+
+  /* Heading block on one side, the machine list on the other — the comp's
+     arrangement for both of the text spreads. */
+  .fac-row--split {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(24px, 4vw, 90px);
+  }
+
+  .fac-row--reverse {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .fac-depts {
+    display: flex;
+    gap: clamp(16px, 2.4vw, 52px);
+    align-items: start;
+  }
+
+  /* The two web presses overlap on a diagonal in the comp: B2 sits high and
+     right, A1 low and left, and the pair reads as one spread. */
+  .fac-row--presses {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    row-gap: clamp(16px, 2vw, 44px);
+  }
+
+  .fac-press--b2 {
+    grid-column: 9 / 25;
+    grid-row: 1;
+  }
+
+  .fac-press--a1 {
+    grid-column: 1 / 17;
+    grid-row: 2;
+  }
+
+  .fac-row--prepress {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(24px, 4vw, 90px);
+  }
+
+  .fac-ctp {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(24px, 3vw, 64px);
+  }
+
+  .fac-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fac-row-gap);
+  }
+
+  .fac-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+    align-items: end;
+    gap: clamp(20px, 3vw, 70px);
+  }
+
+  .fac-finishing {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(16px, 2.4vw, 52px);
+  }
+
+  .fac-finishing__chip {
+    padding: var(--fac-chip-pad);
+    background: var(--fac-ink);
+    color: var(--fac-ground);
+    font-family: var(--font-jp);
+    font-size: var(--fac-chip-size);
+    font-weight: var(--fw-medium);
+    line-height: 1.15;
+    letter-spacing: var(--fac-chip-track);
+    white-space: nowrap;
+    justify-self: start;
+  }
+
+  .fac-finishing__row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: end;
+    gap: clamp(16px, 2.4vw, 56px);
+  }
+
+  @media (max-width: 900px) {
+    /* Below the comp's own width the spreads stop being spreads: everything
+       becomes one column so the model numbers stay at a readable size. */
+    .fac-row--split,
+    .fac-row--reverse,
+    .fac-row--prepress,
+    .fac-finishing {
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(24px, 5vw, 48px);
+    }
+
+    .fac-row--reverse {
+      direction: ltr;
+    }
+
+    .fac-depts {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .fac-row--presses {
+      display: flex;
+      flex-direction: column-reverse;
+    }
+
+    .fac-pair,
+    .fac-finishing__row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .facility :global(.facility__rail) {
+      display: none;
+    }
+
+    .facility__inner {
+      padding: 0 var(--space-5);
+    }
+  }
+</style>

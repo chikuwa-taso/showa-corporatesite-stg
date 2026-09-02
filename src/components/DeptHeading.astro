@@ -1,0 +1,115 @@
+---
+import type { Department } from '../data/facility';
+
+interface Props {
+  dept: Department;
+}
+
+const { dept } = Astro.props;
+---
+
+{/* The comp frames each heading in four corner brackets with a rule beneath it
+    and the standfirst below that. The brackets are drawn, not typed. */}
+<div class="dept">
+  <h2 class="dept__title">
+    {
+      dept.titleLines.map((line, i) => (
+        <>
+          {i > 0 && <br />}
+          {line}
+        </>
+      ))
+    }
+  </h2>
+
+  <p class="dept__body">
+    {
+      dept.body.map((line, i) => (
+        <>
+          {i > 0 && <br />}
+          {line}
+        </>
+      ))
+    }
+  </p>
+</div>
+
+<style>
+  .dept {
+    position: relative;
+    padding: var(--fac-bracket-pad);
+    text-align: center;
+    color: var(--fac-ink);
+  }
+
+  /* One element per pair of corners: a box with only two borders showing, so
+     the four brackets are two pseudo-elements rather than four. */
+  .dept::before,
+  .dept::after {
+    content: '';
+    position: absolute;
+    width: var(--fac-bracket-len);
+    height: var(--fac-bracket-len);
+    pointer-events: none;
+  }
+
+  .dept::before {
+    top: 0;
+    left: 0;
+    border-top: var(--fac-hair) solid var(--fac-ink);
+    border-left: var(--fac-hair) solid var(--fac-ink);
+  }
+
+  .dept::after {
+    bottom: 0;
+    right: 0;
+    border-bottom: var(--fac-hair) solid var(--fac-ink);
+    border-right: var(--fac-hair) solid var(--fac-ink);
+  }
+
+  /* The other diagonal pair. */
+  .dept__title::before,
+  .dept__title::after {
+    content: '';
+    position: absolute;
+    width: var(--fac-bracket-len);
+    height: var(--fac-bracket-len);
+    pointer-events: none;
+  }
+
+  .dept__title::before {
+    top: 0;
+    right: 0;
+    border-top: var(--fac-hair) solid var(--fac-ink);
+    border-right: var(--fac-hair) solid var(--fac-ink);
+  }
+
+  .dept__title::after {
+    bottom: 0;
+    left: 0;
+    border-bottom: var(--fac-hair) solid var(--fac-ink);
+    border-left: var(--fac-hair) solid var(--fac-ink);
+  }
+
+  .dept__title {
+    margin: 0;
+    font-family: var(--fac-font-display);
+    font-size: var(--fac-title-size);
+    font-weight: var(--fw-regular);
+    line-height: 1.55;
+    letter-spacing: var(--fac-title-track);
+    white-space: nowrap;
+  }
+
+  .dept__body {
+    margin: var(--fac-title-gap) 0 0;
+    padding-top: var(--fac-title-gap);
+    border-top: var(--fac-hair) solid var(--fac-ink);
+    font-family: var(--fac-font-display);
+    font-size: var(--fac-body-size);
+    font-weight: var(--fw-regular);
+    line-height: 1.9;
+    letter-spacing: var(--fac-body-track);
+    white-space: nowrap;
+  }
+</style>
