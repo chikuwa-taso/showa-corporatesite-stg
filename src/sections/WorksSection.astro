@@ -10,9 +10,10 @@ interface Props {
 const { useVideo = CONFIG.useVideo } = Astro.props;
 ---
 
+{/* The strip runs edge to edge — no gutter for the labels to sit in. They are
+    laid over the artwork in white instead, with the marquee running underneath,
+    which is how the comp sets this section. */}
 <section id="works" class="works">
-  <SectionRail label="WORKS" side="left" />
-
   <div class="works__viewport">
     <div class="works__track">
       {WORK_TILES.map((tile) => <WorkTile tile={tile} useVideo={useVideo} />)}
@@ -21,14 +22,13 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
     </div>
   </div>
 
-  <SectionRail label="実績" side="right" />
+  <SectionRail label="WORKS" side="left" tone="inverse" class="works__rail works__rail--left" />
+  <SectionRail label="実績" side="right" tone="inverse" class="works__rail works__rail--right" />
 </section>
 
 <style>
   .works {
-    display: grid;
-    grid-template-columns: var(--rail-width) minmax(0, 1fr) var(--rail-width);
-    align-items: stretch;
+    position: relative;
     background: var(--surface-page);
   }
 
@@ -49,6 +49,31 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
     animation-play-state: paused;
   }
 
+  /* SectionRail's root carries its own component id, so Astro's scoping will not
+     reach it from here — the same reason NETWORK's rail needs :global.
+
+     Each rail is a full-height band twice the inset wide, pinned to its edge;
+     the label is centred inside it, which lands it exactly one inset in. Its own
+     side padding is cancelled so that centring is not nudged off. */
+  .works :global(.works__rail) {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: calc(2 * var(--works-rail-inset));
+    padding: 0;
+    z-index: 1;
+    /* Decorative, and the strip pauses on hover — the label must not eat that. */
+    pointer-events: none;
+  }
+
+  .works :global(.works__rail--left) {
+    left: 0;
+  }
+
+  .works :global(.works__rail--right) {
+    right: 0;
+  }
+
   @keyframes works-marquee {
     from {
       transform: translate3d(0, 0, 0);
@@ -61,16 +86,6 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
   @media (prefers-reduced-motion: reduce) {
     .works__track {
       animation: none;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .works {
-      grid-template-columns: 1fr;
-    }
-
-    .works :global(.rail) {
-      display: none;
     }
   }
 </style>

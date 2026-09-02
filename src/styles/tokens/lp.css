@@ -25,6 +25,10 @@
 
   /* WORKS marquee */
   --marquee-duration: 52s;
+  /* The strip runs full bleed and its labels sit on the artwork rather than in a
+     gutter beside it, so this is how far in from each edge the label centres —
+     the comp puts both at 5.00% of the board width. */
+  --works-rail-inset: 5%;
   /* The client's work photography, all shot to one crop. */
   --tile-ratio-photo: 1.421 / 1;
   /* Kept for the design-system stand-in tiles' alternating rhythm. */
