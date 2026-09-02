@@ -22,7 +22,7 @@ body {
   background: var(--surface-page);
   color: var(--text-body);
   font-family: var(--font-jp);
-  font-weight: var(--fw-light);
+  font-weight: var(--fw-medium);
 }
 
 img,

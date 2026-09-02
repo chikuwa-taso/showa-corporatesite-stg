@@ -28,12 +28,15 @@ const { title, description, noindex = false } = Astro.props;
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    {/* Only the two weights the site actually sets. Japanese webfont CSS is
-        enormous — every extra weight is roughly another 115KB of render-blocking
-        stylesheet — so add one here only when something starts using it. */}
+    {/* Only the weight the site actually sets. The comp is Medium throughout —
+        measured off the client's own artwork, where 「印」's ink fills 0.41 of its
+        box against 0.42 for this face at 500 (300 gives 0.20, 400 gives 0.31).
+        Japanese webfont CSS is enormous — every extra weight is roughly another
+        115KB of render-blocking stylesheet — so add one here only when something
+        starts using it, or the browser will fake it from the nearest one. */}
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@300;400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@500&display=swap"
     />
     {/* Adobe Fonts kit carrying Adapter Mono PE Variable, which sets all Latin.
         Domain-locked — the production host must be added to the web project or
