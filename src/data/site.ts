@@ -166,7 +166,12 @@ export const FACILITY_HREF = '/contact';
 export type TileRatio = 'photo' | 'wide' | 'square';
 
 export type WorkTile =
-  | { kind: 'photo'; ratio: TileRatio; src: string; alt: string }
+  /**
+   * `lid` is the colour field the tile shows at rest; the photo underneath is
+   * revealed on hover. Each lid was matched to its photo's own background —
+   * measured, not eyeballed: every one is the nearest of the four in CIE Lab.
+   */
+  | { kind: 'photo'; ratio: TileRatio; src: string; lid: string; alt: string }
   /** `fill` shows through whenever the video is off, loading, or reduced-motion. */
   | { kind: 'video'; ratio: TileRatio; name: string; fill: string }
   | { kind: 'fill'; ratio: TileRatio; fill: string };
@@ -184,24 +189,28 @@ export const WORK_TILES: WorkTile[] = [
     kind: 'photo',
     ratio: 'photo',
     src: '/assets/works/oshigoto-book',
+    lid: '/assets/works/oshigoto-book-lid.jpg',
     alt: '福井県のおしごと本 パンフレット',
   },
   {
     kind: 'photo',
     ratio: 'photo',
     src: '/assets/works/ski-jam',
+    lid: '/assets/works/ski-jam-lid.jpg',
     alt: 'スキージャム勝山 チラシ・リフト券・リストバンド',
   },
   {
     kind: 'photo',
     ratio: 'photo',
     src: '/assets/works/europe-ken',
+    lid: '/assets/works/europe-ken-lid.jpg',
     alt: 'ヨーロッパ軒 特製ソースのパッケージと包装紙',
   },
   {
     kind: 'photo',
     ratio: 'photo',
     src: '/assets/works/tamuraya',
+    lid: '/assets/works/tamuraya-lid.jpg',
     alt: '越前田村屋 食品パッケージと手提げ袋',
   },
 ];

@@ -72,6 +72,12 @@ for work in oshigoto-book ski-jam europe-ken tamuraya; do
     sips -s format jpeg -s formatOptions 82 --resampleWidth 1600 \
       "$SRC/works/$work.jpg" --out "$OUT/works/$work.jpg" >/dev/null
   fi
+  # The lid each tile wears at rest. Copied byte for byte — the client asked for
+  # these to be used as supplied, and at 160–200KB there is nothing to win.
+  if [ -f "$SRC/works/$work-lid.jpg" ]; then
+    echo "copy:  works/$work-lid.jpg (verbatim)"
+    cp "$SRC/works/$work-lid.jpg" "$OUT/works/$work-lid.jpg"
+  fi
 done
 convert_png brand/lockup.png          brand/lockup          456  92  # header, max 152px
 convert_png brand/lockup-white.png    brand/lockup-white    840  92  # NETWORK, 420px
