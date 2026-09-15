@@ -21,20 +21,21 @@ const { tile, duplicate = false, useVideo = true } = Astro.props;
   {
     tile.kind === 'photo' && (
       <>
-        <picture>
-          <source srcset={asset(`${tile.src}.webp`)} type="image/webp" />
-          {/* The marquee slides tiles in sideways rather than scrolling them into
-              view, and a lazy image resolves too late to fill its slot — hence the
-              eager first half. The duplicates reuse those same URLs, so they come
-              straight from cache and can stay lazy. */}
-          <img
-            src={asset(`${tile.src}.jpg`)}
-            alt={duplicate ? '' : tile.alt}
-            loading={duplicate ? 'lazy' : 'eager'}
-            fetchpriority="low"
-            decoding="async"
-          />
-        </picture>
+        {/* The client's own JPEG, shipped exactly as delivered — so there is no
+            WebP beside it: re-encoding a JPEG can only add a second generation of
+            loss, and a lossless WebP of one is larger than the JPEG itself.
+
+            The marquee slides tiles in sideways rather than scrolling them into
+            view, and a lazy image resolves too late to fill its slot — hence the
+            eager first half. The duplicates reuse those same URLs, so they come
+            straight from cache and can stay lazy. */}
+        <img
+          src={asset(`${tile.src}.jpg`)}
+          alt={duplicate ? '' : tile.alt}
+          loading={duplicate ? 'lazy' : 'eager'}
+          fetchpriority="low"
+          decoding="async"
+        />
 
         {/* The colour field the tile wears at rest. Decorative — the photo
             underneath carries the alt text — and it lifts on hover. Supplied by

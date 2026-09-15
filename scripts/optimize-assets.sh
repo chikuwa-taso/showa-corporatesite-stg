@@ -1,131 +1,156 @@
 #!/bin/bash
-# Regenerates everything under public/assets from the design handoff bundle.
+# Regenerates everything under public/assets from the client's material folders.
 #
-#   ./scripts/optimize-assets.sh /path/to/design_handoff_showa_lp [popup-material-dir]
+#   ./scripts/optimize-assets.sh [materials-root]
 #
-# Requires: ffmpeg, cwebp (brew install ffmpeg webp), sips (macOS built-in).
-# The handoff ships ~37MB of 1080p video and a 3.9MB comp crop; this reduces the
-# set to ~5MB while keeping the rendered sizes the layout actually asks for.
+# Requires: ffmpeg, cwebp (brew install ffmpeg webp).
+#
+# NOTHING HERE RESAMPLES OR RE-ENCODES A PICTURE. The client asked for the
+# artwork at the quality they supplied it, so every asset below is either copied
+# byte for byte, stream-copied, cropped (which only discards whole pixels), or
+# encoded losslessly. Where a source is already a JPEG, its own file ships —
+# re-encoding it, even at q100, would only add a second generation of loss, and a
+# lossless WebP of it would be larger than the JPEG for no visible gain. So the
+# photographic assets carry a single file rather than the usual WebP + fallback
+# pair, and their <picture> elements dropped the <source> to match.
+#
+# Flat artwork (icons, the statement, the map) keeps the pair: there a lossless
+# WebP really is smaller than the PNG and pixel-identical to it.
 set -euo pipefail
 
-SRC="${1:?usage: optimize-assets.sh <path to design_handoff_showa_lp> [popup-material-dir]}/assets"
-POPUP_SRC="${2:-}"
-NETWORK_COMP="${3:-}"
+ROOT="${1:-/Users/leosmacbook/Downloads}"
+TOP="$ROOT/ 昭和美術印刷LP素材_まとめ/ 昭和美術印刷LP素材_TOP"
+ICONS_SRC="$ROOT/ 昭和美術印刷LP素材_まとめ/ 昭和美術印刷LP素材_印刷アイコン"
+STATEMENT_SRC="$ROOT/ 昭和美術印刷LP素材_まとめ/ 昭和美術印刷LP素材_ステートメント"
+WORKS_SRC="$ROOT/ 昭和美術印刷LP＿ワークス＿JPG"
+LID_SRC="$ROOT"                     # ＿流し素材.jpg live loose in the drop
+POPUP_SRC="$ROOT/ 昭和美術印刷LP素材_印刷アイコンからのPOPUP表示"
+LOGO_SRC="$ROOT/昭和美術印刷＿logo"
+NETWORK_COMP="$ROOT/拠点.jpg"
+
 OUT="$(cd "$(dirname "$0")/.." && pwd)/public/assets"
 mkdir -p "$OUT"/{video,brand,about,works,icons,service,network}
 
-# ---------- video ----------
-# Decorative loops: audio stripped, downscaled, plus a WebM and a poster frame.
-encode_video () {
-  local name=$1 width=$2 height=$3 crf=$4 vpxcrf=$5
-  echo "video: $name (${width}x${height})"
+have () { [ -f "$1" ] || { echo "skip:  $(basename "$1") (not in this drop)"; return 1; }; }
 
-  ffmpeg -y -v error -i "$SRC/video/$name.mp4" \
-    -an -vf "scale=${width}:${height}:flags=lanczos" \
-    -c:v libx264 -profile:v high -pix_fmt yuv420p \
-    -crf "$crf" -preset slow -movflags +faststart -g 60 \
+# ---------- video ----------
+# The picture is stream-copied: identical frames, identical bitrate, identical
+# resolution to the client's master. Only the AAC track is dropped — these play
+# muted as decoration and the audio is bytes nobody can ever hear. +faststart
+# moves the index to the front so playback can begin before the file is whole,
+# which matters a great deal now that material-a is 20MB rather than 1.3MB.
+copy_video () {
+  local src=$1 name=$2
+  have "$src" || return 0
+  echo "video: $name (stream copy, $(ffprobe -v error -select_streams v:0 \
+    -show_entries stream=width,height -of csv=p=0:s=x "$src"))"
+
+  ffmpeg -y -v error -i "$src" -map 0:v:0 -c:v copy -an -movflags +faststart \
     "$OUT/video/$name.mp4"
 
-  ffmpeg -y -v error -i "$SRC/video/$name.mp4" \
-    -an -vf "scale=${width}:${height}:flags=lanczos" \
-    -c:v libvpx-vp9 -crf "$vpxcrf" -b:v 0 -row-mt 1 -cpu-used 2 -deadline good \
-    "$OUT/video/$name.webm"
+  # Poster frame at the video's own size, near-lossless — it stands in for the
+  # first frame under prefers-reduced-motion and before the island runs, so it
+  # has to survive being looked at rather than merely blur into place.
+  ffmpeg -y -v error -i "$src" -frames:v 1 -q:v 2 "$OUT/video/$name-poster.jpg"
 
-  ffmpeg -y -v error -i "$SRC/video/$name.mp4" \
-    -vf "scale=${width}:${height}:flags=lanczos" -frames:v 1 -q:v 7 \
-    "$OUT/video/$name-poster.jpg"
+  # The VP9 transcodes are gone: a second encode of an already-encoded master is
+  # a second generation of loss, and the browser preferred it over the mp4.
+  rm -f "$OUT/video/$name.webm"
 }
 
-encode_video material-a 1600 900 30 44  # TOP hero, full-bleed
-encode_video material-b 1600 900 30 34  # NETWORK band
-# material-c is unreferenced since the WORKS strip moved to the client's own
-# photography. Re-add an encode_video line here if a video tile returns.
+copy_video "$TOP/動画素材A.mp4" material-a  # TOP hero, full-bleed
+copy_video "$TOP/動画素材B.mp4" material-b  # NETWORK band
+# 動画素材C.mp4 is in the drop but placed nowhere: the WORKS strip that used to
+# carry a video tile now runs the client's own photography. Add a copy_video
+# line here if a video tile comes back.
 
-# ---------- images ----------
-# Widths are 2x the largest size the layout renders each asset at.
-# WebP for every asset, plus a resized fallback in its original format.
-# Not every asset came from the handoff zip — mail-circle arrived with the
-# CONTACT/RECRUIT drop and the WORKS photos in a folder of their own. Skip what
-# this bundle does not carry rather than clobbering an already-built file.
-convert_png () {
-  local rel=$1 dest=$2 width=$3 q=$4
-  if [ ! -f "$SRC/$rel" ]; then
-    echo "skip:  $rel (not in this bundle)"
-    return
-  fi
-  echo "image: $rel (${width}px)"
-  cwebp -quiet -q "$q" -resize "$width" 0 "$SRC/$rel" -o "$OUT/$dest.webp"
-  cp "$SRC/$rel" "$OUT/$dest.png"
-  sips --resampleWidth "$width" "$OUT/$dest.png" --out "$OUT/$dest.png" >/dev/null
+# ---------- flat artwork ----------
+# Source PNG byte for byte, plus a lossless WebP of it. Both are pixel-identical
+# to what the client drew; the WebP is simply the smaller container.
+copy_flat () {
+  local src=$1 dest=$2
+  have "$src" || return 0
+  echo "image: $dest (verbatim + lossless webp)"
+  cp "$src" "$OUT/$dest.png"
+  cwebp -quiet -lossless -z 9 "$OUT/$dest.png" -o "$OUT/$dest.webp"
 }
 
-convert_png about/about-statement.png about/about-statement 2000 84  # max-width 1000px
-# works/japan-map.png is superseded by the annotated map lifted out of 拠点.jpg
-# below — the handoff's plain outline is no longer placed anywhere.
+copy_flat "$STATEMENT_SRC/アートボード 14@4x.png" about/about-statement
 
-# WORKS strip. These come from the client's 昭和美術印刷LP＿ワークス＿JPG folder
-# rather than the handoff bundle, so point $1 at whichever holds them.
-for work in oshigoto-book ski-jam europe-ken tamuraya; do
-  if [ -f "$SRC/works/$work.jpg" ]; then
-    echo "image: works/$work.jpg (1600px)"
-    cwebp -quiet -q 82 -resize 1600 0 "$SRC/works/$work.jpg" -o "$OUT/works/$work.webp"
-    sips -s format jpeg -s formatOptions 82 --resampleWidth 1600 \
-      "$SRC/works/$work.jpg" --out "$OUT/works/$work.jpg" >/dev/null
-  fi
-  # The lid each tile wears at rest. Copied byte for byte — the client asked for
-  # these to be used as supplied, and at 160–200KB there is nothing to win.
-  if [ -f "$SRC/works/$work-lid.jpg" ]; then
-    echo "copy:  works/$work-lid.jpg (verbatim)"
-    cp "$SRC/works/$work-lid.jpg" "$OUT/works/$work-lid.jpg"
-  fi
-done
-convert_png brand/lockup.png          brand/lockup          456  92  # header, max 152px
-convert_png brand/lockup-white.png    brand/lockup-white    840  92  # NETWORK, 420px
-
-for icon in offset-printing sheetfed-printing on-demand prepress bookbinding; do
-  convert_png "icons/$icon.png" "icons/$icon" 640 90  # rendered up to 300px
+for pair in \
+  "オフリン印刷:offset-printing" "枚葉印刷:sheetfed-printing" \
+  "オンデマンド:on-demand" "プリプレス:prepress" "製本折加工:bookbinding"; do
+  copy_flat "$ICONS_SRC/昭和美術印刷アイコン＿${pair%%:*}.png" "icons/${pair##*:}"
 done
 
-# CONTACT / RECRUIT mail button, rendered up to 132px
-convert_png icons/mail-circle.png icons/mail-circle 264 90
+# The brand lockups are not in any of the client's folders — only the final
+# rasters already in public/assets/brand, which came from the original handoff
+# zip. They stay as they are until the vector or a full-size export turns up.
 
-cp "$SRC/brand/logo.svg" "$OUT/brand/logo.svg"  # favicon / OG
+if have "$LOGO_SRC/昭和美術印刷＿logo.svg"; then
+  # Vector, so resolution is moot — but the copy in the repo had been minified,
+  # which stripped the <style> block and with it the mark's #040000 fill.
+  echo "image: brand/logo.svg (verbatim)"
+  cp "$LOGO_SRC/昭和美術印刷＿logo.svg" "$OUT/brand/logo.svg"
+fi
+
+# ---------- WORKS strip ----------
+# Photographs, supplied as JPEGs. Both the tile and the lid it wears ship exactly
+# as delivered — 3274x2304 rather than the 1600px re-encodes they replace.
+for pair in \
+  "おしごと本パンフ:oshigoto-book" "スキー場:ski-jam" \
+  "ヨーロッパ軒:europe-ken" "田村屋素材:tamuraya"; do
+  src="${pair%%:*}" dest="${pair##*:}"
+  if have "$WORKS_SRC/$src.jpg"; then
+    echo "image: works/$dest.jpg (verbatim)"
+    cp "$WORKS_SRC/$src.jpg" "$OUT/works/$dest.jpg"
+    rm -f "$OUT/works/$dest.webp"
+  fi
+  if have "$LID_SRC/${src}＿流し素材.jpg"; then
+    echo "image: works/$dest-lid.jpg (verbatim)"
+    cp "$LID_SRC/${src}＿流し素材.jpg" "$OUT/works/$dest-lid.jpg"
+  fi
+done
 
 # ---------- SERVICE popups ----------
-# The client's popup material ships each panel as one flat composite: the photo
-# with the vertical title and body copy already burnt into it. Only the photo is
-# taken here — the copy is set as live text in ServiceModal.astro so it stays
-# legible on a phone, selectable, and readable by a screen reader.
+# Each panel arrives as one flat composite with the vertical title and body copy
+# burnt in; only the photograph is taken, because the copy is set as live text in
+# ServiceModal.astro. Every composite places that photo in the same 3432x1974
+# box give or take a pixel of anti-aliasing, so one rectangle with a 3px inset
+# to trim the seam serves all five, and --popup-photo-ratio matches the result.
 #
-# Every composite places the photo at the same 3432x1974 box, give or take a
-# pixel of anti-aliasing, so one crop rectangle with a small inset serves all
-# five. The 3px inset trims the seam; --popup-photo-ratio must match the result.
-if [ -n "$POPUP_SRC" ]; then
-  crop_popup () {
-    local file=$1 dest=$2 x=$3 y=$4
-    echo "popup: $dest"
-    ffmpeg -y -v error -i "$POPUP_SRC/$file" \
-      -vf "crop=3426:1968:$((x + 3)):$((y + 3)),scale=1720:-2:flags=lanczos" \
-      "$OUT/service/$dest.png"
-    cwebp -quiet -q 82 "$OUT/service/$dest.png" -o "$OUT/service/$dest.webp"
-    sips -s format jpeg -s formatOptions 82 \
-      "$OUT/service/$dest.png" --out "$OUT/service/$dest.jpg" >/dev/null
-    rm "$OUT/service/$dest.png"
-  }
+# The crop is the whole operation now: no scale filter, so the pixels inside the
+# rectangle are the composite's own. The 1720px q82 JPEGs these replace were half
+# the linear resolution of the source.
+#
+# These are photographs the client happened to deliver as PNG, which is the worst
+# possible container for them — the five crops come to 41MB as PNG. Lossless WebP
+# stores the identical pixels in 28MB, so that is what ships, and the PNG is only
+# an intermediate. Verified per file below: every channel matches exactly.
+crop_popup () {
+  local file=$1 dest=$2 x=$3 y=$4
+  have "$POPUP_SRC/$file" || return 0
+  echo "popup: $dest (native crop, lossless)"
+  ffmpeg -y -v error -i "$POPUP_SRC/$file" \
+    -vf "crop=3426:1968:$((x + 3)):$((y + 3))" "$OUT/service/$dest.png"
+  cwebp -quiet -lossless -z 9 "$OUT/service/$dest.png" -o "$OUT/service/$dest.webp"
+  rm -f "$OUT/service/$dest.png" "$OUT/service/$dest.jpg"
+}
 
-  crop_popup "昭和美術印刷アイコン＿オフリン印刷_POPUP.png"  offset-printing   292 806
-  crop_popup "昭和美術印刷アイコン＿枚葉印刷_POPUP.png"      sheetfed-printing 299 805
-  crop_popup "昭和美術印刷アイコン＿オンデマンド_POPUP.png"  on-demand         298 805
-  crop_popup "昭和美術印刷アイコン＿プリプレス_POPUP.png"    prepress          298 805
-  crop_popup "昭和美術印刷アイコン＿製本折加工_POPUP.png"    bookbinding       292 805
+crop_popup "昭和美術印刷アイコン＿オフリン印刷_POPUP.png"  offset-printing   292 806
+crop_popup "昭和美術印刷アイコン＿枚葉印刷_POPUP.png"      sheetfed-printing 299 805
+crop_popup "昭和美術印刷アイコン＿オンデマンド_POPUP.png"  on-demand         298 805
+crop_popup "昭和美術印刷アイコン＿プリプレス_POPUP.png"    prepress          298 805
+crop_popup "昭和美術印刷アイコン＿製本折加工_POPUP.png"    bookbinding       292 805
 
-  # The close glyph, cropped out of its hit-area padding. 設備一覧ボタン.png is
-  # not used: it is the brand's underlined text link, which already exists as the
-  # LinkButton component, so it is set as text rather than shipped as a picture.
-  echo "popup: close glyph"
+# The close glyph, cropped out of its hit-area padding at its own size.
+# 設備一覧ボタン.png is not used: it is the brand's underlined text link, which
+# already exists as the LinkButton component, so it is set as text.
+if have "$POPUP_SRC/閉じるボタン.png"; then
+  echo "popup: close glyph (native crop, lossless)"
   ffmpeg -y -v error -i "$POPUP_SRC/閉じるボタン.png" \
-    -vf "crop=156:157:193:166,scale=128:-2:flags=lanczos" "$OUT/icons/close.png"
-  cwebp -quiet -q 90 "$OUT/icons/close.png" -o "$OUT/icons/close.webp"
+    -vf "crop=156:157:193:166" "$OUT/icons/close.png"
+  cwebp -quiet -lossless -z 9 "$OUT/icons/close.png" -o "$OUT/icons/close.webp"
 fi
 
 # ---------- NETWORK map ----------
@@ -133,8 +158,10 @@ fi
 # burnt into the section comp 拠点.jpg, so it is matted out of it. The artwork is
 # neutral white over a saturated blue ground, so the minimum of R/G/B separates
 # them cleanly — the ground's 99th percentile is 78 and the ink's 1st is 222.
-if [ -n "$NETWORK_COMP" ]; then
-  echo "network: japan-map"
+# The matte now runs at the comp's own resolution: the 1400px downscale that used
+# to follow it was throwing away a fifth of the leader lines' sharpness.
+if have "$NETWORK_COMP"; then
+  echo "network: japan-map (native matte, lossless)"
   python3 - "$NETWORK_COMP" "$OUT/network/japan-map.png" <<'PY'
 import sys
 from PIL import Image
@@ -154,9 +181,11 @@ for y in range(h):
         mp[x, y] = 0 if v <= LO else 255 if v >= HI else int((v - LO) * 255 / (HI - LO))
 art = Image.new("RGB", (w, h), (255, 255, 255))
 art.putalpha(mask)
-art.resize((1400, round(1400 * h / w)), Image.LANCZOS).save(dest, optimize=True)
+art.save(dest, optimize=True)  # native size — no resize step
+print(f"       {w}x{h}")
 PY
-  cwebp -quiet -q 90 -alpha_q 100 "$OUT/network/japan-map.png" -o "$OUT/network/japan-map.webp"
+  cwebp -quiet -lossless -z 9 -alpha_q 100 "$OUT/network/japan-map.png" \
+    -o "$OUT/network/japan-map.webp"
 fi
 
 echo

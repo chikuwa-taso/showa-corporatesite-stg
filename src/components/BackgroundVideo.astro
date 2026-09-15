@@ -2,7 +2,7 @@
 import { asset } from '../lib/asset';
 
 interface Props {
-  /** Basename in /assets/video — resolves to .webm + .mp4 + a -poster.jpg. */
+  /** Basename in /assets/video — resolves to a .mp4 plus a -poster.jpg. */
   name: string;
   class?: string;
 }
@@ -15,12 +15,16 @@ const base = asset(`/assets/video/${name}`);
     the island: it sets `muted` as a property (the attribute alone is not enough
     in every engine, and unmuted autoplay is blocked), plays only while onscreen,
     and never starts under prefers-reduced-motion. Without JS the poster frame
-    stands in over the band's gradient. */}
+    stands in over the band's gradient.
+
+    Only an mp4 now. The file is the client's master with its video stream copied
+    across untouched, and the VP9 alternate that used to sit in front of it was a
+    second encode of already-encoded footage — the browser preferred it, so the
+    softer copy was the one everybody saw. */}
 <video
   class:list={['bg-video', className]}
   data-bg-video
   poster={`${base}-poster.jpg`}
-  data-webm={`${base}.webm`}
   data-mp4={`${base}.mp4`}
   muted
   loop

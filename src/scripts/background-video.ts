@@ -4,6 +4,9 @@ function attachSources(video: HTMLVideoElement): void {
   if (video.dataset.sourced) return;
   video.dataset.sourced = 'true';
 
+  // The WebM alternate is gone — the mp4 is now the client's own stream, copied
+  // rather than re-encoded, so there is nothing a transcode could improve on.
+  // The loop stays: a source that is not there is simply skipped.
   for (const [type, url] of [
     ['video/webm', video.dataset.webm],
     ['video/mp4', video.dataset.mp4],

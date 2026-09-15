@@ -30,17 +30,18 @@ const titleId = `service-modal-${service.slug}-title`;
   <SectionRail label="SERVICE" side="left" />
 
   <div class="modal__composition">
-    <picture class="modal__photo">
-      <source srcset={asset(`/assets/service/${service.slug}.webp`)} type="image/webp" />
-      {/* Lazy inside a closed dialog costs nothing until it opens; the icon
-          warms it on hover so the panel is rarely caught mid-load. */}
-      <img
-        src={asset(`/assets/service/${service.slug}.jpg`)}
-        alt={service.photoAlt}
-        loading="lazy"
-        decoding="async"
-      />
-    </picture>
+    {/* One file, not a WebP/JPEG pair: this is the client's composite cropped at
+        its own 3426x1968 and stored losslessly, so a JPEG fallback could only be
+        a worse copy of it. Lazy inside a closed dialog costs nothing until it
+        opens; the icon warms it on hover so the panel is rarely caught
+        mid-load — which matters more now that the file runs to several MB. */}
+    <img
+      class="modal__photo"
+      src={asset(`/assets/service/${service.slug}.webp`)}
+      alt={service.photoAlt}
+      loading="lazy"
+      decoding="async"
+    />
 
     <p class="modal__body">
       {
@@ -149,11 +150,8 @@ const titleId = `service-modal-${service.slug}-title`;
     margin-inline-end: calc(var(--popup-gap-photo-copy) - var(--popup-gap-copy-title));
     width: var(--popup-photo-w);
     aspect-ratio: var(--popup-photo-ratio);
-  }
-
-  .modal__photo img {
-    width: 100%;
-    height: 100%;
+    /* The crop already is --popup-photo-ratio, so cover never actually crops —
+       it only guards against the ratio token and the file drifting apart. */
     object-fit: cover;
   }
 
