@@ -8,7 +8,8 @@
 # NOTHING HERE RESAMPLES OR RE-ENCODES A PICTURE. The client asked for the
 # artwork at the quality they supplied it, so every asset below is either copied
 # byte for byte, stream-copied, cropped (which only discards whole pixels), or
-# encoded losslessly. Where a source is already a JPEG, its own file ships —
+# encoded losslessly. Video poster frames included — they are derived here, so
+# any loss in them would be loss this script introduced. Where a source is already a JPEG, its own file ships —
 # re-encoding it, even at q100, would only add a second generation of loss, and a
 # lossless WebP of it would be larger than the JPEG for no visible gain. So the
 # photographic assets carry a single file rather than the usual WebP + fallback
@@ -49,10 +50,15 @@ copy_video () {
   ffmpeg -y -v error -i "$src" -map 0:v:0 -c:v copy -an -movflags +faststart \
     "$OUT/video/$name.mp4"
 
-  # Poster frame at the video's own size, near-lossless — it stands in for the
-  # first frame under prefers-reduced-motion and before the island runs, so it
-  # has to survive being looked at rather than merely blur into place.
-  ffmpeg -y -v error -i "$src" -frames:v 1 -q:v 2 "$OUT/video/$name-poster.jpg"
+  # Poster frame at the video's own size, encoded losslessly. We derive this
+  # frame rather than receive it, so any loss in it would be loss we introduced —
+  # and it is not a throwaway: under prefers-reduced-motion the video never
+  # plays and the poster is the whole of what that visitor sees. Lossless WebP
+  # over PNG for the same pixels in two thirds the bytes (813KB vs 1215KB on
+  # top-a), matching how the rest of the site stores flat artwork.
+  ffmpeg -y -v error -i "$src" -frames:v 1 "$OUT/video/$name-poster.png"
+  cwebp -quiet -lossless -z 9 "$OUT/video/$name-poster.png" -o "$OUT/video/$name-poster.webp"
+  rm -f "$OUT/video/$name-poster.png" "$OUT/video/$name-poster.jpg"
 
   # The VP9 transcodes are gone: a second encode of an already-encoded master is
   # a second generation of loss, and the browser preferred it over the mp4.
@@ -74,7 +80,8 @@ copy_video "$TOP/動画素材B.mp4" material-b  # NETWORK band
 # NOTE 昭和LPデザインTOP動画B.mp4 is frame-for-frame the same footage as
 # 動画素材B.mp4, i.e. TOP's variant B is the clip NETWORK already plays. Shipped
 # as supplied; flagged in the README as something to confirm.
-rm -f "$OUT/video/material-a.mp4" "$OUT/video/material-a-poster.jpg"
+rm -f "$OUT/video/material-a.mp4" "$OUT/video/material-a-poster.jpg" \
+      "$OUT/video/material-a-poster.webp"
 
 # ---------- flat artwork ----------
 # Source PNG byte for byte, plus a lossless WebP of it. Both are pixel-identical

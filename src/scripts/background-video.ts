@@ -22,7 +22,7 @@ function dealVariant(video: HTMLVideoElement): void {
   if (!Array.isArray(bases) || bases.length === 0) return;
 
   const base = bases[Math.floor(Math.random() * bases.length)] as string;
-  video.poster = `${base}-poster.jpg`;
+  video.poster = `${base}-poster.webp`;
   video.dataset.mp4 = `${base}.mp4`;
 }
 

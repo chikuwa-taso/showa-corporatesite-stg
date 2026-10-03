@@ -3,7 +3,7 @@ import { asset } from '../lib/asset';
 
 interface Props {
   /**
-   * Basename in /assets/video — resolves to a .mp4 plus a -poster.jpg.
+   * Basename in /assets/video — resolves to a .mp4 plus a -poster.webp.
    * Pass several and the island deals one at random on each page load.
    */
   name: string | readonly string[];
@@ -34,7 +34,7 @@ const single = bases.length === 1 ? bases[0] : null;
 <video
   class:list={['bg-video', className]}
   data-bg-video
-  poster={single ? `${single}-poster.jpg` : undefined}
+  poster={single ? `${single}-poster.webp` : undefined}
   data-mp4={single ? `${single}.mp4` : undefined}
   data-variants={single ? undefined : JSON.stringify(bases)}
   muted
@@ -47,7 +47,7 @@ const single = bases.length === 1 ? bases[0] : null;
 {
   !single && (
     <noscript>
-      <img class="bg-video" src={`${bases[0]}-poster.jpg`} alt="" aria-hidden="true" />
+      <img class="bg-video" src={`${bases[0]}-poster.webp`} alt="" aria-hidden="true" />
     </noscript>
   )
 }
