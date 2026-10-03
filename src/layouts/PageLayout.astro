@@ -52,8 +52,14 @@ const {
     padding: var(--page-pad-top) 0 var(--space-10);
   }
 
+  /* Content opens on the lockup's right edge rather than in the middle of the
+     column, so the fixed mark never sits over it on the way past. The whole
+     block moves across together — the pages below align to this edge instead of
+     centring, which keeps their internal spacing as it was. */
   .page__body {
     min-width: 0;
+    padding-left: calc(var(--logo-clear) - var(--rail-col));
+    padding-right: var(--space-6);
   }
 
   .page-footer {
@@ -71,6 +77,13 @@ const {
 
     .page :global(.rail) {
       display: none;
+    }
+
+    /* The header stacks here and the lockup stays inside its band, so there is
+       nothing to clear — back to the ordinary gutter. */
+    .page__body {
+      padding-left: var(--space-5);
+      padding-right: var(--space-5);
     }
 
     .page-footer {

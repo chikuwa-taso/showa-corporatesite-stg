@@ -15,10 +15,20 @@
 
 const DARK_CLASS = 'is-on-dark';
 
-/* Where black stops being the better choice. WCAG contrast against white is
-   1.05 / (L + 0.05) and against black is (L + 0.05) / 0.05; they cross at
-   L = sqrt(0.0525) - 0.05 = 0.179. Below it, white reads better. */
-const CROSSOVER = 0.179;
+/* Where the line turns white: the darkest backdrop on which white still clears
+   3:1 against it, i.e. 1.05 / (L + 0.05) = 3 → L = 0.30.
+ *
+ * Not the point where the two are equal — that is L = 0.179, and it left the
+ * mark black over the NETWORK band, which the client asked to be white. Between
+ * 0.179 and 0.30 black does measure the higher ratio, so this deliberately
+ * prefers white on a mid-toned colour rather than taking the larger number:
+ * black on saturated blue reads as a mistake where white reads as the mark.
+ *
+ * The band's own range decided the value. Sampled over the clip, the strip the
+ * logo covers runs 0.099 to 0.270 — so any threshold above 0.270 holds it white
+ * throughout, and 0.30 is the first that is also justifiable on its own terms.
+ * The lids and the lighter hero clip sit at 0.34 and above, so they stay black. */
+const CROSSOVER = 0.3;
 
 /* Sample grid over the hanging line. Enough points to catch a backdrop that
    changes across the width — a diagonal in the video, say — without making each

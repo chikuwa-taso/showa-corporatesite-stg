@@ -28,6 +28,11 @@
      compensating margin so it stays optically centred in the band. */
   --header-h: calc(var(--header-pad-top) + var(--logo-kanji-h));
   --ls-nav-mono: 0.14em; /* Adapter Mono is already wide, so below --ls-nav */
+  /* Where the lockup's right edge falls. The header is fixed and the Latin line
+     hangs below its band, so anything that scrolls past underneath would pass
+     under the mark; the standalone pages start their content on this line
+     instead. */
+  --logo-clear: calc(var(--header-gutter) + var(--logo-w));
 
   /* Band heights */
   --band-hero-h: 56vw;

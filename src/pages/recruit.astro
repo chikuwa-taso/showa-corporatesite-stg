@@ -43,11 +43,13 @@ import {
 </PageLayout>
 
 <style>
+  /* Left-aligned, not centred: PageLayout opens the column on the lockup's
+     right edge, and centring inside it would push every block back off that
+     edge on a wide screen. Horizontal padding lives on the layout now. */
   .recruit {
     display: grid;
     gap: var(--space-9);
-    justify-items: center;
-    padding: 0 var(--space-6);
+    justify-items: start;
   }
 
   .recruit__intro {
@@ -110,7 +112,6 @@ import {
   @media (max-width: 768px) {
     .recruit {
       gap: var(--space-7);
-      padding: 0 var(--space-5);
     }
 
     .recruit__spec {

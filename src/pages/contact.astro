@@ -26,14 +26,15 @@ import { CONTACT_INTRO, CONTACT_NOTES } from '../data/site';
 </PageLayout>
 
 <style>
+  /* Left-aligned, not centred: PageLayout opens the column on the lockup's
+     right edge, and centring inside it would push the first line back off that
+     edge on a wide screen. Horizontal padding lives on the layout now. */
   .contact {
     display: grid;
     gap: var(--space-10);
     justify-items: start;
     max-width: 1180px;
     width: 100%;
-    margin: 0 auto;
-    padding: 0 var(--space-6);
   }
 
   .contact__intro {
@@ -67,7 +68,6 @@ import { CONTACT_INTRO, CONTACT_NOTES } from '../data/site';
   @media (max-width: 768px) {
     .contact {
       gap: var(--space-9);
-      padding: 0 var(--space-5);
     }
   }
 </style>
