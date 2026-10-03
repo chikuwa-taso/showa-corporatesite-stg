@@ -52,13 +52,15 @@ const {
     padding: var(--page-pad-top) 0 var(--space-10);
   }
 
-  /* Content opens on the lockup's right edge rather than in the middle of the
-     column, so the fixed mark never sits over it on the way past. The whole
+  /* Content opens clear of the lockup rather than in the middle of the column,
+     so the fixed mark never sits over it on the way past — and one gutter past
+     its right edge, the same --header-gutter that separates the mark from the
+     screen's left edge, so the mark has equal air on both sides. The whole
      block moves across together — the pages below align to this edge instead of
      centring, which keeps their internal spacing as it was. */
   .page__body {
     min-width: 0;
-    padding-left: calc(var(--logo-clear) - var(--rail-col));
+    padding-left: calc(var(--logo-clear) + var(--header-gutter) - var(--rail-col));
     padding-right: var(--space-6);
   }
 

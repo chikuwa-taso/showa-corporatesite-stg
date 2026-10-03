@@ -83,12 +83,13 @@ NETWORK は左に地図、中央に縦の区切り線、右に拠点一覧。位
 
 ### RECRUIT / CONTACT の左端
 
-両ページの本文は**ロゴの右端（`--logo-clear` = `--header-gutter + --logo-w`）から
-始める**。ヘッダーは `position: fixed` で英字が帯の下にはみ出しているので、
+両ページの本文は**ロゴの右端（`--logo-clear` = `--header-gutter + --logo-w`）から、
+さらに `--header-gutter` 1つ分あけて始める**。画面左端からロゴ左端までの余白と同じ量を
+ロゴの右側にも取ることで、ロゴの左右の空きを揃えている。ヘッダーは `position: fixed` で英字が帯の下にはみ出しているので、
 中央寄せのままだとスクロール中に本文がマークの下をくぐってしまう。
 
 実装は `PageLayout` の `.page__body` に
-`padding-left: calc(var(--logo-clear) - var(--rail-col))` の1箇所だけ。
+`padding-left: calc(var(--logo-clear) + var(--header-gutter) - var(--rail-col))` の1箇所だけ。
 各ページ側は**中央寄せをやめて左揃え**にしてある（`.contact` の `margin: 0 auto`、
 `.recruit` の `justify-items: center` を撤去）。列の中で中央寄せしたままだと、
 広い画面でこの左端から再び離れてしまうため。左右のパディングも
