@@ -11,21 +11,34 @@ const { href, class: className } = Astro.props;
 <a class:list={['link-button', className]} href={href}><slot /></a>
 
 <style>
+  /* The rule runs exactly as wide as the words: no side padding, and it is drawn
+     as a background rather than a border so it can stop short of the trailing
+     tracking — letter-spacing is added after every character, the last one
+     included, so a border would overhang the final glyph by one step of it.
+
+     Two hooks for callers whose type differs:
+       --link-button-track  how much tracking trails the last glyph (0 when the
+                            caller cancels it itself, as the SERVICE popup does)
+       --link-button-rule   the rule's thickness */
   .link-button {
     display: inline-block;
-    padding: 0 var(--space-8) var(--space-4);
+    padding: 0 0 var(--space-4);
     font-family: var(--font-jp);
-    font-size: var(--fs-h3);
+    /* 80% of --fs-h3 — the client's call, applied to every one of these
+       buttons so they stay one family. */
+    font-size: calc(var(--fs-h3) * 0.8);
     font-weight: var(--fw-medium);
     line-height: 1.4;
     letter-spacing: var(--ls-heading);
     color: var(--text-body);
-    border-bottom: var(--radius-hair) solid var(--border-hairline);
+    background: linear-gradient(var(--border-hairline), var(--border-hairline)) 0 100% /
+      calc(100% - var(--link-button-track, var(--ls-heading)))
+      var(--link-button-rule, var(--radius-hair)) no-repeat;
   }
 
   @media (max-width: 768px) {
     .link-button {
-      padding: 0 var(--space-6) var(--space-3);
+      padding: 0 0 var(--space-3);
     }
   }
 </style>

@@ -34,17 +34,11 @@ const CTAS = [
      will not reach it — the same reason NETWORK's rail needs :global. */
   .contact :global(.contact__cta) {
     font-size: var(--footer-cta-size);
-    /* No side padding: the rule runs exactly as wide as the words. The bottom
-       padding is what sets the gap down to the rule; keeping it proportional to
-       the type stops the band growing back. */
+    /* The bottom padding sets the gap down to the rule; keeping it proportional
+       to the type stops the band growing back. (LinkButton keeps the rule to
+       the width of the words.) */
     padding: 0 0 0.7em;
     white-space: nowrap;
-    /* Tracking puts its space after every character, the last one included, so
-       a border would overhang the final glyph by one step of it. The rule is
-       drawn as a background instead and stops that step short. */
-    border-bottom: 0;
-    background: linear-gradient(var(--border-hairline), var(--border-hairline)) 0 100% /
-      calc(100% - var(--ls-heading)) var(--radius-hair) no-repeat;
   }
 
   @media (max-width: 768px) {

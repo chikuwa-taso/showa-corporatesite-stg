@@ -90,7 +90,11 @@
   --popup-gap-photo-copy: 3.38vw; /* ink gap 361px − 101, applied on the photo */
   /* 設備一覧: ink 126px → em 146px; char pitch 186px → 0.27em. The rule is
      19px → 0.13em thick, its top 90px below the ink (padding 0.55em). */
-  --popup-facility-size: clamp(15px, 1.9vw, 37px);
+  /* 設備一覧 and the × both run at 80% of the comp's size — the client's call,
+     matching the footer and page buttons. Comp: clamp(15px, 1.9vw, 37px), and
+     a 156px (0.71em of the heading) close glyph. */
+  --popup-facility-size: clamp(12px, 1.52vw, 29.6px);
+  --popup-close-w: calc(var(--popup-title-size) * 0.71 * 0.8);
   --popup-facility-track: 0.27em;
   /* The rule's bottom edge runs 126px below the photo's bottom edge. */
   --popup-actions-drop: 1.64vw;
@@ -190,7 +194,7 @@
     --popup-photo-w: calc(100vw - 2 * var(--space-5));
     --popup-title-size: clamp(26px, 7vw, 38px);
     --popup-body-size: clamp(14px, 3.7vw, 18px);
-    --popup-facility-size: clamp(16px, 4.4vw, 22px);
+    --popup-facility-size: clamp(12.8px, 3.52vw, 17.6px); /* 80% of 16 / 4.4vw / 22 */
     --popup-title-rise: 0px;
     --popup-actions-drop: 0px;
   }

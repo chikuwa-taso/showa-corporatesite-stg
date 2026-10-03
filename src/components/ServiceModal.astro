@@ -197,24 +197,28 @@ const titleId = `service-modal-${service.slug}-title`;
   }
 
   /* Offsets in em of the heading, straight from the comp (values ÷ 221px em):
-     × centres on the heading's first column (line-height/2 = 0.94em in, half a
-     glyph back = 0.59em to its right edge); the flex gap of 1.33em then puts
-     the rule's right edge 372px left of the × centre; the whole unit's bottom
-     sits --popup-actions-drop below the photo's bottom edge. */
+     the × centres on the heading's first column, 0.94em in (line-height / 2),
+     and the rule's right edge sits 372px = 1.683em left of that centre. Both
+     are fixed to the ×'s CENTRE, so they hold whatever size the glyph is: its
+     right edge is 0.94em less half its width, and the flex gap is 1.683em less
+     half its width. The whole unit's bottom sits --popup-actions-drop below the
+     photo's bottom edge. */
   .modal__actions-inner {
     position: absolute;
-    right: calc(0.59 * var(--popup-title-size));
+    right: calc(0.94 * var(--popup-title-size) - var(--popup-close-w) / 2);
     bottom: calc(-1 * var(--popup-actions-drop));
     display: flex;
     align-items: flex-end;
-    column-gap: calc(1.33 * var(--popup-title-size));
+    column-gap: calc(1.683 * var(--popup-title-size) - var(--popup-close-w) / 2);
   }
 
   /* LinkButton's root carries its own component id, which Astro's scoping will
      not match from here — the same reason NETWORK's rail needs :global. */
   .modal__actions-inner :global(.modal__facility) {
     padding: 0 0 0.55em; /* comp: rule top 90px under the ink */
-    border-bottom-width: 0.13em; /* comp: 19px rule */
+    --link-button-rule: 0.13em; /* comp: 19px rule */
+    /* The label below already cancels its own trailing tracking. */
+    --link-button-track: 0px;
     font-size: var(--popup-facility-size);
     font-weight: var(--fw-medium);
     line-height: 1;
@@ -227,7 +231,7 @@ const titleId = `service-modal-${service.slug}-title`;
   }
 
   .modal__close {
-    width: calc(var(--popup-title-size) * 0.71); /* comp: 156px glyph */
+    width: var(--popup-close-w);
     /* Hit area beyond the glyph, cancelled out of layout so the glyph's own
        edges are what the offsets above position. */
     padding: var(--space-2);
