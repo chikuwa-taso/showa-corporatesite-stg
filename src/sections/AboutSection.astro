@@ -29,9 +29,15 @@ import { asset } from '../lib/asset';
 <style>
   /* The statement runs full bleed, and the rails sit over its margins rather
      than in columns beside it — the same arrangement WORKS and NETWORK use. */
+  /* The band is 70% of its natural height (the client's call). The type stays
+     the size it was — its share of the window is fixed above — so the 30% comes
+     out of whitespace only: the section padding and the artwork's own blank
+     margins above and below the ink each scale by the same factor, and every
+     gap keeps its proportion to the others. */
   .about {
+    --about-scale: 0.7;
     position: relative;
-    padding: var(--section-pad-y) 0;
+    padding: calc(var(--section-pad-y) * var(--about-scale)) 0;
   }
 
   .about__body {
@@ -57,6 +63,14 @@ import { asset } from '../lib/asset';
   .about__statement {
     width: 100%;
     height: auto;
+    /* The board is 7681x3362, but the ink only spans rows 1004..2571 — the rest
+       is blank. The box keeps the full width (so the type keeps its size) and
+       takes the same share of the board's height as the band does of its own;
+       cover then trims the blank margins equally top and bottom. At 0.7 that
+       is 504px off each end, well inside the 1004 / 791 margins. */
+    aspect-ratio: 7681 / calc(3362 * var(--about-scale));
+    object-fit: cover;
+    object-position: 50% 50%;
   }
 
   /* Scoped styles do not reach a child component's root element, so the rails
