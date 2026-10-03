@@ -117,7 +117,8 @@
   /* Footer CTAs. The band is the header's mirror: the same white above and below
      its content, and the same side gutters. That leaves little room, so the
      buttons run a step down from --fs-h3 rather than at their page size. */
-  --footer-cta-size: clamp(15px, 1.45vw, 20px);
+  /* 80% of the earlier clamp(15px, 1.45vw, 20px) — the client's call. */
+  --footer-cta-size: clamp(12px, 1.16vw, 16px);
   --footer-cta-gap: clamp(var(--space-6), 6vw, var(--space-9));
 
   /* 設備一覧. The comp is a black board, 7681px wide, and sets its headings in a
