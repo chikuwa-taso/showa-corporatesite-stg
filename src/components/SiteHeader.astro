@@ -59,8 +59,9 @@ const { activePage } = Astro.props;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-5);
-    /* --header-h is computed from these plus the logo, so they must stay tokens. */
-    padding: var(--header-pad-top) var(--header-gutter) var(--header-pad-bottom);
+    /* No padding under the logo: the band stops on the kanji's bottom edge, and
+       --header-h is computed the same way, so the two must stay in step. */
+    padding: var(--header-pad-top) var(--header-gutter) 0;
   }
 
   /* Keeps the fixed header from covering the top of the page. */
@@ -68,14 +69,21 @@ const { activePage } = Astro.props;
     height: var(--header-h);
   }
 
+  /* The box is only as tall as the kanji, so that is all the band accounts for.
+     The image itself keeps its full height and spills out of the bottom —
+     SHOWA ART PRINTING lands on the page below the white, with nothing painted
+     behind it. Nothing clips it: the bar is `position: fixed`, so its containing
+     block is the viewport rather than any ancestor that might scroll. */
   .header__logo {
     flex: none;
     width: var(--logo-w);
+    height: var(--logo-kanji-h);
     line-height: 0;
     display: block;
   }
 
   .header__logo img {
+    display: block;
     width: 100%;
     height: auto;
   }
@@ -88,6 +96,11 @@ const { activePage } = Astro.props;
     align-items: center;
     justify-content: flex-end;
     gap: var(--header-nav-gap);
+    /* The band has padding on top but none underneath, so centring in the
+       content box would leave the nav sitting low. A bottom margin of the top
+       padding lifts a centred item by half of it — exactly the offset — and
+       puts the nav back on the band's own centre line. */
+    margin-bottom: var(--header-pad-top);
   }
 
   .nav__link {
@@ -124,8 +137,16 @@ const { activePage } = Astro.props;
       padding: var(--header-pad-top) 0 var(--header-pad-bottom);
     }
 
+    /* --logo-kanji-frac is 1 here, so the box is the whole lockup again and
+       nothing hangs below. */
     .header__logo {
       margin-left: var(--header-gutter);
+    }
+
+    .nav {
+      /* The band has its bottom padding back, so the centring compensation
+         above is not wanted. */
+      margin-bottom: 0;
     }
 
     /* Seven items never fit a phone row. They stay one row that scrolls, since

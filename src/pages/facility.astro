@@ -100,6 +100,17 @@ import {
   </footer>
 </BaseLayout>
 
+{/* The one page whose ground is black. Everywhere else the Latin line hangs out
+    of the white band and reads against the page; here it would be black on
+    black and simply disappear, so this page keeps the whole lockup inside the
+    band instead. The cost is that its header is a little taller than the rest —
+    delete this block to let /facility match the others and lose the wordmark. */}
+<style is:global>
+  :root {
+    --logo-kanji-frac: 1;
+  }
+</style>
+
 <style>
   .facility {
     position: relative;

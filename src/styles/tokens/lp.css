@@ -14,9 +14,19 @@
   --logo-aspect: 1.7476; /* the lockup is 1239x709 */
   --header-pad-top: 16px;
   --header-pad-bottom: 14px;
-  --header-h: calc(
-    var(--header-pad-top) + var(--header-pad-bottom) + var(--logo-w) / var(--logo-aspect)
-  );
+  /* How much of the lockup's height the kanji block occupies. The white band
+     ends on the kanji's baseline edge and SHOWA ART PRINTING hangs below it,
+     over whatever the page is showing — so only this share of the logo counts
+     towards the band. Measured on lockup.png (456x261, alpha composited over
+     white): kanji ink spans rows 9..192, the Latin 242..260, so the boundary
+     sits at row 193 → 193/261. Set to 1 on mobile, where the nav sits directly
+     under the logo and there is nothing for the Latin to hang over. */
+  --logo-kanji-frac: 0.7395;
+  --logo-kanji-h: calc(var(--logo-w) / var(--logo-aspect) * var(--logo-kanji-frac));
+  /* No bottom padding in the sum: the kanji's bottom edge IS the band's bottom
+     edge. The header zeroes its own padding-bottom to match, and the nav gets a
+     compensating margin so it stays optically centred in the band. */
+  --header-h: calc(var(--header-pad-top) + var(--logo-kanji-h));
   --ls-nav-mono: 0.14em; /* Adapter Mono is already wide, so below --ls-nav */
 
   /* Band heights */
@@ -154,6 +164,10 @@
        scroll-padding and scroll-spy line all need the taller measure.
        12 pad + 64 logo + 12 gap + 20 nav row + 12 pad. */
     --header-h: 120px;
+    /* The whole lockup stays inside the band here. The nav sits directly under
+       the logo rather than beside it, so a hanging Latin line would land on the
+       nav links instead of on the page. */
+    --logo-kanji-frac: 1;
     /* Both rows get the same 12px, and the footer band mirrors it. */
     --header-pad-top: var(--space-3);
     --header-pad-bottom: var(--space-3);
