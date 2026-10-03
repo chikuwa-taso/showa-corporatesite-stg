@@ -211,6 +211,14 @@ export const WORK_TILES: WorkTile[] = [
   },
 ];
 
+/**
+ * The TOP hero's clips. One is dealt per page load, in the browser — the site is
+ * a static build, so picking at render time would hand every visitor the same
+ * one. Each basename needs a matching `.mp4` and `-poster.jpg` under
+ * /assets/video; add or drop entries here and nothing else has to change.
+ */
+export const TOP_VIDEOS = ['top-a', 'top-b', 'top-c'] as const;
+
 /** The handoff's tweak flags, surfaced here so they can be flipped in one place. */
 export const CONFIG = {
   /** false swaps every band video for its flat gradient. */

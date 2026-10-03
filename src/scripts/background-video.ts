@@ -1,5 +1,31 @@
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+/**
+ * Deal one of the clip's variants. The site is a static build, so the draw has
+ * to happen here rather than at render time — otherwise every visitor gets
+ * whichever one the build picked.
+ *
+ * Runs before the IntersectionObserver rather than inside it, so the poster is
+ * in place as early as possible: the hero is onscreen from the start, and under
+ * prefers-reduced-motion the poster is the whole of what anybody sees.
+ */
+function dealVariant(video: HTMLVideoElement): void {
+  const raw = video.dataset.variants;
+  if (!raw) return;
+
+  let bases: unknown;
+  try {
+    bases = JSON.parse(raw);
+  } catch {
+    return;
+  }
+  if (!Array.isArray(bases) || bases.length === 0) return;
+
+  const base = bases[Math.floor(Math.random() * bases.length)] as string;
+  video.poster = `${base}-poster.jpg`;
+  video.dataset.mp4 = `${base}.mp4`;
+}
+
 function attachSources(video: HTMLVideoElement): void {
   if (video.dataset.sourced) return;
   video.dataset.sourced = 'true';
@@ -33,6 +59,8 @@ function play(video: HTMLVideoElement): void {
 export function initBackgroundVideo(): void {
   const videos = [...document.querySelectorAll<HTMLVideoElement>('[data-bg-video]')];
   if (videos.length === 0) return;
+
+  for (const video of videos) dealVariant(video);
 
   // Offscreen videos stay paused, and unseen ones never download at all.
   const observer = new IntersectionObserver(

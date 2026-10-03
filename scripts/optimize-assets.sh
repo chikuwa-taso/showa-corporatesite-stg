@@ -20,6 +20,7 @@ set -euo pipefail
 
 ROOT="${1:-/Users/leosmacbook/Downloads}"
 TOP="$ROOT/ 昭和美術印刷LP素材_まとめ/ 昭和美術印刷LP素材_TOP"
+TOP_LOOP="$ROOT"                    # 昭和LPデザインTOP動画*.mp4 live loose in the drop
 ICONS_SRC="$ROOT/ 昭和美術印刷LP素材_まとめ/ 昭和美術印刷LP素材_印刷アイコン"
 STATEMENT_SRC="$ROOT/ 昭和美術印刷LP素材_まとめ/ 昭和美術印刷LP素材_ステートメント"
 WORKS_SRC="$ROOT/ 昭和美術印刷LP＿ワークス＿JPG"
@@ -58,11 +59,22 @@ copy_video () {
   rm -f "$OUT/video/$name.webm"
 }
 
-copy_video "$TOP/動画素材A.mp4" material-a  # TOP hero, full-bleed
+# TOP hero. Three clips, one picked at random on each page load — so all three
+# ship, but a visitor only ever downloads the one they were dealt.
+copy_video "$TOP_LOOP/昭和LPデザインTOP動画A.mp4" top-a
+copy_video "$TOP_LOOP/昭和LPデザインTOP動画B.mp4" top-b
+copy_video "$TOP_LOOP/昭和LPデザインTOP動画C.mp4" top-c
+
 copy_video "$TOP/動画素材B.mp4" material-b  # NETWORK band
-# 動画素材C.mp4 is in the drop but placed nowhere: the WORKS strip that used to
-# carry a video tile now runs the client's own photography. Add a copy_video
-# line here if a video tile comes back.
+
+# Superseded, and deleted so they cannot quietly keep shipping:
+#   動画素材A.mp4 — the old fixed TOP hero, replaced by the three above.
+#   動画素材C.mp4 — was never placed; the WORKS strip it would have fed now runs
+#                   the client's photography.
+# NOTE 昭和LPデザインTOP動画B.mp4 is frame-for-frame the same footage as
+# 動画素材B.mp4, i.e. TOP's variant B is the clip NETWORK already plays. Shipped
+# as supplied; flagged in the README as something to confirm.
+rm -f "$OUT/video/material-a.mp4" "$OUT/video/material-a-poster.jpg"
 
 # ---------- flat artwork ----------
 # Source PNG byte for byte, plus a lossless WebP of it. Both are pixel-identical

@@ -1,6 +1,6 @@
 ---
 import BackgroundVideo from '../components/BackgroundVideo.astro';
-import { CONFIG } from '../data/site';
+import { CONFIG, TOP_VIDEOS } from '../data/site';
 
 interface Props {
   useVideo?: boolean;
@@ -9,9 +9,11 @@ interface Props {
 const { useVideo = CONFIG.useVideo } = Astro.props;
 ---
 
-{/* Brand impression only — no type, no scrim, no overlay. */}
+{/* Brand impression only — no type, no scrim, no overlay. One of the three clips
+    is dealt per page load, so the first thing a returning visitor sees is not
+    always the same. Only the one dealt is ever downloaded. */}
 <section id="top" class="top">
-  {useVideo && <BackgroundVideo name="material-a" />}
+  {useVideo && <BackgroundVideo name={TOP_VIDEOS} />}
 </section>
 
 <style>

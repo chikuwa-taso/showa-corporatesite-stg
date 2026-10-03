@@ -2,13 +2,18 @@
 import { asset } from '../lib/asset';
 
 interface Props {
-  /** Basename in /assets/video — resolves to a .mp4 plus a -poster.jpg. */
-  name: string;
+  /**
+   * Basename in /assets/video — resolves to a .mp4 plus a -poster.jpg.
+   * Pass several and the island deals one at random on each page load.
+   */
+  name: string | readonly string[];
   class?: string;
 }
 
 const { name, class: className } = Astro.props;
-const base = asset(`/assets/video/${name}`);
+const names = typeof name === 'string' ? [name] : name;
+const bases = names.map((n) => asset(`/assets/video/${n}`));
+const single = bases.length === 1 ? bases[0] : null;
 ---
 
 {/* Decorative, so aria-hidden and no audio track. Playback is driven entirely by
@@ -17,22 +22,35 @@ const base = asset(`/assets/video/${name}`);
     and never starts under prefers-reduced-motion. Without JS the poster frame
     stands in over the band's gradient.
 
-    Only an mp4 now. The file is the client's master with its video stream copied
+    Only an mp4. The file is the client's master with its video stream copied
     across untouched, and the VP9 alternate that used to sit in front of it was a
     second encode of already-encoded footage — the browser preferred it, so the
-    softer copy was the one everybody saw. */}
+    softer copy was the one everybody saw.
+
+    With several clips there is no `poster` in the markup: which one is right is
+    not known until the island draws, and a static poster would be shown and then
+    swapped. The band's gradient covers that beat, and the <noscript> below keeps
+    a still for anyone running without JS. */}
 <video
   class:list={['bg-video', className]}
   data-bg-video
-  poster={`${base}-poster.jpg`}
-  data-mp4={`${base}.mp4`}
+  poster={single ? `${single}-poster.jpg` : undefined}
+  data-mp4={single ? `${single}.mp4` : undefined}
+  data-variants={single ? undefined : JSON.stringify(bases)}
   muted
   loop
   playsinline
   preload="none"
   aria-hidden="true"
-  tabindex="-1"
-></video>
+  tabindex="-1"></video>
+
+{
+  !single && (
+    <noscript>
+      <img class="bg-video" src={`${bases[0]}-poster.jpg`} alt="" aria-hidden="true" />
+    </noscript>
+  )
+}
 
 <style>
   .bg-video {
