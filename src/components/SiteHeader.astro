@@ -15,10 +15,18 @@ const { activePage } = Astro.props;
 
 <div class="header-bar">
   <header class="header">
+    {/* The lockup is drawn twice from one file. The first copy is clipped to the
+        kanji — the part that sits on the white band — and the second to the
+        Latin line that hangs below it, so only that line can be recoloured when
+        the page behind it is dark. */}
     <a class="header__logo" href={route('/#top')}>
-      <picture>
+      <picture class="header__logo-kanji">
         <source srcset={asset('/assets/brand/lockup.webp')} type="image/webp" />
-        <img src={asset('/assets/brand/lockup.png')} alt={BRAND_ALT} width="1239" height="709" />
+        <img src={asset('/assets/brand/lockup.png')} alt={BRAND_ALT} width="456" height="261" />
+      </picture>
+      <picture class="header__logo-tail" data-logo-tail aria-hidden="true">
+        <source srcset={asset('/assets/brand/lockup.webp')} type="image/webp" />
+        <img src={asset('/assets/brand/lockup.png')} alt="" width="456" height="261" />
       </picture>
     </a>
 
@@ -75,6 +83,7 @@ const { activePage } = Astro.props;
      behind it. Nothing clips it: the bar is `position: fixed`, so its containing
      block is the viewport rather than any ancestor that might scroll. */
   .header__logo {
+    position: relative;
     flex: none;
     width: var(--logo-w);
     height: var(--logo-kanji-h);
@@ -86,6 +95,33 @@ const { activePage } = Astro.props;
     display: block;
     width: 100%;
     height: auto;
+  }
+
+  /* Both copies start at the anchor's top edge and run the full height of the
+     artwork; the clips decide which band of it each one actually paints. */
+  .header__logo-kanji,
+  .header__logo-tail {
+    display: block;
+    width: 100%;
+  }
+
+  .header__logo-kanji {
+    clip-path: inset(0 0 calc((1 - var(--logo-kanji-frac)) * 100%) 0);
+  }
+
+  .header__logo-tail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    clip-path: inset(calc(var(--logo-kanji-frac) * 100%) 0 0 0);
+  }
+
+  /* Set by logo-contrast.ts when the page behind the hanging line is dark
+     enough that black would be the harder of the two to read. The artwork is
+     black on transparency, so inverting it yields white and leaves the
+     transparency alone. */
+  .header__logo-tail.is-on-dark {
+    filter: invert(1);
   }
 
   .nav {
@@ -165,3 +201,9 @@ const { activePage } = Astro.props;
     }
   }
 </style>
+
+<script>
+  import { initLogoContrast } from "../scripts/logo-contrast";
+
+  initLogoContrast();
+</script>

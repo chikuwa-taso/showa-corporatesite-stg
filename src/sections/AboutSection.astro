@@ -5,7 +5,7 @@ import { asset } from '../lib/asset';
 ---
 
 <section id="about" class="about">
-  <SectionRail label="ABOUT" side="left" />
+  <SectionRail label="ABOUT" side="left" class="about__rail about__rail--left" />
 
   <div class="about__body">
     {/* An image at the client's instruction — never re-typeset. */}
@@ -15,47 +15,75 @@ import { asset } from '../lib/asset';
         class="about__statement"
         src={asset('/assets/about/about-statement.png')}
         alt={ABOUT_STATEMENT_ALT}
-        width="4551"
-        height="1694"
+        width="7681"
+        height="3362"
         loading="lazy"
         decoding="async"
       />
     </picture>
   </div>
 
-  <SectionRail label="会社概要" side="right" />
+  <SectionRail label="会社概要" side="right" class="about__rail about__rail--right" />
 </section>
 
 <style>
+  /* The statement runs full bleed, and the rails sit over its margins rather
+     than in columns beside it — the same arrangement WORKS and NETWORK use. */
   .about {
-    display: grid;
-    grid-template-columns: var(--rail-col) 1fr var(--rail-col);
+    position: relative;
     padding: var(--section-pad-y) 0;
   }
 
   .about__body {
-    display: flex;
-    justify-content: center;
-    padding: 0 var(--space-6);
+    display: block;
   }
 
+  /* The <picture> has to carry a definite width of its own. As a flex item it
+     was sized from its contents, and the statement is lazy — so before it
+     loaded the wrapper measured zero, the image's `width: 100%` resolved
+     against zero, and it never got the chance to grow. */
+  .about__body > picture {
+    display: block;
+    width: 100%;
+  }
+
+  /* Full page width, with no cap. The artwork is drawn on the same 7681px board
+     as every other comp, which means the board IS the page: its own margins put
+     the type at 57.61% of the width (ink spans x 1608..6032 of 7681), and the
+     client's mockup sets it at 57.57% of the window. So the two agree exactly
+     as long as the board spans the window, and the statement then holds that
+     share of the screen at every size — which is what was asked for. The old
+     `max-width: 1000px` broke the share the moment the window passed 1000px. */
   .about__statement {
     width: 100%;
-    max-width: 1000px;
     height: auto;
   }
 
+  /* Scoped styles do not reach a child component's root element, so the rails
+     need :global — the same reason WORKS and NETWORK do. Each is a band one
+     rail-column wide pinned to its edge, which keeps the labels exactly where
+     the grid used to put them. */
+  .about :global(.about__rail) {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: var(--rail-col);
+    padding: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .about :global(.about__rail--left) {
+    left: 0;
+  }
+
+  .about :global(.about__rail--right) {
+    right: 0;
+  }
+
   @media (max-width: 768px) {
-    .about {
-      grid-template-columns: 1fr;
-    }
-
-    .about :global(.rail) {
+    .about :global(.about__rail) {
       display: none;
-    }
-
-    .about__body {
-      padding: 0 var(--space-5);
     }
   }
 </style>
