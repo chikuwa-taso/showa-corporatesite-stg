@@ -3,95 +3,103 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import LinkButton from '../components/LinkButton.astro';
 import SectionRail from '../components/SectionRail.astro';
-import { route } from '../lib/asset';
-import DeptHeading from '../components/DeptHeading.astro';
-import SpecList from '../components/SpecList.astro';
-import MachineShot from '../components/MachineShot.astro';
-import {
-  DEPT_OFFSET,
-  SPECS_OFFSET,
-  MACHINES_OFFSET,
-  MACHINE_CTP,
-  DEPT_PREPRESS,
-  DEPT_ONDEMAND,
-  SPECS_PREPRESS,
-  DEPT_SHEETFED,
-  DEPT_BINDING,
-  SPECS_SHEETFED,
-  SPECS_SHEETFED_TAIL,
-  MACHINES_SHEETFED,
-  MACHINES_FINISHING,
-  FINISHING_CHIP,
-  GX40RP_PARTNER,
-} from '../data/facility';
+import { asset, route } from '../lib/asset';
+import { DEPARTMENTS } from '../data/facility';
+
+/** Frames are measured on the 7681px board; 76.81 board px is 1vw. */
+const BOARD_PER_VW = 76.81;
+const FRAME_H = 1004;
 ---
 
 <BaseLayout
   title="設備一覧｜昭和美術印刷株式会社"
-  description="昭和美術印刷の保有設備。オフリン輪転機、枚葉オフセット、CTP・プリプレス、オンデマンド、製本・加工の各設備を掲載しています。"
+  description="昭和美術印刷の保有設備。オフセット輪転印刷、枚葉印刷、オンデマンド印刷、プリプレス、製本・折加工・PP加工・型抜き加工の各部門の設備を掲載しています。"
   noindex
 >
   <SiteHeader activePage="facility" />
 
-  {/* The one black page on the site — the comp sets the whole spread on it, so
-      the ground and the ink swap rather than the sections carrying their own. */}
   <main class="facility">
-    <SectionRail label="EQUIPMENT" side="left" tone="inverse" class="facility__rail facility__rail--left" />
-    <SectionRail label="設備一覧" side="right" tone="inverse" class="facility__rail facility__rail--right" />
+    {/* The side column — both rails and the pictogram index — stays put while
+        the page scrolls. It shares one grid cell with the content, so it takes
+        no room of its own; and because it keeps its real height, sticky lets go
+        of it as the black ground ends rather than letting it ride over the
+        footer. */}
+    <div class="fac-side">
+      <SectionRail label="EQUIPMENT" side="left" tone="inverse" class="fac-side__rail fac-side__rail--left" />
 
-    <div class="facility__inner">
-      {/* ---- オフリン印刷部門 ---- */}
-      <section class="fac-row fac-row--split">
-        <DeptHeading dept={DEPT_OFFSET} />
-        <SpecList items={SPECS_OFFSET} />
-      </section>
+      <nav class="fac-nav" aria-label="部門">
+        {
+          DEPARTMENTS.map((d, i) => (
+            <a
+              class:list={['fac-nav__item', i === 0 && 'is-active']}
+              href={`#fac-${d.id}`}
+              data-fac-nav={d.id}
+              aria-current={i === 0 ? 'true' : undefined}
+            >
+              <picture>
+                <source srcset={asset(`/assets/facility/icon-${d.icon}.webp`)} type="image/webp" />
+                <img src={asset(`/assets/facility/icon-${d.icon}.png`)} alt={d.title} />
+              </picture>
+            </a>
+          ))
+        }
+      </nav>
 
-      <section class="fac-row fac-row--presses">
-        <div class="fac-press fac-press--b2">
-          <MachineShot machine={MACHINES_OFFSET[1]!} />
-        </div>
-        <div class="fac-press fac-press--a1">
-          <MachineShot machine={MACHINES_OFFSET[0]!} />
-        </div>
-      </section>
+      <SectionRail label="設備一覧" side="right" tone="inverse" class="fac-side__rail fac-side__rail--right" />
+    </div>
 
-      {/* ---- プリプレス / オンデマンド / CTP ---- */}
-      <section class="fac-row fac-row--prepress">
-        <div class="fac-depts">
-          <DeptHeading dept={DEPT_PREPRESS} />
-          <DeptHeading dept={DEPT_ONDEMAND} />
-        </div>
-        <div class="fac-ctp">
-          <MachineShot machine={MACHINE_CTP} captionSide="below" />
-          <SpecList items={SPECS_PREPRESS} />
-        </div>
-      </section>
+    <div class="facility__content">
+      {
+        DEPARTMENTS.map((d) => (
+          <section class="dept" id={`fac-${d.id}`} data-fac-section={d.id} aria-labelledby={`fac-${d.id}-title`}>
+            <header class="dept__head">
+              <picture>
+                <source srcset={asset(`/assets/facility/icon-${d.icon}.webp`)} type="image/webp" />
+                <img class="dept__icon" src={asset(`/assets/facility/icon-${d.icon}.png`)} alt="" />
+              </picture>
+              <p class="dept__tag">{d.tagline}</p>
+              <h2 class="dept__title" id={`fac-${d.id}-title`}>{d.title}</h2>
+            </header>
 
-      {/* ---- 枚葉印刷 / 製本・加工 ---- */}
-      <section class="fac-row fac-row--split fac-row--reverse">
-        <SpecList items={SPECS_SHEETFED} tail={SPECS_SHEETFED_TAIL} />
-        <div class="fac-depts">
-          <DeptHeading dept={DEPT_SHEETFED} />
-          <DeptHeading dept={DEPT_BINDING} />
-        </div>
-      </section>
+            <div class:list={['dept__tree', !d.body && 'dept__tree--bare']}>
+              {d.body && (
+                <div class="dept__intro">
+                  {d.body.map((line) => (
+                    <p>{line}</p>
+                  ))}
+                </div>
+              )}
 
-      <section class="fac-row fac-stack">
-        <MachineShot machine={MACHINES_SHEETFED[0]!} partner={GX40RP_PARTNER} />
-        <MachineShot machine={MACHINES_SHEETFED[1]!} captionSide="below" />
-        <div class="fac-pair">
-          <MachineShot machine={MACHINES_SHEETFED[2]!} captionSide="below" />
-          <MachineShot machine={MACHINES_SHEETFED[3]!} captionSide="below" />
-        </div>
-      </section>
-
-      {/* ---- 紙折機ほかの仕上げ設備 ---- */}
-      <section class="fac-row fac-finishing">
-        <span class="fac-finishing__chip">{FINISHING_CHIP}</span>
-        <div class="fac-finishing__row">
-          {MACHINES_FINISHING.map((m) => <MachineShot machine={m} captionSide="below" />)}
-        </div>
-      </section>
+              <ul class="dept__machines">
+                {d.machines.map((m) => (
+                  <li class:list={['machine', m.photo && 'machine--photo']}>
+                    <p class="machine__head">
+                      <span class="machine__name">{m.name}</span>
+                      {m.spec && <span class="machine__spec">{m.spec}</span>}
+                    </p>
+                    {m.notes?.map((n) => (
+                      <p class="machine__note">{n}</p>
+                    ))}
+                    {m.photo && (
+                      <div
+                        class="machine__frame"
+                        style={`--frame-w:${(m.photo.boardW / BOARD_PER_VW).toFixed(2)}vw;--frame-ratio:${m.photo.boardW} / ${FRAME_H}`}
+                      >
+                        <img
+                          src={asset(`/assets/facility/${m.photo.src}.webp`)}
+                          alt={m.photo.alt}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        ))
+      }
     </div>
   </main>
 
@@ -100,17 +108,23 @@ import {
   </footer>
 </BaseLayout>
 
-{/* This page's black ground used to swallow the Latin line hanging below the
-    header, so it kept the whole lockup inside the white band. logo-contrast.ts
-    now reads the backdrop and turns that line white here, so the page takes the
-    same header as everywhere else. */}
+<script>
+  import { initFacilityNav } from '../scripts/facility-nav';
+
+  initFacilityNav();
+</script>
 
 <style>
   .facility {
     position: relative;
+    display: grid;
     background: var(--fac-ground);
     color: var(--fac-ink);
-    padding: var(--section-pad-y) 0;
+  }
+
+  .fac-side,
+  .facility__content {
+    grid-area: 1 / 1;
   }
 
   .page-footer {
@@ -120,161 +134,316 @@ import {
     background: var(--surface-page);
   }
 
-  /* Same 5% inset the WORKS and NETWORK rails use. */
-  .facility :global(.facility__rail) {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 10%;
-    padding: 0;
-    z-index: 1;
+  /* ---------------------------------------------------------------- side */
+
+  .fac-side {
+    --side-h: calc(var(--fac-side-centre) + 2 * var(--fac-nav-pitch) + var(--fac-nav-ring));
+    position: sticky;
+    top: var(--header-h);
+    z-index: 2;
+    align-self: start;
+    height: var(--side-h);
+    pointer-events: none;
   }
 
-  .facility :global(.facility__rail--left) {
+  /* Each rail is a band twice the inset wide pinned to its edge, so its label
+     centres one inset in — the arrangement WORKS and NETWORK use — and on the
+     same line as the middle pictogram. SectionRail's root is another
+     component's element, hence :global. */
+  .fac-side :global(.fac-side__rail) {
+    position: absolute;
+    top: var(--fac-side-centre);
+    width: 10%;
+    padding: 0;
+    transform: translateY(-50%);
+  }
+
+  .fac-side :global(.fac-side__rail--left) {
     left: 0;
   }
 
-  .facility :global(.facility__rail--right) {
+  .fac-side :global(.fac-side__rail--right) {
     right: 0;
   }
 
-  .facility__inner {
+  .fac-nav {
+    position: absolute;
+    left: calc(var(--fac-nav-x) - var(--fac-nav-ring) / 2);
+    top: calc(var(--fac-side-centre) - 2 * var(--fac-nav-pitch) - var(--fac-nav-ring) / 2);
     display: flex;
     flex-direction: column;
-    gap: var(--fac-row-gap);
-    padding: 0 var(--fac-gutter);
+    gap: calc(var(--fac-nav-pitch) - var(--fac-nav-ring));
+    pointer-events: auto;
   }
 
-  .fac-row {
+  /* The ring is the item's own border, transparent until it is the section in
+     view, so marking one never moves anything. */
+  .fac-nav__item {
+    display: grid;
+    place-items: center;
+    width: var(--fac-nav-ring);
+    height: var(--fac-nav-ring);
+    border: var(--fac-stroke) solid transparent;
+    border-radius: 50%;
+    box-sizing: border-box;
+    transition: border-color var(--dur-fast) var(--ease-brand);
+  }
+
+  .fac-nav__item.is-active {
+    border-color: var(--fac-ink);
+  }
+
+  .fac-nav__item:hover {
+    opacity: var(--hover-opacity);
+  }
+
+  .fac-nav__item :global(picture),
+  .fac-nav__item img {
+    display: block;
+  }
+
+  .fac-nav__item img {
+    height: var(--fac-nav-icon);
+    width: auto;
+  }
+
+  /* -------------------------------------------------------------- content */
+
+  .facility__content {
+    padding: var(--fac-page-top) 0 var(--fac-page-bottom) var(--fac-tree-x);
+  }
+
+  .dept {
+    /* Land a jump from the index where the comp puts a heading: the same depth
+       below the header as the first one sits on load. */
+    scroll-margin-top: var(--fac-page-top);
+  }
+
+  .dept + .dept {
+    margin-top: var(--fac-section-gap);
+  }
+
+  /* Pictogram on the rule's line, tagline and title one column across; the
+     tagline's top on the pictogram's top. */
+  .dept__head {
+    position: relative;
+    min-height: var(--fac-icon);
+    padding-left: var(--fac-head-x);
+  }
+
+  .dept__head :global(picture) {
+    position: absolute;
+    left: 0.21vw; /* x 1823, a hair right of the rule */
+    top: 0;
+  }
+
+  .dept__icon {
+    display: block;
+    height: var(--fac-icon);
+    width: auto;
+  }
+
+  .dept__tag {
+    margin: 0;
+    font-size: var(--fac-tag-size);
+    font-weight: var(--fw-medium);
+    line-height: 1;
+    letter-spacing: var(--fac-tag-track);
+  }
+
+  .dept__title {
+    margin: calc(var(--fac-title-top) - var(--fac-tag-size)) 0 0;
+    font-size: var(--fac-title-size);
+    font-weight: var(--fw-medium);
+    line-height: 1;
+    letter-spacing: var(--fac-title-track);
+  }
+
+  /* ----------------------------------------------------------------- tree */
+
+  .dept__tree {
+    margin-top: var(--fac-head-to-tree);
+  }
+
+  /* The body and the divider under it make one corner: the tree's rule on the
+     left, the divider along the bottom, meeting square. */
+  .dept__intro {
+    width: var(--fac-tree-w);
+    box-sizing: border-box;
+    padding: 0 0 var(--fac-body-to-divider) var(--fac-text-x);
+    border-left: var(--fac-stroke) solid var(--fac-ink);
+    border-bottom: var(--fac-stroke) solid var(--fac-ink);
+  }
+
+  .dept__intro p {
+    margin: 0;
+    font-size: var(--fac-body-size);
+    font-weight: var(--fw-medium);
+    line-height: var(--fac-body-line);
+    letter-spacing: var(--fac-body-track);
+  }
+
+  .dept__intro p:first-child {
+    margin-top: calc(-1 * var(--fac-body-lift));
+  }
+
+  /* The comp's line breaks are deliberate — each entry is one line, and the
+     longest (枚葉's third) runs a little past the divider's end in the comp
+     itself. So lines do not re-wrap while the type is still at the comp's share
+     of the window. Below 1200px the 11px floor takes over, the text no longer
+     scales with the column, and it is allowed to wrap. */
+  @media (min-width: 1200px) {
+    .dept__intro p {
+      white-space: nowrap;
+    }
+  }
+
+  .dept__machines {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Each item carries its own length of the rule (::before, full height) and
+     its stub (::after, on the name's centre line); the last one's rule stops at
+     its stub, which closes the tree into an └. --pt is the item's top padding,
+     named so both pseudo-elements can find the name's line from it. */
+  .machine {
+    --pt: var(--fac-item-gap);
+    position: relative;
+    padding: var(--pt) 0 0 var(--fac-text-x);
+  }
+
+  .machine:first-child {
+    --pt: var(--fac-divider-to-first);
+  }
+
+  .dept__tree--bare .machine:first-child {
+    --pt: var(--fac-tree-to-first);
+  }
+
+  .machine--photo + .machine {
+    --pt: var(--fac-after-frame);
+  }
+
+  .machine::before,
+  .machine::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    background: var(--fac-ink);
+  }
+
+  .machine::before {
+    top: 0;
+    bottom: 0;
+    width: var(--fac-stroke);
+  }
+
+  .machine:last-child::before {
+    bottom: auto;
+    height: calc(var(--pt) + var(--fac-name-size) / 2 + var(--fac-stroke) / 2);
+  }
+
+  .machine::after {
+    top: calc(var(--pt) + var(--fac-name-size) / 2 - var(--fac-stroke) / 2);
+    width: var(--fac-stub);
+    height: var(--fac-stroke);
+  }
+
+  .machine__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--fac-spec-gap);
     margin: 0;
   }
 
-  /* Heading block on one side, the machine list on the other — the comp's
-     arrangement for both of the text spreads. */
-  .fac-row--split {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: start;
-    gap: clamp(24px, 4vw, 90px);
-  }
-
-  .fac-row--reverse {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .fac-depts {
-    display: flex;
-    gap: clamp(16px, 2.4vw, 52px);
-    align-items: start;
-  }
-
-  /* The two web presses overlap on a diagonal in the comp: B2 sits high and
-     right, A1 low and left, and the pair reads as one spread. */
-  .fac-row--presses {
-    display: grid;
-    grid-template-columns: repeat(24, 1fr);
-    row-gap: clamp(16px, 2vw, 44px);
-  }
-
-  .fac-press--b2 {
-    grid-column: 9 / 25;
-    grid-row: 1;
-  }
-
-  .fac-press--a1 {
-    grid-column: 1 / 17;
-    grid-row: 2;
-  }
-
-  .fac-row--prepress {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: start;
-    gap: clamp(24px, 4vw, 90px);
-  }
-
-  .fac-ctp {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(24px, 3vw, 64px);
-  }
-
-  .fac-stack {
-    display: flex;
-    flex-direction: column;
-    gap: var(--fac-row-gap);
-  }
-
-  .fac-pair {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
-    align-items: end;
-    gap: clamp(20px, 3vw, 70px);
-  }
-
-  .fac-finishing {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: end;
-    gap: clamp(16px, 2.4vw, 52px);
-  }
-
-  .fac-finishing__chip {
-    padding: var(--fac-chip-pad);
-    background: var(--fac-ink);
-    color: var(--fac-ground);
-    font-family: var(--font-jp);
-    font-size: var(--fac-chip-size);
+  .machine__name {
+    font-size: var(--fac-name-size);
     font-weight: var(--fw-medium);
-    line-height: 1.15;
-    letter-spacing: var(--fac-chip-track);
-    white-space: nowrap;
-    justify-self: start;
+    line-height: 1;
+    letter-spacing: var(--fac-name-track);
   }
 
-  .fac-finishing__row {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: end;
-    gap: clamp(16px, 2.4vw, 56px);
+  .machine__spec {
+    font-size: var(--fac-body-size);
+    font-weight: var(--fw-medium);
+    line-height: 1;
+    letter-spacing: var(--fac-spec-track);
   }
 
-  @media (max-width: 900px) {
-    /* Below the comp's own width the spreads stop being spreads: everything
-       becomes one column so the model numbers stay at a readable size. */
-    .fac-row--split,
-    .fac-row--reverse,
-    .fac-row--prepress,
-    .fac-finishing {
-      grid-template-columns: minmax(0, 1fr);
-      gap: clamp(24px, 5vw, 48px);
+  .machine__note {
+    margin: 0;
+    font-size: var(--fac-note-size);
+    font-weight: var(--fw-medium);
+    line-height: var(--fac-note-line);
+    letter-spacing: var(--fac-note-track);
+  }
+
+  .machine__head + .machine__note {
+    margin-top: var(--fac-name-to-notes);
+  }
+
+  .machine__frame {
+    width: var(--frame-w);
+    max-width: 100%;
+    aspect-ratio: var(--frame-ratio);
+    margin-top: var(--fac-to-frame);
+    border: var(--fac-stroke) solid var(--fac-ink);
+    box-sizing: border-box;
+  }
+
+  .machine__frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* --------------------------------------------------------------- mobile */
+
+  /* No phone artboard was drawn. The index turns into a row pinned under the
+     header, the rails go, and the tree keeps its shape at a readable size
+     (the sizes themselves are set in lp.css). */
+  @media (max-width: 768px) {
+    /* Stacked instead: the index sits in the flow above the content. */
+    .facility {
+      display: block;
     }
 
-    .fac-row--reverse {
-      direction: ltr;
+    .fac-side {
+      height: auto;
+      padding: var(--space-3) 0;
+      background: var(--fac-ground);
     }
 
-    .fac-depts {
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .fac-row--presses {
-      display: flex;
-      flex-direction: column-reverse;
-    }
-
-    .fac-pair,
-    .fac-finishing__row {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .facility :global(.facility__rail) {
+    .fac-side :global(.fac-side__rail) {
       display: none;
     }
 
-    .facility__inner {
-      padding: 0 var(--space-5);
+    .fac-nav {
+      position: static;
+      flex-direction: row;
+      justify-content: center;
+      gap: var(--space-3);
+    }
+
+    .facility__content {
+      padding-right: var(--space-5);
+    }
+
+    .dept {
+      scroll-margin-top: calc(var(--fac-nav-ring) + 2 * var(--space-3) + var(--space-5));
+    }
+
+    .dept__intro {
+      width: 100%;
+    }
+
+    /* Every frame takes the column's width; each keeps its own proportions. */
+    .machine__frame {
+      width: 100%;
     }
   }
 </style>

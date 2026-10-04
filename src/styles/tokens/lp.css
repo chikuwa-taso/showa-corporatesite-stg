@@ -125,38 +125,71 @@
   --footer-cta-size: clamp(12px, 1.16vw, 16px);
   --footer-cta-gap: clamp(var(--space-6), 6vw, var(--space-9));
 
-  /* 設備一覧. The comp is a black board, 7681px wide, and sets its headings in a
-     Mincho — the only place on the site that departs from the gothic, so the
-     face is named here rather than in fonts.css. Sizes are comp px ÷ 7681 → vw,
-     floored so nothing collapses on a phone. */
+  /* 設備一覧. Read off the client's comp 全体像.jpg, a 7681px board like every
+     other comp: board px ÷ 76.81 → vw. Type sizes are ink ÷ 0.905 (the face's
+     kanji ink ratio); tracking from the measured character pitch; line-heights
+     from the measured line pitch. Vertical gaps are the comp's ink-to-ink
+     distances with each line's half-leading taken back off, so the ink lands
+     where the comp puts it. */
   --fac-ground: #000;
   --fac-ink: #fff;
-  --fac-hair: 1px;
-  --fac-font-display: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
-  --fac-title-size: clamp(21px, 1.62vw, 34px);
-  --fac-title-track: 0.18em;
-  --fac-title-gap: clamp(16px, 1.3vw, 28px);
-  --fac-body-size: clamp(13px, 0.79vw, 17px);
-  --fac-body-track: 0.1em;
-  --fac-spec-size: clamp(14px, 0.95vw, 21px);
-  --fac-spec-track: 0.08em;
-  --fac-spec-gap: clamp(12px, 0.95vw, 22px);
-  --fac-spec-note-gap: 0.35em;
-  --fac-spec-rule-gap: clamp(10px, 0.9vw, 20px);
-  --fac-spec-rule-min: clamp(28px, 4vw, 90px);
-  --fac-note-size: clamp(10px, 0.6vw, 13px);
-  --fac-note-track: 0.04em;
-  --fac-caption-size: clamp(12px, 0.72vw, 16px);
-  --fac-chip-size: clamp(13px, 0.86vw, 19px);
-  --fac-chip-track: 0.1em;
-  --fac-chip-pad: 0.3em 0.55em 0.34em;
-  --fac-chip-gap: clamp(10px, 0.9vw, 20px);
-  --fac-shot-gap: clamp(10px, 0.8vw, 18px);
-  --fac-plus-size: clamp(18px, 1.5vw, 32px);
-  --fac-bracket-len: clamp(20px, 1.9vw, 42px);
-  --fac-bracket-pad: clamp(20px, 2vw, 44px) clamp(24px, 2.4vw, 52px);
-  --fac-gutter: clamp(20px, 4.7vw, 90px);
-  --fac-row-gap: clamp(56px, 7vw, 150px);
+  --fac-stroke: max(1px, 0.156vw); /* every rule, frame and circle: 12px */
+
+  /* Columns */
+  --fac-tree-x: 23.53vw; /* the tree's vertical rule: x 1807 */
+  --fac-tree-w: 63.14vw; /* rule → divider's right end at x 6657 */
+  --fac-text-x: 5.31vw; /* rule → body / machine text: x 2215 */
+  --fac-stub: 3.23vw; /* branch stub: 248 */
+  --fac-head-x: 10.88vw; /* rule → tagline / title: x 2643 */
+
+  /* Heading */
+  --fac-icon: max(48px, 6.09vw); /* 468 square of ink, every pictogram */
+  --fac-tag-size: max(10px, 0.91vw); /* ink 63 */
+  --fac-tag-track: 0.58em;
+  --fac-title-size: max(20px, 2.41vw); /* ink 167 */
+  --fac-title-track: 0.43em;
+  --fac-title-top: 3.52vw; /* title's line top below the icon's top */
+
+  /* Body */
+  --fac-body-size: max(11px, 0.92vw); /* ink 64 */
+  --fac-body-track: 0.55em;
+  --fac-body-line: 3.17; /* pitch 225 */
+
+  /* Machines */
+  --fac-name-size: max(14px, 1.47vw); /* ink 102 */
+  --fac-name-track: 0.29em;
+  --fac-spec-gap: 2.09vw; /* 193 ink gap, less the name's trailing tracking */
+  --fac-spec-track: 0.37em;
+  --fac-note-size: max(10px, 0.75vw); /* ink 52 */
+  --fac-note-track: 0.25em;
+  --fac-note-line: 2.59; /* pitch 150 */
+  --fac-frame-h: 13.07vw; /* every frame 1004 tall */
+
+  /* Vertical rhythm (ink gaps less half-leading) */
+  --fac-page-top: 10.94vw; /* header → first heading: 840 */
+  --fac-page-bottom: 11.04vw;
+  --fac-section-gap: 12.8vw;
+  --fac-head-to-tree: 4.43vw; /* 340 */
+  --fac-body-lift: 0.46vw; /* first body line sits 35px above the rule's top */
+  --fac-body-to-divider: 3.89vw;
+  --fac-divider-to-first: 4.22vw;
+  --fac-tree-to-first: 2.81vw; /* when there is no body (製本) */
+  --fac-name-to-notes: 0.66vw;
+  --fac-to-frame: 2.8vw;
+  --fac-item-gap: 2.68vw;
+  --fac-after-frame: 2.99vw;
+
+  /* Below ~1100px the comp's sizes would set the copy under 10px, so each type
+     size and icon has a floor; above it every value is the comp's own share of
+     the window. */
+
+  /* Sticky side column: the pictogram index and both rails share one centre
+     line, 24.2vw below the header (the comp's 1860). */
+  --fac-side-centre: 24.2vw;
+  --fac-nav-x: 12.67vw; /* column centre: x 973 */
+  --fac-nav-icon: max(18px, 2.41vw); /* 185 */
+  --fac-nav-ring: max(36px, 4.86vw); /* 373 */
+  --fac-nav-pitch: 6.55vw; /* 503 */
 
   /* Rail column width incl. its inner offset, shared by ABOUT/SERVICE/NETWORK */
   --rail-col: calc(var(--rail-width) + var(--space-2));
@@ -197,5 +230,36 @@
     --popup-facility-size: clamp(12.8px, 3.52vw, 17.6px); /* 80% of 16 / 4.4vw / 22 */
     --popup-title-rise: 0px;
     --popup-actions-drop: 0px;
+
+    /* 設備一覧 has no phone artboard: the tree keeps its shape, at sizes that
+       read on a phone rather than at the board's share of a 390px window. */
+    --fac-tree-x: var(--space-5);
+    --fac-text-x: 28px;
+    --fac-stub: 16px;
+    --fac-head-x: 64px;
+    --fac-icon: 48px;
+    --fac-title-top: 26px;
+    --fac-tag-size: 10px;
+    --fac-title-size: 20px;
+    --fac-body-size: 12px;
+    --fac-body-line: 2.2;
+    --fac-name-size: 15px;
+    --fac-note-size: 11px;
+    --fac-note-line: 2;
+    --fac-spec-gap: 12px;
+    --fac-page-top: 32px;
+    --fac-page-bottom: 48px;
+    --fac-section-gap: 64px;
+    --fac-head-to-tree: 24px;
+    --fac-body-lift: 0px;
+    --fac-body-to-divider: 20px;
+    --fac-divider-to-first: 24px;
+    --fac-tree-to-first: 20px;
+    --fac-name-to-notes: 6px;
+    --fac-to-frame: 14px;
+    --fac-item-gap: 18px;
+    --fac-after-frame: 20px;
+    --fac-nav-ring: 40px;
+    --fac-nav-icon: 20px;
   }
 }

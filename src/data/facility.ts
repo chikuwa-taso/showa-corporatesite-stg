@@ -1,212 +1,154 @@
 /**
- * 設備一覧 — transcribed from the client's 仮＿設備一覧ページ comp.
- *
- * The comp bakes every word into one 7681×18744 JPEG. Only the machine
- * photographs are lifted out of it; all the type is set live here so the model
- * numbers stay selectable, searchable and legible at any size.
+ * 設備一覧 — every line of copy on the page, transcribed from the client's comp
+ * 全体像.jpg. Body copy breaks are the comp's own and are kept as given.
  */
 
-/** A spec line: the machine, and the parenthesised detail printed beneath it. */
-export type SpecItem = {
-  /** Left of the leader rule. */
-  name: string;
-  /** Right of the leader rule — the sheet size, where the comp prints one. */
-  format?: string;
-  /** Small lines under the name. */
-  notes?: string[];
-};
-
-export type Department = {
-  id: string;
-  /** The heading, one entry per line, inside the comp's corner brackets. */
-  titleLines: string[];
-  /** The standfirst under the rule — the same wording as the SERVICE popups. */
-  body: string[];
-};
-
-export const FACILITY_INTRO = 'EQUIPMENT';
-
-export const DEPT_OFFSET: Department = {
-  id: 'offset',
-  titleLines: ['オフリン', '印刷部門'],
-  body: ['新聞やカタログなどの', '大量の印刷物を高速かつ', '効率的に印刷する部門。'],
-};
-
-export const SPECS_OFFSET: SpecItem[] = [
-  {
-    name: '小森／システム 40',
-    format: '4色×4色 A ヨコ全判',
-    notes: [
-      '（NIKKA・ハイスピードシーター／ KYODO・KP バレタイジングロボットシステム A4-16P折 A4-8P折 A1シーター）',
-    ],
-  },
-  {
-    name: '小森／システム 35S',
-    format: '4色×4色 B タテ半裁',
-    notes: [
-      '（NIKKA・ハイスピードシーター／ KYODO・KP バレタイジングロボットシステム）',
-      '（小森製パーフォレーター・B4×2P 2列出しシーター B3折出 B2折出 B5-16P折 B5-8P折 B2シーター B4ペラ出し）',
-    ],
-  },
-  {
-    name: '小森／システム 35-546Ⅱ',
-    format: '4色×4色 B タテ半裁',
-    notes: [
-      '（VITSシーター KYODO・KP バレタイジングロボットシステム）（B3折出 B2折出 B5-16P折 B5-8P折 B2シーター）',
-    ],
-  },
-  { name: '巻取自動立体倉庫（KPシステム W タイプ）' },
-];
-
-export const DEPT_PREPRESS: Department = {
-  id: 'prepress',
-  titleLines: ['プリプレス', '部門'],
-  body: ['データ制作・色調整・CTP', '出力など、品質を左右する', '準備作業を行う部門。'],
-};
-
-export const DEPT_ONDEMAND: Department = {
-  id: 'on-demand',
-  titleLines: ['オンデマンド', '部門'],
-  body: ['小ロット・短納期に対応する', 'デジタル印刷を行う部門。', '即時印刷が可能。'],
-};
-
-export const SPECS_PREPRESS: SpecItem[] = [
-  { name: '大日本スクリーン／ PTR-8900・PTR-8600' },
-  { name: '大日本スクリーン／ EQUIOS Ver8.01 EQ103', notes: ['（CTP用RIP）'] },
-  { name: '大日本スクリーン／ Flat Worker Ver8.04/FP414', notes: ['（版面設計用）'] },
-  { name: 'FUJIFILM ／プリモジェット', notes: ['（インクジェット色校正機）'] },
-  { name: 'KONICA MINOLTA ／ AccurioPress C4070' },
-];
-
-export const DEPT_SHEETFED: Department = {
-  id: 'sheetfed',
-  titleLines: ['枚葉印刷', '部門'],
-  body: ['紙を一枚ずつ印刷する。', '小ロット多品種や高品質な', 'カラー印刷に適した部門。'],
-};
-
-export const DEPT_BINDING: Department = {
-  id: 'binding',
-  titleLines: ['製本・加工', '部門'],
-  body: ['断裁・折り・綴じ・表紙加工、', '製品として仕上げる', '加工工程を担当する部門。'],
-};
-
-export const SPECS_SHEETFED: SpecItem[] = [
-  {
-    name: '小森／リスロン GX40RP',
-    notes: ['（4色×4色 菊判全判UVオフセット印刷機）＋ HiNiX ／ RF-40SⅡ'],
-  },
-  { name: '小森／リスロン G40', notes: ['（コーター付 6色 菊判全判UVオフセット印刷機）'] },
-  { name: '小森／ SPICA-426P', notes: ['（4色菊判半裁反転機構付オフセット印刷機）'] },
-  {
-    name: 'OSAKO ／ 368型全自動高速中綴機…3台',
-    notes: ['（12鞍）（10鞍＋カバーフィーダー）（6鞍＋カバーフィーダー）'],
-  },
-  {
-    name: 'Horizon ／紙折機',
-    notes: ['（菊判全判クロス…2台）（菊判半裁クロス…1台）（菊判半裁平行折機…2台）'],
-  },
-  { name: 'Horizon ／ RD-4055', notes: ['（ロータリーダイカットシステム…1台）'] },
-  // The comp prints 打技機 here and 打抜機 on the photo caption below; 打抜機 is
-  // the term for a die-cutter, so both read that way here. Worth confirming.
-  { name: '飯島製作所／ KF-1020', notes: ['（自動平盤打抜機）'] },
-  { name: 'アコ・ブランズ・ジャパン／ Sagitta 76', notes: ['（菊判全判 全自動ラミネーター）'] },
-];
-
-export const SPECS_SHEETFED_TAIL = 'ほか';
-
-/** A machine photograph with the chip label and caption the comp gives it. */
-export type Machine = {
+export interface MachinePhoto {
+  /** Basename in /assets/facility (lossless WebP crop of the comp). */
   src: string;
-  /** The white chip. */
-  chip: string;
-  /** Lines beside or under the chip. */
-  caption: string[];
-  /** Smaller line under the caption. */
-  note?: string;
+  /** Outer width of the white frame on the 7681px board — every frame is 1004 tall. */
+  boardW: number;
   alt: string;
-};
+}
 
-export const MACHINES_OFFSET: Machine[] = [
+export interface Machine {
+  name: string;
+  /** Small spec set on the same line as the name. */
+  spec?: string;
+  /** Smaller lines under the name. */
+  notes?: string[];
+  photo?: MachinePhoto;
+}
+
+export interface Department {
+  id: string;
+  /** Pictogram slug, shared with SERVICE. */
+  icon: string;
+  tagline: string;
+  title: string;
+  /** Body copy, one entry per line of the comp. Omitted where the comp has none. */
+  body?: string[];
+  machines: Machine[];
+}
+
+export const DEPARTMENTS: Department[] = [
   {
-    src: 'press-a1',
-    chip: 'A1',
-    caption: ['小森／システム 40 - 4色×4色 A1Y'],
-    note: 'NIKKA・ハイスピードシーター／印刷品質監視装置',
-    alt: '小森 システム40 A1輪転印刷機',
+    id: 'offset',
+    icon: 'offset-printing',
+    tagline: '大量の印刷物を高速かつ効率的に印刷する部門',
+    title: 'オフセット輪転印刷',
+    body: [
+      '常に生産ラインの効率化を追求し、最新の高速オフセット輪転機を導入しております。',
+      '24時間稼働により、短納期かつ大量の印刷ニーズにも柔軟に対応が可能です。',
+      '一枚一枚の印刷物に、プロの厳しい目とコンピューターによる',
+      '高度な品質管理システムを組み合わせることで、高い品質をご提供いたします。',
+    ],
+    machines: [
+      {
+        name: '小森／システム35S',
+        spec: '4色×4色 Bタテ半裁',
+        notes: [
+          'NIKKA・ハイスピードシーター／ KYODO・KPパレタイジングロボットシステム',
+          '小森製パーフォレーター・B4×2P 2列出しシーター B3折出 B2折出 B5-16P折 B5-8P折 B2シーター B4ペラ出し',
+        ],
+        photo: { src: 'system-35s', boardW: 1802, alt: '小森 システム35S' },
+      },
+      {
+        name: '小森／システム40',
+        spec: '4色×4色 Aヨコ全判',
+        notes: [
+          'NIKKA・ハイスピードシーター／ KYODO・KPパレタイジングロボットシステム A4-16P折 A4-8P折 A1シーター',
+        ],
+        photo: { src: 'system-40', boardW: 1802, alt: '小森 システム40' },
+      },
+      {
+        name: '小森／システム35-546Ⅱ',
+        spec: '4色×4色 Bタテ半裁',
+        // The comp reads 「VITSシーター— KYODO・KPパレタイジングロボットシステム)(B3折出 …
+        // B2シーター—」: stray dashes and a back-to-front bracket pair. Set in the
+        // form the two machines above use; the client has been asked to confirm.
+        notes: [
+          'VITSシーター／ KYODO・KPパレタイジングロボットシステム（B3折出 B2折出 B5-16P折 B5-8P折 B2シーター）',
+        ],
+      },
+      { name: '巻取自動立体倉庫（KPシステムWタイプ）' },
+    ],
   },
   {
-    src: 'press-b2',
-    chip: 'B2',
-    caption: ['小森／システム35S - 4色×4色 B2T'],
-    note: '小森製パーフォレーター搭載 NIKKA・ハイスピードシーター／B4×2P 2列出しシーター／印刷品質監視装置',
-    alt: '小森 システム35S B2輪転印刷機',
+    id: 'sheetfed',
+    icon: 'sheetfed-printing',
+    tagline: '一枚ずつ印刷する小ロットや高品質なカラー印刷に適した部門',
+    title: '枚葉印刷',
+    body: [
+      '多様なプロモーション戦略に寄り添い、パンフレット、カタログ、',
+      'ポスター、情報誌など、あらゆるPRツールを少部数から高品質でご提供いたします。',
+      'また、繊細な表現が求められる美術印刷から、正確な色管理が不可欠な企業カタログまで、',
+      '高度な技術でお客様の期待を超える仕上がりをお約束いたします。',
+    ],
+    machines: [
+      {
+        name: '小森／リスロンGX40RP',
+        notes: ['4色×4色 菊判全判UVオフセット印刷機 ＋ HiNiX／RF-40SⅡ'],
+        photo: { src: 'lithrone-gx40rp', boardW: 3448, alt: '小森 リスロンGX40RP と HiNiX RF-40SⅡ' },
+      },
+      {
+        name: '小森／リスロンG40',
+        notes: ['コーター付 6色 菊判全判UVオフセット印刷機'],
+        photo: { src: 'lithrone-g40', boardW: 1802, alt: '小森 リスロンG40' },
+      },
+      { name: '小森／SPICA-426P', notes: ['4色菊判半裁反転機構付オフセット印刷機'] },
+    ],
+  },
+  {
+    id: 'ondemand',
+    icon: 'on-demand',
+    tagline: '小ロット・短納期に対応する即時印刷が可能なデジタル印刷を行う部門',
+    title: 'オンデマンド印刷',
+    body: [
+      '製版工程を省略できるオンデマンド印刷は、データ入稿から印刷までの時間を大幅に短縮。',
+      '急なご要望にも迅速に対応します。1部からの小ロット印刷にも最適です。',
+      '当社のオンデマンド印刷は、印刷色基準に基づいた厳格なトータル色管理システムを導入。',
+      'オフセット印刷に匹敵する、安定した高品質な色再現性を実現します。',
+    ],
+    machines: [{ name: 'KONICA MINOLTA／AccurioPress C407' }],
+  },
+  {
+    id: 'prepress',
+    icon: 'prepress',
+    tagline: 'データ制作・色調整・CTP出力など品質を左右する準備作業を行う部門',
+    title: 'プリプレス',
+    body: [
+      '高度な最先端技術を武器に、低コスト・スピーディな作業を実現させることで、',
+      'お客様のニーズにお応えできるよう印刷品質の向上に努めています。',
+    ],
+    machines: [
+      {
+        name: '大日本スクリーン／PTR-8900・PTR-8600',
+        photo: { src: 'ptr-8900', boardW: 1382, alt: '大日本スクリーン PTR-8900' },
+      },
+      { name: '大日本スクリーン／EQUIOS Ver8.01 EQ103', notes: ['CTP用RIP'] },
+      { name: '大日本スクリーン／Flat Worker Ver8.04/FP414', notes: ['版面設計用'] },
+      { name: 'FUJIFILM／プリモジェット', notes: ['インクジェット色校正機'] },
+    ],
+  },
+  {
+    id: 'binding',
+    icon: 'bookbinding',
+    tagline: '製品として仕上げる加工工程を担当する部門',
+    title: '製本・折加工・PP加工・型抜き加工',
+    machines: [
+      {
+        name: 'OSAKO／368型全自動高速中綴機…3台',
+        notes: ['12鞍 ／ 10鞍＋カバーフィーダー ／ 6鞍＋カバーフィーダー'],
+      },
+      {
+        name: 'Horizon／紙折機',
+        notes: ['菊判全判クロス…2台 ／ 菊判半裁クロス…1台 ／ 菊判半裁平行折機…2台'],
+      },
+      { name: 'Horizon／RD-4055', notes: ['ロータリーダイカットシステム…1台'] },
+      // The comp has 「自動平盤打技機」; the machine is a die-cutter, 打抜機.
+      { name: '飯島製作所／KF-1020', notes: ['自動平盤打抜機'] },
+      { name: 'アコ・ブランズ・ジャパン／Sagitta 76', notes: ['菊判全判 全自動ラミネーター'] },
+    ],
   },
 ];
-
-export const MACHINE_CTP: Machine = {
-  src: 'ctp',
-  chip: 'CTP',
-  caption: ['SCREEN ／', 'サーマルプレートレコーダー'],
-  alt: 'SCREEN サーマルプレートレコーダー',
-};
-
-export const MACHINES_SHEETFED: Machine[] = [
-  {
-    src: 'press-gx40rp',
-    chip: '菊判全判UV',
-    caption: ['小森／リスロン GX40RP'],
-    note: '（4色×4色 菊判全判UVオフセット印刷機）',
-    alt: '小森 リスロン GX40RP 菊判全判UVオフセット印刷機',
-  },
-  {
-    src: 'press-g40',
-    chip: '菊判全判UV',
-    caption: ['小森／リスロン G40'],
-    note: '（コーター付 6色 菊判全判UVオフセット印刷機）',
-    alt: '小森 リスロン G40 菊判全判UVオフセット印刷機',
-  },
-  {
-    src: 'press-spica',
-    chip: '菊判半裁',
-    caption: ['小森／ SPICA-426P'],
-    note: '（4色菊判半裁反転機構付オフセット印刷機）',
-    alt: '小森 SPICA-426P 菊判半裁オフセット印刷機',
-  },
-  {
-    src: 'stitcher',
-    chip: '中綴機×3台',
-    caption: ['OSAKO/368型全自動高速中綴機'],
-    alt: 'OSAKO 368型 全自動高速中綴機',
-  },
-];
-
-/** The three finishing machines that share the last row. */
-export const MACHINES_FINISHING: Machine[] = [
-  {
-    src: 'folder-horizon',
-    chip: '',
-    caption: ['Horizon ／ AF-762KL'],
-    note: '菊判全判・クロス紙折機',
-    alt: 'Horizon AF-762KL 紙折機',
-  },
-  {
-    src: 'laminator',
-    chip: '',
-    caption: ['アコ・ブランズ・ジャパン', 'Sagitta 76（ホットナイフ方式）'],
-    note: '菊判全判・全自動ラミネーター',
-    alt: 'アコ・ブランズ・ジャパン Sagitta 76 全自動ラミネーター',
-  },
-  {
-    src: 'diecutter',
-    chip: '',
-    caption: ['飯島製作所／ KF-1020'],
-    note: '自動平盤打抜機',
-    alt: '飯島製作所 KF-1020 自動平盤打抜機',
-  },
-];
-
-/** The chip that labels the whole finishing row. */
-export const FINISHING_CHIP = '紙折機×5台';
-
-/** The 「＋」 between the GX40RP and the coater it pairs with. */
-export const GX40RP_PARTNER = 'HiNiX ／ RF-40SⅡ';

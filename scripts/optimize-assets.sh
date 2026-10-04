@@ -29,9 +29,10 @@ LID_SRC="$ROOT"                     # ＿流し素材.jpg live loose in the drop
 POPUP_SRC="$ROOT/ 昭和美術印刷LP素材_印刷アイコンからのPOPUP表示"
 LOGO_SRC="$ROOT/昭和美術印刷＿logo"
 NETWORK_COMP="$ROOT/拠点.jpg"
+FACILITY_COMP="$ROOT/ 昭和美術印刷LP＿設備一覧/全体像.jpg"
 
 OUT="$(cd "$(dirname "$0")/.." && pwd)/public/assets"
-mkdir -p "$OUT"/{video,brand,about,works,icons,service,network}
+mkdir -p "$OUT"/{video,brand,about,works,icons,service,network,facility}
 
 have () { [ -f "$1" ] || { echo "skip:  $(basename "$1") (not in this drop)"; return 1; }; }
 
@@ -205,6 +206,50 @@ print(f"       {w}x{h}")
 PY
   cwebp -quiet -lossless -z 9 -alpha_q 100 "$OUT/network/japan-map.png" \
     -o "$OUT/network/japan-map.webp"
+fi
+
+
+# ---------- 設備一覧 ----------
+# Photos: the five machine shots exist only inside the page comp 全体像.jpg, each
+# in a white 12px frame on the pure-black ground. The frame is drawn in CSS so it
+# stays a crisp hairline at any width, so only the interior is taken — the outer
+# box measured on the comp, inset 13px to clear the stroke's anti-aliasing. A
+# crop discards whole pixels and nothing else; it is stored as lossless WebP.
+#
+# Pictograms: the SERVICE icons, white, cropped tight to their ink. Every one is
+# a square of ink on its canvas (661x661, 646x647, 677x664, 669x668, 665x651), and
+# the comp draws them all into the same square box — so with the blank canvas
+# trimmed, the element's size IS the ink's size and CSS needs no fudge factor.
+# Inverting black line art on transparency gives white and leaves alpha alone.
+if have "$FACILITY_COMP"; then
+  echo "facility: photos + white pictograms"
+  python3 - "$FACILITY_COMP" "$OUT/facility" "$OUT/icons" <<'PY2'
+import sys
+from PIL import Image, ImageOps
+Image.MAX_IMAGE_PIXELS = None
+comp, out, icons = sys.argv[1:]
+im = Image.open(comp).convert("RGB")
+I = 13  # stroke inset
+frames = {  # outer boxes on the 7681px board: x0, y0, x1, y1 (inclusive)
+    "system-35s":   (2208, 3812, 4009, 4815),
+    "system-40":    (2208, 5546, 4009, 6550),
+    "lithrone-gx40rp": (2208, 11224, 5655, 12227),
+    "lithrone-g40": (2208, 12958, 4009, 13962),
+    "ptr-8900":     (2208, 21150, 3589, 22153),
+}
+for name, (x0, y0, x1, y1) in frames.items():
+    im.crop((x0 + I, y0 + I, x1 + 1 - I, y1 + 1 - I)).save(f"{out}/{name}.webp", lossless=True, quality=100, method=6)
+    print(f"       {name}: {x1 - x0 + 1 - 2*I}x{y1 - y0 + 1 - 2*I}")
+for slug in ["offset-printing", "sheetfed-printing", "on-demand", "prepress", "bookbinding"]:
+    src = Image.open(f"{icons}/{slug}.png").convert("RGBA")
+    a = src.split()[-1]
+    ink = a.point(lambda v: 255 if v > 0 else 0).getbbox()
+    crop = src.crop(ink)
+    r, g, b, a = crop.split()
+    white = Image.merge("RGBA", (*ImageOps.invert(Image.merge("RGB", (r, g, b))).split(), a))
+    white.save(f"{out}/icon-{slug}.png", optimize=True)
+    white.save(f"{out}/icon-{slug}.webp", lossless=True, quality=100, method=6)
+PY2
 fi
 
 echo
