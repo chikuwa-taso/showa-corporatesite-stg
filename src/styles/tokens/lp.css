@@ -221,8 +221,13 @@
     --logo-tail-h: calc(var(--logo-w) / var(--logo-aspect) * (1 - var(--logo-kanji-frac)));
 
     /* TOP fills the screen under the header, and stays pinned there while the
-       ABOUT copy scrolls up over it. */
-    --band-hero-h: calc(100svh - var(--header-h));
+       ABOUT copy scrolls up over it. Sized to the LARGE viewport (lvh): mobile
+       Safari shrinks its toolbars once scrolling starts and the screen grows
+       taller, and a video sized to the small viewport (svh) then stopped short
+       — the white page showed through the transparent ABOUT band as a strip
+       along the bottom. With lvh the video always reaches the bottom edge; the
+       extra slice simply sits under the toolbar until it retracts. */
+    --band-hero-h: calc(100lvh - var(--header-h));
 
     /* ABOUT, set live in vertical type over the video. 見出し: ink 40px → 44.5px
        em, char pitch 65.4px (0.47em), column pitch 81px (1.82). 本文: 12px em,
