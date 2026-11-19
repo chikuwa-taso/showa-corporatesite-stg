@@ -41,16 +41,25 @@ const CTAS = [
     white-space: nowrap;
   }
 
+  /* Phones, per the comp: the two side by side, pushed out to 45px from each
+     edge, in a band a little deeper than the header's. */
   @media (max-width: 768px) {
-    /* Stacked into two rows, as the header is — and on the same vertical
-       measure, so the two bands still read as a pair. */
     .contact {
-      flex-direction: column;
-      align-items: center;
-      /* Tight enough that the two stacked rows still fit inside --header-h, so
-         the band's own height is what sets the depth here too. */
-      gap: var(--space-5);
-      padding: var(--header-pad-top) var(--space-5) var(--header-pad-bottom);
+      justify-content: space-between;
+      min-height: var(--footer-sp-h);
+      gap: 0;
+      padding: 0 var(--footer-sp-inset);
+    }
+
+    .contact :global(.contact__cta) {
+      --link-button-track: var(--footer-sp-track);
+      font-size: var(--footer-sp-size);
+      line-height: 1;
+      letter-spacing: var(--footer-sp-track);
+      padding: 0 0 var(--footer-sp-rule-gap);
+      /* The tracking after the last glyph would hold the right-hand button off
+         the inset; the rule already stops short of it. */
+      margin-right: calc(-1 * var(--footer-sp-track));
     }
   }
 </style>

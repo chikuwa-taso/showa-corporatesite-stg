@@ -85,19 +85,29 @@ const { iconSize = CONFIG.iconSize, showLabels = CONFIG.serviceLabels } = Astro.
       display: none;
     }
 
-    /* The 3 + 2 rows would overflow a phone, so both wrap and centre instead —
-       which makes the gutter, not the 3-up row, the constraint on size. */
+    /* The phone comp sets the five in a 2-1-2 cross: two, the third centred
+       between the rows, then two. The rows dissolve into one grid so the third
+       can span both columns. */
     .service {
-      --icon-size: min(
-        calc(var(--icon-size-base) * var(--icon-mobile-scale)),
-        calc(100vw - 2 * var(--space-5))
-      );
+      --icon-size: var(--service-sp-icon);
+    }
+
+    .service__body {
+      display: grid;
+      grid-template-columns: repeat(2, var(--service-sp-col));
+      grid-auto-rows: var(--service-sp-row);
+      justify-content: center;
+      align-items: center;
+      justify-items: center;
+      gap: 0;
     }
 
     .service__row {
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 0 var(--space-5);
+      display: contents;
+    }
+
+    .service__row:first-child :global(.service-icon:nth-child(3)) {
+      grid-column: 1 / -1;
     }
   }
 </style>

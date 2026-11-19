@@ -1,13 +1,20 @@
 ---
 import SectionRail from '../components/SectionRail.astro';
 import WorkTile from '../components/WorkTile.astro';
-import { WORK_TILES, CONFIG } from '../data/site';
+import { WORK_TILES, WORK_ORDER_PHONE, CONFIG, type WorkTile } from '../data/site';
+import { asset } from '../lib/asset';
 
 interface Props {
   useVideo?: boolean;
 }
 
 const { useVideo = CONFIG.useVideo } = Astro.props;
+
+type PhotoTile = Extract<WorkTile, { kind: 'photo' }>;
+const photos = WORK_TILES.filter((tile): tile is PhotoTile => tile.kind === 'photo');
+const phoneTiles = WORK_ORDER_PHONE.map((src) => photos.find((tile) => tile.src === src)).filter(
+  (tile): tile is PhotoTile => tile !== undefined,
+);
 ---
 
 {/* The strip runs edge to edge — no gutter for the labels to sit in. They are
@@ -21,6 +28,21 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
       {WORK_TILES.map((tile) => <WorkTile tile={tile} useVideo={useVideo} duplicate />)}
     </div>
   </div>
+
+  {/* Phones only: the four works stacked, each rising into view as it arrives.
+      A tap lifts the colour field to show the work; another tap puts it back. */}
+  <ul class="works__sp">
+    {
+      phoneTiles.map((tile) => (
+        <li class="works__sp-item" data-reveal>
+          <button class="works__sp-tile" type="button" aria-pressed="false" data-work-toggle>
+            <img src={asset(`${tile.src}.jpg`)} alt={tile.alt} loading="lazy" decoding="async" />
+            <img class="works__sp-lid" src={asset(tile.lid)} alt="" loading="lazy" decoding="async" />
+          </button>
+        </li>
+      ))
+    }
+  </ul>
 
   <SectionRail label="WORKS" side="left" tone="inverse" class="works__rail works__rail--left" />
   <SectionRail label="実績" side="right" tone="inverse" class="works__rail works__rail--right" />
@@ -86,6 +108,66 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
   @media (prefers-reduced-motion: reduce) {
     .works__track {
       animation: none;
+    }
+  }
+
+  .works__sp {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .works__viewport,
+    .works :global(.works__rail) {
+      display: none;
+    }
+
+    .works__sp {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--works-sp-gap);
+      margin: 0;
+      padding: var(--works-sp-pad) 0;
+      list-style: none;
+    }
+
+    .works__sp-item {
+      width: var(--works-sp-tile-w);
+    }
+
+    .works__sp-tile {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: var(--tile-ratio-photo);
+      padding: 0;
+      border: 0;
+      overflow: hidden;
+      background: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .works__sp-tile img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .works__sp-lid {
+      transition: opacity var(--dur-base) var(--ease-brand);
+    }
+
+    .works__sp-tile[aria-pressed='true'] .works__sp-lid {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+    .works__sp-lid {
+      transition: none;
     }
   }
 </style>

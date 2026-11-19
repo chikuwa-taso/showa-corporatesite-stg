@@ -25,4 +25,13 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
     /* Stands in whenever the video is off, still loading, or reduced-motion. */
     background: var(--gradient-fire);
   }
+
+  /* Phones: one screen tall under the header (--band-hero-h), and pinned there
+     until the end of ABOUT, whose copy scrolls up over the running video. */
+  @media (max-width: 768px) {
+    .top {
+      position: sticky;
+      top: var(--header-h);
+    }
+  }
 </style>

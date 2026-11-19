@@ -1,6 +1,6 @@
 ---
 import SectionRail from '../components/SectionRail.astro';
-import { ABOUT_STATEMENT_ALT } from '../data/site';
+import { ABOUT_STATEMENT_ALT, ABOUT_TITLE_LINES, ABOUT_BODY_LINES } from '../data/site';
 import { asset } from '../lib/asset';
 ---
 
@@ -21,6 +21,17 @@ import { asset } from '../lib/asset';
         decoding="async"
       />
     </picture>
+  </div>
+
+  {/* Phones only: the statement set live in white vertical type, scrolling up
+      over the hero video pinned behind it. Each block fades in as it arrives. */}
+  <div class="about__sp">
+    <h2 class="about__sp-title" data-reveal>
+      {ABOUT_TITLE_LINES.map((line, i) => (<>{i > 0 && <br />}{line}</>))}
+    </h2>
+    <p class="about__sp-body" data-reveal>
+      {ABOUT_BODY_LINES.map((line, i) => (<>{i > 0 && <br />}{line}</>))}
+    </p>
   </div>
 
   <SectionRail label="会社概要" side="right" class="about__rail about__rail--right" />
@@ -95,9 +106,55 @@ import { asset } from '../lib/asset';
     right: 0;
   }
 
+  .about__sp {
+    display: none;
+  }
+
   @media (max-width: 768px) {
     .about :global(.about__rail) {
       display: none;
+    }
+
+    /* Transparent, and above the pinned hero, so the copy reads over the video.
+       The artwork's own padding goes; the live copy carries the comp's. */
+    .about {
+      z-index: 1;
+      padding: var(--about-sp-pad-top) 0 var(--about-sp-pad-bottom);
+      background: transparent;
+      color: var(--text-inverse);
+    }
+
+    .about__body {
+      display: none;
+    }
+
+    .about__sp {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .about__sp-title,
+    .about__sp-body {
+      margin: 0;
+      writing-mode: var(--writing-vertical);
+      font-family: var(--font-display);
+      font-weight: var(--fw-medium);
+    }
+
+    .about__sp-title {
+      margin-right: var(--about-sp-title-right);
+      font-size: var(--about-sp-title-size);
+      line-height: var(--about-sp-title-line);
+      letter-spacing: var(--about-sp-title-track);
+    }
+
+    .about__sp-body {
+      margin-top: var(--about-sp-body-gap);
+      margin-right: var(--about-sp-body-right);
+      font-size: var(--about-sp-body-size);
+      line-height: var(--about-sp-body-line);
+      letter-spacing: var(--about-sp-body-track);
     }
   }
 </style>

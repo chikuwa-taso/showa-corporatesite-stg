@@ -29,6 +29,14 @@ const titleId = `service-modal-${service.slug}-title`;
       the same grid the section uses, landing them in exactly the same place. */}
   <SectionRail label="SERVICE" side="left" />
 
+  {/* Phones only. The dialog sits in the top layer from the band's bottom edge
+      down, which would cover the Latin line hanging below the band — so it
+      carries its own copy of that line, in exactly the same place. */}
+  <picture class="modal__logo-tail" aria-hidden="true">
+    <source srcset={asset('/assets/brand/lockup.webp')} type="image/webp" />
+    <img src={asset('/assets/brand/lockup.png')} alt="" width="456" height="261" loading="lazy" decoding="async" />
+  </picture>
+
   <div class="modal__composition">
     {/* One file, not a WebP/JPEG pair: this is the client's composite cropped at
         its own 3426x1968 and stored losslessly, so a JPEG fallback could only be
@@ -267,6 +275,13 @@ const titleId = `service-modal-${service.slug}-title`;
     }
   }
 
+  .modal__logo-tail {
+    display: none;
+  }
+
+  /* Phones, per the comp: the photo across the top; under it the heading in
+     one column at the right with the copy beside it, and 設備一覧 — ruled down
+     its right side — over the × at the left. */
   @media (max-width: 768px) {
     .modal {
       grid-template-columns: 1fr;
@@ -276,47 +291,100 @@ const titleId = `service-modal-${service.slug}-title`;
       display: none;
     }
 
-    /* Stacked: photo, then the heading and copy side by side as one vertical
-       block, then the actions row. The rows keep their reading order. */
+    .modal__logo-tail {
+      position: absolute;
+      top: calc(-1 * var(--logo-kanji-h));
+      left: var(--header-gutter);
+      display: block;
+      width: var(--logo-w);
+      clip-path: inset(calc(var(--logo-kanji-frac) * 100%) 0 0 0);
+      pointer-events: none;
+    }
+
+    .modal__logo-tail img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
     .modal__composition {
       grid-column: 1;
-      grid-template-columns: auto auto;
-      grid-template-rows: auto auto auto;
-      column-gap: var(--space-6);
-      row-gap: var(--space-6);
-      justify-content: center;
-      padding: var(--space-6) var(--space-5);
+      grid-template-columns: auto 1fr auto auto; /* actions | space | copy | heading */
+      grid-template-rows: auto auto;
+      column-gap: 0;
+      justify-content: stretch;
+      align-content: start;
+      padding: var(--popup-sp-photo-top) 0 var(--space-7);
     }
 
     .modal__photo {
-      grid-column: 1 / 3;
+      grid-column: 1 / -1;
       grid-row: 1;
-      margin-inline-end: 0;
+      justify-self: center;
+      width: var(--popup-sp-photo-w);
+      margin: 0;
     }
 
     .modal__body {
+      grid-column: 3;
+      grid-row: 2;
+      align-self: start;
+      margin: var(--popup-sp-block-top) var(--popup-sp-body-gap) 0 0;
+      font-size: var(--popup-sp-body-size);
+      line-height: var(--popup-sp-body-line);
+      letter-spacing: var(--popup-sp-body-track);
+    }
+
+    /* One column here: every heading fits the phone's height in one. */
+    .modal__title {
+      grid-column: 4;
+      grid-row: 2;
+      margin: var(--popup-sp-block-top) var(--popup-sp-title-right) 0 0;
+      font-size: var(--popup-sp-title-size);
+      line-height: 1;
+      letter-spacing: var(--popup-sp-title-track);
+    }
+
+    .modal__title br {
+      display: none;
+    }
+
+    /* The anchor trick stands down: the actions are an ordinary column. */
+    .modal__actions {
       grid-column: 1;
       grid-row: 2;
-      justify-self: end;
-    }
-
-    .modal__title {
-      grid-column: 2;
-      grid-row: 2;
-    }
-
-    /* The anchor trick stands down: the actions become an ordinary centred row. */
-    .modal__actions {
-      grid-column: 1 / 3;
-      grid-row: 3;
-      justify-self: center;
+      justify-self: start;
+      align-self: start;
       width: auto;
       height: auto;
+      margin: var(--popup-sp-block-top) 0 0 var(--popup-sp-facility-left);
     }
 
     .modal__actions-inner {
       position: static;
-      column-gap: var(--space-7);
+      flex-direction: column;
+      align-items: center;
+      row-gap: var(--popup-sp-close-gap);
+      column-gap: 0;
+    }
+
+    /* Set vertically, so the rule runs down the right of the words rather than
+       under them — 1px, the words' own length. */
+    .modal__actions-inner :global(.modal__facility) {
+      writing-mode: var(--writing-vertical);
+      padding: 0 var(--popup-sp-rule-gap) 0 0;
+      font-size: var(--popup-sp-facility-size);
+      background-position: 100% 0;
+      background-size: var(--radius-hair) 100%;
+    }
+
+    .modal__facility-label {
+      letter-spacing: var(--popup-sp-facility-track);
+      margin-inline-end: calc(-1 * var(--popup-sp-facility-track));
+    }
+
+    .modal__close {
+      width: var(--popup-sp-close-w);
     }
   }
 </style>

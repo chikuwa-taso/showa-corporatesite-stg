@@ -198,38 +198,94 @@
   --section-pad-y: var(--space-11);
 }
 
-/* No mobile layout was designed; this follows the brand's composition rules —
-   rails drop away, the 3+2 and two-column grids stack, and the nav stays a plain
-   row (the brand has no hamburger, chevrons or arrows to build a menu from). */
+/* The phone layout follows the client's スマホ版デザインと動作指示書, drawn on a
+   375px-wide screen: comp px ÷ 3.75 → vw, so it keeps its shape across phone
+   widths. Nothing here applies above 768px — the PC layout is untouched. */
 @media (max-width: 768px) {
   :root {
-    /* The header stacks into a logo row plus a nav row, so the spacer,
-       scroll-padding and scroll-spy line all need the taller measure.
-       12 pad + 64 logo + 12 gap + 20 nav row + 12 pad. */
-    --header-h: 120px;
-    /* The whole lockup stays inside the band here. The nav sits directly under
-       the logo rather than beside it, so a hanging Latin line would land on the
-       nav links instead of on the page. */
-    --logo-kanji-frac: 1;
-    /* Both rows get the same 12px, and the footer band mirrors it. */
-    --header-pad-top: var(--space-3);
-    --header-pad-bottom: var(--space-3);
-    --band-hero-h: 72vw;
+    /* Header: the same arrangement as PC — the kanji fills the white band, the
+       Latin line hangs below it over the page — with a menu toggle on the right
+       in place of the nav row. Lockup 152.5px wide, 31px down, 20px in. */
+    --header-gutter: 5.33vw;
+    --logo-w: 40.67vw;
+    --header-pad-top: 8.27vw;
+    --header-pad-bottom: 0px;
+    /* The toggle: three 2px bars on a 10.5px pitch, 26.6px wide, the top bar
+       35px below the screen's top edge. */
+    --menu-toggle-w: 7.09vw;
+    --menu-toggle-bar: max(1px, 0.53vw);
+    --menu-toggle-pitch: 2.8vw;
+    --menu-toggle-top: 9.33vw;
+    /* How far the Latin line hangs below the band — what anything pinned under
+       the header has to clear. */
+    --logo-tail-h: calc(var(--logo-w) / var(--logo-aspect) * (1 - var(--logo-kanji-frac)));
+
+    /* TOP fills the screen under the header, and stays pinned there while the
+       ABOUT copy scrolls up over it. */
+    --band-hero-h: calc(100svh - var(--header-h));
+
+    /* ABOUT, set live in vertical type over the video. 見出し: ink 40px → 44.5px
+       em, char pitch 65.4px (0.47em), column pitch 81px (1.82). 本文: 12px em,
+       char pitch 18.7px (0.56em), column pitch 33.85px (2.82). */
+    --about-sp-pad-top: 28.8vw;
+    --about-sp-pad-bottom: 16.3vw;
+    --about-sp-title-size: 11.87vw;
+    --about-sp-title-track: 0.47em;
+    --about-sp-title-line: 1.82;
+    --about-sp-title-right: 17.28vw;
+    --about-sp-body-gap: 18.05vw;
+    --about-sp-body-size: 3.2vw;
+    --about-sp-body-track: 0.56em;
+    --about-sp-body-line: 2.82;
+    --about-sp-body-right: 18.5vw;
+
+    /* WORKS: four tiles stacked, 227px wide on the photos' own 1.421 crop,
+       54.6px apart, the first 98.6px below the end of the video. */
+    --works-sp-pad: 26.3vw;
+    --works-sp-tile-w: 60.53vw;
+    --works-sp-gap: 14.56vw;
+
+    /* SERVICE: the five pictograms in a 2-1-2 cross. Ink 56px → a 143.5px
+       canvas; columns 163.7px apart, rows 108.2px apart. */
+    --service-sp-icon: 38.27vw;
+    --service-sp-col: 43.65vw;
+    --service-sp-row: 28.85vw;
+
+    /* SERVICE popup: photo 307.4px wide, 66.9px under the band; the vertical
+       block 58.5px under the photo. 見出し 21.2px at 0.43em, one column, 58px in
+       from the right; 本文 11px at 0.56em on a 31.4px column pitch, 31.2px left
+       of the heading; 設備一覧 19.3px at 0.37em, 57px in from the left, its rule
+       1px and 9.6px to its right; × 28px, 63.9px below the rule. */
+    --popup-sp-photo-w: 82vw;
+    --popup-sp-photo-top: 17.84vw;
+    --popup-sp-block-top: 15.6vw;
+    --popup-sp-title-size: 5.65vw;
+    --popup-sp-title-track: 0.43em;
+    --popup-sp-title-right: 15.47vw;
+    --popup-sp-body-size: 2.93vw;
+    --popup-sp-body-track: 0.56em;
+    --popup-sp-body-line: 2.855;
+    --popup-sp-body-gap: 8.32vw;
+    --popup-sp-facility-size: 5.15vw;
+    --popup-sp-facility-track: 0.37em;
+    --popup-sp-facility-left: 15.01vw;
+    --popup-sp-rule-gap: 2.56vw;
+    --popup-sp-close-w: 7.47vw;
+    --popup-sp-close-gap: 17.04vw;
+
+    /* Footer: the two buttons side by side, 45px in from each edge, in a band
+       100.5px deep. 15px type at 0.47em; the 1px rule 11px under the ink. */
+    --footer-sp-h: 26.8vw;
+    --footer-sp-inset: 12vw;
+    --footer-sp-size: 4vw;
+    --footer-sp-track: 0.47em;
+    --footer-sp-rule-gap: 2.8vw;
+
     --marquee-h: 56vw;
     --section-pad-y: var(--space-9);
     --service-row-gap: var(--space-7);
     --service-stack-gap: var(--space-7);
     --rail-col: 0px;
-
-    /* The popup stacks, so the photo takes the width instead of a share of it
-       and the heading no longer hangs above anything. Tracking and line-height
-       stay in em, so the comp's texture carries down unchanged. */
-    --popup-photo-w: calc(100vw - 2 * var(--space-5));
-    --popup-title-size: clamp(26px, 7vw, 38px);
-    --popup-body-size: clamp(14px, 3.7vw, 18px);
-    --popup-facility-size: clamp(12.8px, 3.52vw, 17.6px); /* 80% of 16 / 4.4vw / 22 */
-    --popup-title-rise: 0px;
-    --popup-actions-drop: 0px;
 
     /* 設備一覧 has no phone artboard: the tree keeps its shape, at sizes that
        read on a phone rather than at the board's share of a 390px window. */

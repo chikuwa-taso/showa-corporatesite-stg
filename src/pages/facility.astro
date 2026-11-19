@@ -412,9 +412,11 @@ const FRAME_H = 1004;
       display: block;
     }
 
+    /* The header's Latin line hangs into the top of this strip, so the icons
+       start below it. */
     .fac-side {
       height: auto;
-      padding: var(--space-3) 0;
+      padding: calc(var(--logo-tail-h) + var(--space-3)) 0 var(--space-3);
       background: var(--fac-ground);
     }
 
@@ -434,7 +436,9 @@ const FRAME_H = 1004;
     }
 
     .dept {
-      scroll-margin-top: calc(var(--fac-nav-ring) + 2 * var(--space-3) + var(--space-5));
+      scroll-margin-top: calc(
+        var(--logo-tail-h) + var(--fac-nav-ring) + 2 * var(--space-3) + var(--space-5)
+      );
     }
 
     .dept__intro {

@@ -212,6 +212,17 @@ export const WORK_TILES: WorkTile[] = [
 ];
 
 /**
+ * The phone layout stacks the same four works in the order the phone comp sets
+ * them — orange, gold, blue, pale blue — rather than the strip's order.
+ */
+export const WORK_ORDER_PHONE = [
+  '/assets/works/oshigoto-book',
+  '/assets/works/tamuraya',
+  '/assets/works/europe-ken',
+  '/assets/works/ski-jam',
+];
+
+/**
  * The TOP hero's clips. One is dealt per page load, in the browser — the site is
  * a static build, so picking at render time would hand every visitor the same
  * one. Each basename needs a matching `.mp4` and `-poster.jpg` under
@@ -234,6 +245,21 @@ export const CONFIG = {
    */
   iconSize: 300,
 };
+
+/**
+ * The statement set live, for the phone layout — on PC it is the client's
+ * artwork. One entry per vertical column, with the breaks of the phone comp.
+ */
+export const ABOUT_TITLE_LINES = ['印刷と', '技術の', 'ショーワ'];
+export const ABOUT_BODY_LINES = [
+  'かつての印刷は、手の感覚がすべてだった。',
+  'いまの印刷は、数値とロジックが支えている。',
+  'けれど、どちらかだけでは届かない美しさがある。',
+  '昭和美術印刷は、職人の目と、最新の技術で、',
+  'この一枚に、時代を超える誠実さを込めます。',
+  '印刷の技術のショーワ。',
+  '福井から、日本のいい印刷を支えます。',
+];
 
 export const ABOUT_STATEMENT_ALT =
   '印刷と技術のショーワ　かつての印刷は、手の感覚がすべてだった。いまの印刷は、数値とロジックが支えている。けれど、どちらかだけでは届かない美しさがある。昭和美術印刷は、職人の目と、最新の技術で、この一枚に、時代を超える誠実さを込めます。印刷の技術のショーワ。福井から、日本のいい印刷を支えます。';

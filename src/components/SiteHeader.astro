@@ -30,7 +30,22 @@ const { activePage } = Astro.props;
       </picture>
     </a>
 
-    <nav class="nav" aria-label="サイト内ナビゲーション">
+    {/* Phones only: the comp puts a menu toggle where the nav row sits on PC.
+        The three bars are drawn in CSS — the brand supplies no glyph for it. */}
+    <button
+      class="header__menu"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      aria-label="メニューを開く"
+      data-menu-toggle
+    >
+      <span class="header__menu-bar"></span>
+      <span class="header__menu-bar"></span>
+      <span class="header__menu-bar"></span>
+    </button>
+
+    <nav class="nav" id="site-nav" aria-label="サイト内ナビゲーション">
       {
         NAV_ITEMS.map((item) => {
           const isActive = activePage !== undefined && item.page === activePage;
@@ -163,47 +178,122 @@ const { activePage } = Astro.props;
     opacity: var(--hover-opacity);
   }
 
+  /* The toggle only exists on phones. */
+  .header__menu {
+    display: none;
+  }
+
+  /* The phone header keeps the PC arrangement — kanji on the white band, the
+     Latin line hanging below it — at the comp's phone sizes (lp.css), with the
+     menu toggle where the nav row would be. The nav itself becomes the panel the
+     toggle opens. */
   @media (max-width: 768px) {
     .header {
-      flex-direction: column;
-      align-items: stretch;
-      gap: var(--space-3);
-      /* The gutter moves onto the children so the nav can scroll edge to edge;
-         the vertical measure stays on the tokens, which the footer mirrors. */
-      padding: var(--header-pad-top) 0 var(--header-pad-bottom);
+      align-items: flex-start;
     }
 
-    /* --logo-kanji-frac is 1 here, so the box is the whole lockup again and
-       nothing hangs below. */
+    /* Above the open menu panel, so the hanging Latin line stays on show. */
     .header__logo {
-      margin-left: var(--header-gutter);
+      z-index: 1;
     }
 
+    .header__menu {
+      position: relative;
+      display: block;
+      flex: none;
+      width: var(--menu-toggle-w);
+      height: calc(2 * var(--menu-toggle-pitch) + var(--menu-toggle-bar));
+      /* The top bar sits 35px down the screen in the comp, not on the band's
+         centre line. */
+      margin-top: calc(var(--menu-toggle-top) - var(--header-pad-top));
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--text-body);
+      cursor: pointer;
+    }
+
+    /* A larger hit area than the glyph, without moving the glyph. */
+    .header__menu::before {
+      content: '';
+      position: absolute;
+      inset: calc(-1 * var(--space-3));
+    }
+
+    .header__menu-bar {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: var(--menu-toggle-bar);
+      background: currentColor;
+      transition:
+        transform var(--dur-fast) var(--ease-brand),
+        opacity var(--dur-fast) var(--ease-brand);
+    }
+
+    .header__menu-bar:nth-child(1) {
+      top: 0;
+    }
+
+    .header__menu-bar:nth-child(2) {
+      top: var(--menu-toggle-pitch);
+    }
+
+    .header__menu-bar:nth-child(3) {
+      top: calc(2 * var(--menu-toggle-pitch));
+    }
+
+    /* Open: the outer bars cross into an ×, the middle one drops out. */
+    .header-bar.is-menu-open .header__menu-bar:nth-child(1) {
+      transform: translateY(var(--menu-toggle-pitch)) rotate(45deg);
+    }
+
+    .header-bar.is-menu-open .header__menu-bar:nth-child(2) {
+      opacity: 0;
+    }
+
+    .header-bar.is-menu-open .header__menu-bar:nth-child(3) {
+      transform: translateY(calc(-1 * var(--menu-toggle-pitch))) rotate(-45deg);
+    }
+
+    /* The panel: white, from the band down, the links stacked under the
+       hanging Latin line. */
     .nav {
-      /* The band has its bottom padding back, so the centring compensation
-         above is not wanted. */
-      margin-bottom: 0;
-    }
-
-    /* Seven items never fit a phone row. They stay one row that scrolls, since
-       the brand supplies no icon to build a menu toggle from. */
-    .nav {
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      gap: var(--space-5);
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding: 0 var(--header-gutter) var(--space-1);
-    }
-
-    .nav::-webkit-scrollbar {
+      position: fixed;
+      inset: var(--header-h) 0 0 0;
       display: none;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: var(--space-6);
+      margin: 0;
+      padding: calc(var(--logo-tail-h) + var(--space-7)) var(--header-gutter) var(--space-7);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background: var(--surface-page);
+    }
+
+    .header-bar.is-menu-open .nav {
+      display: flex;
+    }
+
+    .nav__link {
+      font-size: var(--fs-small);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .header__menu-bar {
+        transition: none;
+      }
     }
   }
 </style>
 
 <script>
   import { initLogoContrast } from "../scripts/logo-contrast";
+  import { initMenu } from "../scripts/menu";
 
   initLogoContrast();
+  initMenu();
 </script>
