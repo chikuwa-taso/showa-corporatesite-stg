@@ -16,6 +16,12 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
   {useVideo && <BackgroundVideo name={TOP_VIDEOS} />}
 </section>
 
+<script>
+  import { initHeroPin } from '../scripts/hero-pin';
+
+  initHeroPin();
+</script>
+
 <style>
   .top {
     position: relative;
@@ -26,14 +32,44 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
     background: var(--gradient-fire);
   }
 
-  /* Phones: one screen tall under the header (--band-hero-h), and pinned there
+  /* Phones: one screen tall under the header (--band-hero-h), and held there
      until the end of ABOUT, whose copy scrolls up over the running video. */
   @media (max-width: 768px) {
     .top {
+      /* Fallback only — see the scroll-driven version below. */
       position: sticky;
       top: var(--header-h);
       /* The box's own size, for the rotated video below (cqw / cqh). */
       container-type: size;
+    }
+
+    /* Safari 26+ (Liquid Glass) clips fixed and sticky elements at the floating
+       toolbar's top edge and fills the strip under the toolbar with a flat
+       colour — the page's white, since the video has no background-colour. So
+       on phones the hero is NOT sticky: it stays ordinary scrolling content,
+       which Safari does draw behind the glass, and a scroll-driven animation
+       moves it down by exactly as far as the page has scrolled — 0 to --pin,
+       over the first --pin px of scroll — which holds it still on screen the
+       way sticky did. Past --pin it keeps that offset, so it leaves the screen
+       together with the end of ABOUT. --pin (ABOUT's height, in effect) is
+       measured by hero-pin.ts. A transform, so it runs off the main thread. */
+    @supports (animation-timeline: scroll()) {
+      .top {
+        position: relative;
+        top: auto;
+        animation-name: top-hold;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+      }
+
+      /* A rule of its own: the CSS minifier folds longhands on one selector
+         into the \`animation\` shorthand, and a shorthand carrying a timeline
+         is rejected by WebKit — the whole declaration, name included, drops. */
+      .top:where(#top) {
+        animation-duration: auto;
+        animation-timeline: scroll(root block);
+        animation-range: 0px var(--pin, 0px);
+      }
     }
 
     /* The clips are landscape. Cropped straight into a portrait screen, only a
@@ -54,6 +90,15 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
       height: 100cqw;
       margin: -50cqw 0 0 -50cqh;
       transform: rotate(90deg);
+    }
+  }
+
+  @keyframes top-hold {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(var(--pin, 0px));
     }
   }
 </style>
