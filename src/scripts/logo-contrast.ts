@@ -140,11 +140,30 @@ export function initLogoContrast(): void {
     if (!bitmap) return null;
 
     const [iw, ih] = size;
-    const r = el.getBoundingClientRect();
-    if (r.width === 0 || r.height === 0) return null;
+    const box = el.getBoundingClientRect();
+    if (box.width === 0 || box.height === 0) return null;
+
+    // The phone hero turns its video 90° (TopSection), so the point is first
+    // carried back into the element's own, unrotated frame: undo its transform
+    // about the centre, against the size it was laid out at.
+    const style = getComputedStyle(el);
+    let r: { left: number; top: number; width: number; height: number } = box;
+    if (style.transform !== 'none') {
+      const cx = box.left + box.width / 2;
+      const cy = box.top + box.height / 2;
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
+      if (w === 0 || h === 0) return null;
+      const local = new DOMMatrix(style.transform)
+        .inverse()
+        .transformPoint(new DOMPoint(x - cx, y - cy));
+      r = { left: cx - w / 2, top: cy - h / 2, width: w, height: h };
+      x = cx + local.x;
+      y = cy + local.y;
+    }
 
     // Where the content sits inside the box, as a 0..1 position in the source.
-    const fit = getComputedStyle(el).objectFit || 'fill';
+    const fit = style.objectFit || 'fill';
     let u: number;
     let v: number;
     if (fit === 'cover' || fit === 'contain') {

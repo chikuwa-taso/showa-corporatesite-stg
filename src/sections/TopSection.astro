@@ -32,6 +32,28 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
     .top {
       position: sticky;
       top: var(--header-h);
+      /* The box's own size, for the rotated video below (cqw / cqh). */
+      container-type: size;
+    }
+
+    /* The clips are landscape. Cropped straight into a portrait screen, only a
+       narrow middle strip of each frame is left to be blown up to fill it —
+       which is what made them look soft. Turned 90° clockwise they are
+       portrait too, so the frame's long side runs down the screen and only the
+       overspill is trimmed (at the sides on a tall phone). The element is laid
+       out with the box's width and height swapped, centred on the box, then
+       rotated — a pure rotation, no re-encode, so the files stay the client's
+       uncompressed masters. :global because the video is BackgroundVideo's. */
+    .top :global(.bg-video) {
+      inset: auto;
+      top: 50%;
+      left: 50%;
+      width: 100cqh;
+      /* global.css caps media at 100% wide, which would square it off. */
+      max-width: none;
+      height: 100cqw;
+      margin: -50cqw 0 0 -50cqh;
+      transform: rotate(90deg);
     }
   }
 </style>
