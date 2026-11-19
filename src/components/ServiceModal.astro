@@ -283,8 +283,10 @@ const titleId = `service-modal-${service.slug}-title`;
      one column at the right with the copy beside it, and 設備一覧 — ruled down
      its right side — over the × at the left. */
   @media (max-width: 768px) {
+    /* minmax(0, …): the popup is never wider than the screen, whatever its
+       content measures. */
     .modal {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .modal :global(.rail) {
@@ -325,10 +327,15 @@ const titleId = `service-modal-${service.slug}-title`;
       margin: 0;
     }
 
+    /* The column breaks are fixed (bodyLines), so nothing may wrap. Left to
+       wrap, a vertical block's line length falls back to a guess the engines
+       disagree on — Safari broke these into four and five columns, and the
+       wider block pushed the whole popup past the screen's edge. */
     .modal__body {
       grid-column: 3;
       grid-row: 2;
       align-self: start;
+      white-space: nowrap;
       margin: var(--popup-sp-block-top) var(--popup-sp-body-gap) 0 0;
       font-size: var(--popup-sp-body-size);
       line-height: var(--popup-sp-body-line);
@@ -342,6 +349,7 @@ const titleId = `service-modal-${service.slug}-title`;
       margin: var(--popup-sp-block-top) var(--popup-sp-title-right) 0 0;
       font-size: var(--popup-sp-title-size);
       line-height: 1;
+      white-space: nowrap;
       letter-spacing: var(--popup-sp-title-track);
     }
 
