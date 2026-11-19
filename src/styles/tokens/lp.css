@@ -285,6 +285,22 @@
     --popup-sp-close-gap: calc(17.04 * var(--pu));
     --popup-sp-pad-bottom: calc(6 * var(--pu));
 
+    /* RECRUIT: the 募集要項 table off the phone comp — 20.7px from each edge,
+       an 81px label column, every cell 10.6px type on a 17px line (a one-line
+       row 35.6px deep). Small lines 9.3px; the 2交代制 note 7px so it stays
+       on one line; the two longest labels 8.5px. */
+    --rt-sp-gutter: 5.51vw;
+    --rt-sp-label-w: 21.62vw;
+    --rt-sp-text: 2.83vw;
+    --rt-sp-small: 2.48vw;
+    --rt-sp-tiny: 1.88vw;
+    --rt-sp-label-small: 2.27vw;
+    --rt-sp-line: 1.6;
+    --rt-sp-pad-y: 2.4vw;
+    --rt-sp-label-x: 3.57vw;
+    --rt-sp-cell-x: 4.96vw;
+    --rt-sp-pad-right: 2.4vw;
+
     /* Footer: the two buttons side by side, 45px in from each edge, in a band
        100.5px deep. 15px type at 0.47em; the 1px rule 11px under the ink. */
     --footer-sp-h: 26.8vw;

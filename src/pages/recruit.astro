@@ -109,9 +109,25 @@ import {
     letter-spacing: var(--ls-body);
   }
 
+  /* Phones: everything else on the page lines up with the comp's table — the
+     same edges (20.7px in, a little wider than the layout's gutter) and the
+     same untracked type; the headings keep their PC proportion to it. */
   @media (max-width: 768px) {
     .recruit {
       gap: var(--space-7);
+      margin-inline: calc(var(--rt-sp-gutter) - var(--space-5));
+    }
+
+    .recruit__intro,
+    .recruit__note {
+      font-size: var(--rt-sp-text);
+      line-height: var(--rt-sp-line);
+      letter-spacing: 0;
+    }
+
+    .recruit__heading {
+      font-size: calc(var(--rt-sp-text) * 22 / 13);
+      letter-spacing: var(--ls-heading);
     }
 
     .recruit__spec {

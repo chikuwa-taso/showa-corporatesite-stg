@@ -27,13 +27,21 @@ function toLines(cells: RecruitCell[]): RecruitCell[][] {
       {
         rows.map((row) => (
           <tr>
-            <th scope="row">{row.label}</th>
+            <th scope="row" class:list={[row.phoneLabelSmall && 'spec__th--sp-small']}>
+              {row.label}
+            </th>
             <td>
+              {/* Rows with phone breaks carry both sets of lines; CSS shows one. */}
               {toLines(row.cells).map((line) => (
-                <div class="spec__line">
+                <div class:list={['spec__line', row.phone && 'spec__pc']}>
                   {line.map((cell) =>
                     cell.small ? <span class="spec__small">{cell.text}</span> : <span>{cell.text}</span>,
                   )}
+                </div>
+              ))}
+              {row.phone?.map((cell) => (
+                <div class:list={['spec__line spec__sp', cell.tiny && 'spec__tiny']}>
+                  <span class:list={[cell.small && 'spec__small']}>{cell.text}</span>
                 </div>
               ))}
             </td>
@@ -93,18 +101,74 @@ function toLines(cells: RecruitCell[]): RecruitCell[][] {
     font-size: var(--fs-label);
   }
 
+  .spec__sp {
+    display: none;
+  }
+
+  /* Phones, per the comp (昭和サイト＿スマホ版デザイン＿採用情報表.jpg, a 375px
+     screen; values in lp.css as --rt-sp-*): the table fits the screen with no
+     sideways scroll, the cells break where the comp breaks them, and the type
+     runs untracked at one size throughout. */
   @media (max-width: 768px) {
-    .spec {
-      min-width: 560px;
+    .spec-scroll {
+      overflow-x: visible;
     }
 
-    .spec th {
-      width: 140px;
+    /* Japanese face only: the comp's line lengths are Zen Kaku Gothic
+       Antique's, digits included — Adapter Mono's wider figures would push
+       several of its lines past the cell. */
+    .spec {
+      table-layout: fixed;
+      font-family: 'Zen Kaku Gothic Antique', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+      font-size: var(--rt-sp-text);
+      line-height: var(--rt-sp-line);
+      letter-spacing: 0;
+    }
+
+    .spec--fit {
+      width: 100%;
     }
 
     .spec th,
-    .spec td {
-      padding: var(--space-3) var(--space-4);
+    .spec td,
+    .spec--fit th,
+    .spec--fit td {
+      padding: var(--rt-sp-pad-y) var(--rt-sp-pad-right) var(--rt-sp-pad-y) var(--rt-sp-cell-x);
+    }
+
+    .spec th,
+    .spec--fit th {
+      width: var(--rt-sp-label-w);
+      padding-left: var(--rt-sp-label-x);
+      padding-right: 0;
+    }
+
+    .spec__th--sp-small {
+      font-size: var(--rt-sp-label-small);
+    }
+
+    .spec__pc {
+      display: none;
+    }
+
+    /* The breaks are the comp's; nothing else may break a line. */
+    .spec__sp {
+      display: block;
+      white-space: nowrap;
+    }
+
+    .spec__line + .spec__line {
+      margin-top: 0;
+    }
+
+    .spec__small {
+      font-size: var(--rt-sp-small);
+    }
+
+    /* On the line itself, not a span inside it, so the line box shrinks with
+       the type — the comp's row is that much shallower. */
+    .spec__tiny {
+      font-size: var(--rt-sp-tiny);
     }
   }
 </style>

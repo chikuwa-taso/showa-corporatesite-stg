@@ -290,8 +290,25 @@ export const CONTACT_NOTES = [
 /* ---------------------------------------------------------------- recruit */
 
 /** One line inside a spec-table cell. `sameLine` joins it onto the previous. */
-export type RecruitCell = { text: string; small?: boolean; sameLine?: boolean };
-export type RecruitRow = { label: string; cells: RecruitCell[] };
+export type RecruitCell = {
+  text: string;
+  small?: boolean;
+  /** Phone only: smaller still, so a long note keeps to one line. */
+  tiny?: boolean;
+  sameLine?: boolean;
+};
+export type RecruitRow = {
+  label: string;
+  cells: RecruitCell[];
+  /**
+   * Phone only: the cell broken into lines where the phone comp breaks it
+   * (昭和サイト＿スマホ版デザイン＿採用情報表.jpg), one entry per line. Rows
+   * without it show their `cells` on phones too.
+   */
+  phone?: RecruitCell[];
+  /** Phone only: the comp sets the longest labels a size down. */
+  phoneLabelSmall?: boolean;
+};
 
 export const RECRUIT_INTRO =
   '現在、下記の職種で募集を行っています。応募を検討される方は下記をご覧ください。';
@@ -304,12 +321,17 @@ export const RECRUIT_GRADUATE_ROWS: RecruitRow[] = [
   {
     label: '応募資格',
     cells: [{ text: '大卒・大学院・短大・専門学校、高専を卒業見込みの方　第2新卒も可能' }],
+    phone: [{ text: '大卒・大学院・短大・専門学校、' }, { text: '高専を卒業見込みの方　第2新卒も可能' }],
   },
   {
     label: '勤務時間',
     cells: [
       { text: '8:30 〜 17:30 シフト制有り　' },
       { text: '※ 印刷オペレーターは2交代制 8:30〜17:30 ／ 20:30〜5:30', small: true, sameLine: true },
+    ],
+    phone: [
+      { text: '8:30 〜 17:30 シフト制有り' },
+      { text: '※ 印刷オペレーターは2交代制 8:30〜17:30 ／ 20:30〜5:30', tiny: true },
     ],
   },
   { label: '時間外労働', cells: [{ text: 'あり　月平均4時間程度' }] },
@@ -328,6 +350,7 @@ export const RECRUIT_GRADUATE_ROWS: RecruitRow[] = [
   {
     label: '諸手当',
     cells: [{ text: '能力給・役職手当・家族手当・通勤交通費・残業手当　等' }],
+    phone: [{ text: '能力給・役職手当・家族手当・' }, { text: '通勤交通費・残業手当　等' }],
   },
   { label: '昇給', cells: [{ text: 'あり（年1回）' }] },
   { label: '賞与', cells: [{ text: '年2回（7月、12月）' }] },
@@ -337,20 +360,30 @@ export const RECRUIT_GRADUATE_ROWS: RecruitRow[] = [
       { text: '日曜・祝日・土曜月3回程度（年間休日107日）、有給休暇、' },
       { text: '年末年始休暇、夏季休暇、産前・産後休暇、育児・介護休暇、慶弔休暇' },
     ],
+    phone: [
+      // Halfwidth ･ as in the comp — the fullwidth dot leaves no room for 、.
+      { text: '日曜･祝日･土曜月3回程度（年間休日107日）、' },
+      { text: '有給休暇、年末年始休暇、夏季休暇、' },
+      { text: '産前・産後休暇、育児・介護休暇、慶弔休暇' },
+    ],
   },
   {
     label: '採用実績',
     cells: [{ text: '福井大学　福井工業大学　仁愛大学　富山大学　新潟大学　静岡大学　広島大学' }],
+    phone: [{ text: '福井大学　福井工業大学　仁愛大学' }, { text: '富山大学　新潟大学　静岡大学　広島大学' }],
   },
   { label: '保険', cells: [{ text: '社会保険完備' }] },
   {
     label: '福利厚生・待遇',
     cells: [{ text: 'マイカー通勤可、健康診断、永年勤続表彰、会員制リゾートホテル利用可' }],
+    phone: [{ text: 'マイカー通勤可、健康診断、永年勤続表彰、' }, { text: '会員制リゾートホテル利用可' }],
+    phoneLabelSmall: true,
   },
-  { label: '受動喫煙対策', cells: [{ text: '敷地内禁煙' }] },
+  { label: '受動喫煙対策', cells: [{ text: '敷地内禁煙' }], phoneLabelSmall: true },
   {
     label: '連絡先',
     cells: [{ text: '担当：総務部　前川　0776-53-5353　（連絡後、履歴書、成績証明書を提出）' }],
+    phone: [{ text: '担当：総務部　前川　0776-53-5353' }, { text: '（連絡後、履歴書、成績証明書を提出）' }],
   },
   { label: '選考方法', cells: [{ text: '面接・適正診断' }] },
 ];
