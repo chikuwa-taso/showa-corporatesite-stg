@@ -256,22 +256,29 @@
        from the right; 本文 11px at 0.56em on a 31.4px column pitch, 31.2px left
        of the heading; 設備一覧 19.3px at 0.37em, 57px in from the left, its rule
        1px and 9.6px to its right; × 28px, 63.9px below the rule. */
-    --popup-sp-photo-w: 82vw;
-    --popup-sp-photo-top: 17.84vw;
-    --popup-sp-block-top: 15.6vw;
-    --popup-sp-title-size: 5.65vw;
+    /* The popup is one board, the comp's 375 × 571.5 screen under the band,
+       scaled to whichever runs out first — the width or the height — so the
+       whole of it always shows, on any phone and either way up. --pu is that
+       board's 1/100 of its width: 1vw while the width decides, less when a
+       short screen does (571.5 / 3.75 = 152.4 units tall). */
+    --pu: min(1vw, (100svh - var(--header-h)) / 152.4);
+    --popup-sp-photo-w: calc(82 * var(--pu));
+    --popup-sp-photo-top: calc(17.84 * var(--pu));
+    --popup-sp-block-top: calc(15.6 * var(--pu));
+    --popup-sp-title-size: calc(5.65 * var(--pu));
     --popup-sp-title-track: 0.43em;
-    --popup-sp-title-right: 15.47vw;
-    --popup-sp-body-size: 2.93vw;
+    --popup-sp-title-right: calc(15.47 * var(--pu));
+    --popup-sp-body-size: calc(2.93 * var(--pu));
     --popup-sp-body-track: 0.56em;
     --popup-sp-body-line: 2.855;
-    --popup-sp-body-gap: 8.32vw;
-    --popup-sp-facility-size: 5.15vw;
+    --popup-sp-body-gap: calc(8.32 * var(--pu));
+    --popup-sp-facility-size: calc(5.15 * var(--pu));
     --popup-sp-facility-track: 0.37em;
-    --popup-sp-facility-left: 15.01vw;
-    --popup-sp-rule-gap: 2.56vw;
-    --popup-sp-close-w: 7.47vw;
-    --popup-sp-close-gap: 17.04vw;
+    --popup-sp-facility-left: calc(15.01 * var(--pu));
+    --popup-sp-rule-gap: calc(2.56 * var(--pu));
+    --popup-sp-close-w: calc(7.47 * var(--pu));
+    --popup-sp-close-gap: calc(17.04 * var(--pu));
+    --popup-sp-pad-bottom: calc(6 * var(--pu));
 
     /* Footer: the two buttons side by side, 45px in from each edge, in a band
        100.5px deep. 15px type at 0.47em; the 1px rule 11px under the ink. */

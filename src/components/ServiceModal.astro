@@ -316,7 +316,13 @@ const titleId = `service-modal-${service.slug}-title`;
       column-gap: 0;
       justify-content: stretch;
       align-content: start;
-      padding: var(--popup-sp-photo-top) 0 var(--space-7);
+      /* The board itself: 100 units wide, centred, with every measure inside
+         it in the same units (lp.css) — so when a short screen shrinks it, it
+         shrinks as one piece and keeps the comp's proportions. */
+      justify-self: center;
+      width: calc(100 * var(--pu));
+      min-height: 0;
+      padding: var(--popup-sp-photo-top) 0 var(--popup-sp-pad-bottom);
     }
 
     .modal__photo {
