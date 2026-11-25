@@ -17,6 +17,10 @@
 #
 # Flat artwork (icons, the statement, the map) keeps the pair: there a lossless
 # WebP really is smaller than the PNG and pixel-identical to it.
+#
+# ONE EXCEPTION: the SERVICE popup photos. Stored losslessly they ran 2.5–7.9MB
+# each and the popups opened visibly late, so they now ship as a resized set of
+# high-quality lossy WebPs (see that section for the settings and why).
 set -euo pipefail
 
 ROOT="${1:-/Users/leosmacbook/Downloads}"
@@ -139,22 +143,44 @@ done
 # box give or take a pixel of anti-aliasing, so one rectangle with a 3px inset
 # to trim the seam serves all five, and --popup-photo-ratio matches the result.
 #
-# The crop is the whole operation now: no scale filter, so the pixels inside the
-# rectangle are the composite's own. The 1720px q82 JPEGs these replace were half
-# the linear resolution of the source.
+# The crop itself has no scale filter, so the largest rung below carries the
+# composite's own full resolution.
 #
-# These are photographs the client happened to deliver as PNG, which is the worst
-# possible container for them — the five crops come to 41MB as PNG. Lossless WebP
-# stores the identical pixels in 28MB, so that is what ships, and the PNG is only
-# an intermediate. Verified per file below: every channel matches exactly.
+# Stored losslessly these were 26MB for the five (2.5–7.9MB each) and the popups
+# opened visibly late. Yet the photo is drawn at 44.68vw on desktop and at most
+# 82vw on a phone — about 1700 device px on a 1920px Retina screen, 960 on a 3x
+# phone — so a visitor was downloading 2–3x the pixels they could ever see, in a
+# container that spends most of its bytes reproducing sensor noise exactly.
+#
+# So each crop now ships as a srcset ladder ($POPUP_WIDTHS, topping out at the
+# crop's own 3426px so nothing is upscaled) of lossy WebP at q90, -m 6,
+# -sharp_yuv (keeps the red gloves' edges from bleeding through 4:2:0 chroma).
+# Downscales use Lanczos. At 1:1 the q90 full-size file is indistinguishable from
+# the lossless one by eye; what it drops is the grain's exact pixel pattern, not
+# detail. ServiceModal.astro's `sizes` lets the browser pick the rung it needs.
+POPUP_WIDTHS="960 1440 2000 2600 3426"
+
+encode_popup () {
+  local png=$1 dest=$2 w
+  for w in $POPUP_WIDTHS; do
+    if [ "$w" = 3426 ]; then
+      cwebp -quiet -q 90 -m 6 -sharp_yuv -metadata none "$png" -o "$OUT/service/$dest-$w.webp"
+    else
+      ffmpeg -y -v error -i "$png" -vf "scale=$w:-1:flags=lanczos" "$OUT/service/$dest-tmp.png"
+      cwebp -quiet -q 90 -m 6 -sharp_yuv -metadata none "$OUT/service/$dest-tmp.png" -o "$OUT/service/$dest-$w.webp"
+      rm -f "$OUT/service/$dest-tmp.png"
+    fi
+  done
+}
+
 crop_popup () {
   local file=$1 dest=$2 x=$3 y=$4
   have "$POPUP_SRC/$file" || return 0
-  echo "popup: $dest (native crop, lossless)"
+  echo "popup: $dest (native crop → q90 WebP at $POPUP_WIDTHS)"
   ffmpeg -y -v error -i "$POPUP_SRC/$file" \
     -vf "crop=3426:1968:$((x + 3)):$((y + 3))" "$OUT/service/$dest.png"
-  cwebp -quiet -lossless -z 9 "$OUT/service/$dest.png" -o "$OUT/service/$dest.webp"
-  rm -f "$OUT/service/$dest.png" "$OUT/service/$dest.jpg"
+  encode_popup "$OUT/service/$dest.png" "$dest"
+  rm -f "$OUT/service/$dest.png" "$OUT/service/$dest.jpg" "$OUT/service/$dest.webp"
 }
 
 crop_popup "昭和美術印刷アイコン＿オフリン印刷_POPUP.png"  offset-printing   292 806
