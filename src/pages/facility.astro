@@ -9,6 +9,24 @@ import { DEPARTMENTS } from '../data/facility';
 /** Frames are measured on the 7681px board; 76.81 board px is 1vw. */
 const BOARD_PER_VW = 76.81;
 const FRAME_H = 1004;
+
+/** Phone-only line breaks, used only when they rebuild the PC text exactly. */
+const phoneLines = (lines: string[] | undefined, text: string): string[] =>
+  lines && lines.join('') === text ? lines : [text];
+
+/** A machine name in pieces that a phone line may break between: after a ／
+    or a ・, and before a （ or a …. So a long name breaks between maker and
+    model, or between words, never leaving a lone character behind. On PC the
+    pieces are plain inline text. */
+const nameParts = (name: string): string[] => name.split(/(?<=[／・])|(?=[（…])/);
+
+/** Text cut into runs, the Latin ones flagged: on phones the comp tracks
+    letters and figures tighter than kana. On PC the runs are plain text. */
+const runs = (text: string): { t: string; latin: boolean }[] =>
+  text
+    .split(/([A-Za-z0-9][A-Za-z0-9.\-/×]*)/)
+    .filter((t) => t !== '')
+    .map((t) => ({ t, latin: /^[A-Za-z0-9]/.test(t) }));
 ---
 
 <BaseLayout
@@ -57,15 +75,32 @@ const FRAME_H = 1004;
                 <source srcset={asset(`/assets/facility/icon-${d.icon}.webp`)} type="image/webp" />
                 <img class="dept__icon" src={asset(`/assets/facility/icon-${d.icon}.png`)} alt="" />
               </picture>
-              <p class="dept__tag">{d.tagline}</p>
-              <h2 class="dept__title" id={`fac-${d.id}-title`}>{d.title}</h2>
+              <p class="dept__tag">
+                <span class="pc-t">{d.tagline}</span>
+                <span class="sp-t">
+                  {phoneLines(d.tagLines, d.tagline).map((line, i) => (<>{i > 0 && <br />}{line}</>))}
+                </span>
+              </p>
+              <h2
+                class="dept__title"
+                id={`fac-${d.id}-title`}
+                style={d.phoneTitleTrack ? `--title-track:${d.phoneTitleTrack}` : undefined}
+              >
+                <span class="pc-t">{d.title}</span>
+                <span class="sp-t">
+                  {phoneLines(d.titleLines, d.title).map((line, i) => (<>{i > 0 && <br />}{line}</>))}
+                </span>
+              </h2>
             </header>
 
             <div class:list={['dept__tree', !d.body && 'dept__tree--bare']}>
               {d.body && (
                 <div class="dept__intro">
                   {d.body.map((line) => (
-                    <p>{line}</p>
+                    <p>
+                      <span class="pc-t">{line}</span>
+                      <span class="sp-t">{runs(line).map((r) => (r.latin ? <span class="lt">{r.t}</span> : r.t))}</span>
+                    </p>
                   ))}
                 </div>
               )}
@@ -74,12 +109,33 @@ const FRAME_H = 1004;
                 {d.machines.map((m) => (
                   <li class:list={['machine', m.photo && 'machine--photo']}>
                     <p class="machine__head">
-                      <span class="machine__name">{m.name}</span>
-                      {m.spec && <span class="machine__spec">{m.spec}</span>}
+                      <span class="machine__name">
+                        <span class="pc-t">{m.name}</span>
+                        <span class="sp-t">
+                          {nameParts(m.name).map((part) => (
+                            <span class:list={['machine__name-part', part.startsWith('（') && 'machine__name-part--paren']}>
+                              {runs(part).map((r) => (r.latin ? <span class="lt">{r.t}</span> : r.t))}
+                            </span>
+                          ))}
+                        </span>
+                      </span>
+                      {m.spec && (
+                        <span class="machine__spec">
+                          <span class="pc-t">{m.spec}</span>
+                          <span class="sp-t">{runs(m.spec).map((r) => (r.latin ? <span class="lt">{r.t}</span> : r.t))}</span>
+                        </span>
+                      )}
                     </p>
-                    {m.notes?.map((n) => (
-                      <p class="machine__note">{n}</p>
-                    ))}
+                    {m.notes && (
+                      <div class="machine__notes">
+                        {m.notes.map((n) => (
+                          <p class="machine__note">
+                            <span class="pc-t">{n}</span>
+                            <span class="sp-t">{runs(n).map((r) => (r.latin ? <span class="lt">{r.t}</span> : r.t))}</span>
+                          </p>
+                        ))}
+                      </div>
+                    )}
                     {m.photo && (
                       <div
                         class="machine__frame"
@@ -381,7 +437,7 @@ const FRAME_H = 1004;
     letter-spacing: var(--fac-note-track);
   }
 
-  .machine__head + .machine__note {
+  .machine__head + .machine__notes {
     margin-top: var(--fac-name-to-notes);
   }
 
@@ -403,20 +459,38 @@ const FRAME_H = 1004;
 
   /* --------------------------------------------------------------- mobile */
 
-  /* No phone artboard was drawn. The index turns into a row pinned under the
-     header, the rails go, and the tree keeps its shape at a readable size
-     (the sizes themselves are set in lp.css). */
+  /* Each piece of copy is set twice: as one unbroken run for PC (.pc-t),
+     exactly as before, and with the phone comp's line breaks and Latin runs
+     for phones (.sp-t). Breaking the PC run into elements would re-shape it
+     and move glyphs by a sub-pixel, so the two never share markup. Only one is
+     ever displayed, so a screen reader meets each text once. */
+  .sp-t {
+    display: none;
+  }
+
   @media (max-width: 768px) {
-    /* Stacked instead: the index sits in the flow above the content. */
+    .pc-t {
+      display: none;
+    }
+
+    .sp-t {
+      display: inline;
+    }
+  }
+
+  /* Phones, per the phone comp (昭和サイト＿スマホ版デザイン＿設備一覧.jpg, a
+     375px screen; values in lp.css as --fac-sp-*). The index is a row pinned
+     under the header, every department opens on a full-width rule with its
+     title beside a large pictogram, the tagline hangs off a bar, the body runs
+     the full measure, and the machines branch off a tree underneath. */
+  @media (max-width: 768px) {
     .facility {
       display: block;
     }
 
-    /* The header's Latin line hangs into the top of this strip, so the icons
-       start below it. */
     .fac-side {
       height: auto;
-      padding: calc(var(--logo-tail-h) + var(--space-3)) 0 var(--space-3);
+      padding: var(--fac-sp-nav-top) var(--fac-sp-gutter) var(--fac-sp-nav-bottom);
       background: var(--fac-ground);
     }
 
@@ -427,27 +501,211 @@ const FRAME_H = 1004;
     .fac-nav {
       position: static;
       flex-direction: row;
-      justify-content: center;
-      gap: var(--space-3);
+      justify-content: space-between;
+      gap: 0;
     }
 
+    .fac-nav__item {
+      width: var(--fac-sp-ring);
+      height: var(--fac-sp-ring);
+      border-width: 1px;
+    }
+
+    .fac-nav__item img {
+      height: var(--fac-sp-nav-icon);
+    }
+
+    /* Japanese face throughout, Latin included: the comp's letters and
+       figures are proportional (a narrow I), not Adapter Mono's fixed width. */
     .facility__content {
-      padding-right: var(--space-5);
+      padding: 0 0 var(--fac-sp-page-bottom);
+      font-family: 'Zen Kaku Gothic Antique', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
     }
 
+    .lt {
+      letter-spacing: var(--lt-track);
+    }
+
+    /* Each department opens on its rule, which lands just under the pinned
+       index on a jump. */
     .dept {
-      scroll-margin-top: calc(
-        var(--logo-tail-h) + var(--fac-nav-ring) + 2 * var(--space-3) + var(--space-5)
-      );
+      margin: 0 var(--fac-sp-gutter);
+      padding: var(--fac-sp-head-top) 0 var(--fac-sp-dept-bottom);
+      border-top: 1px solid var(--fac-ink);
+      scroll-margin-top: var(--fac-sp-index-h);
     }
 
+    .dept + .dept {
+      margin-top: 0;
+    }
+
+    /* Title at the left, pictogram at the right, the tagline across under
+       whichever of the two runs longer. */
+    .dept__head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      min-height: 0;
+      padding-left: 0;
+    }
+
+    .dept__head :global(picture) {
+      position: static;
+      grid-column: 2;
+      grid-row: 1;
+      margin-top: var(--fac-sp-icon-top);
+    }
+
+    .dept__icon {
+      height: var(--fac-sp-icon);
+    }
+
+    .dept__title {
+      grid-column: 1;
+      grid-row: 1;
+      margin: 0;
+      font-size: var(--fac-sp-title-size);
+      line-height: var(--fac-sp-title-line);
+      letter-spacing: var(--title-track, var(--fac-sp-title-track));
+      white-space: nowrap;
+    }
+
+    .dept__tag {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      margin-top: var(--fac-sp-tag-top);
+      padding: var(--fac-sp-tag-pad-top) 0 var(--fac-sp-tag-pad-bottom) var(--fac-sp-tag-x);
+      border-left: 1px solid var(--fac-ink);
+      font-size: var(--fac-sp-tag-size);
+      line-height: var(--fac-sp-tag-line);
+      letter-spacing: var(--fac-sp-tag-track);
+      white-space: nowrap;
+    }
+
+    .dept__tree {
+      margin-top: 0;
+    }
+
+    /* The body leaves the tree and runs the full measure as one paragraph —
+       the PC lines flow together. */
     .dept__intro {
-      width: 100%;
+      width: auto;
+      margin-top: var(--fac-sp-body-top);
+      padding: 0;
+      border: 0;
+      text-align: justify;
     }
 
-    /* Every frame takes the column's width; each keeps its own proportions. */
+    .dept__intro p {
+      display: inline;
+      font-size: var(--fac-sp-body-size);
+      line-height: var(--fac-sp-body-line);
+      letter-spacing: var(--fac-sp-body-track);
+      --lt-track: var(--fac-sp-body-lt);
+    }
+
+    .dept__intro p:first-child {
+      margin-top: 0;
+    }
+
+    .dept__machines {
+      margin-top: var(--fac-sp-tree-top);
+    }
+
+    .dept__tree--bare .dept__machines {
+      margin-top: var(--fac-sp-body-top);
+    }
+
+    .machine,
+    .machine:first-child,
+    .dept__tree--bare .machine:first-child {
+      --pt: var(--fac-sp-first);
+      padding-left: var(--fac-sp-text-x);
+    }
+
+    .machine + .machine {
+      --pt: var(--fac-sp-item-gap);
+    }
+
+    .machine--photo + .machine {
+      --pt: var(--fac-sp-after-frame);
+    }
+
+    /* The stub and the └ meet the centre of the name's first line. */
+    .machine::after {
+      top: calc(var(--pt) + var(--fac-sp-name-size) * var(--fac-sp-name-line) / 2 - 0.5px);
+      width: var(--fac-sp-stub);
+      height: 1px;
+    }
+
+    .machine::before {
+      width: 1px;
+    }
+
+    .machine:last-child::before {
+      height: calc(var(--pt) + var(--fac-sp-name-size) * var(--fac-sp-name-line) / 2 + 0.5px);
+    }
+
+    /* Name, then the spec on a line of its own. A long name breaks between
+       maker and model (after ／) or before a （, never mid-word. */
+    .machine__head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .machine__name {
+      font-size: var(--fac-sp-name-size);
+      line-height: var(--fac-sp-name-line);
+      letter-spacing: var(--fac-sp-name-track);
+      --lt-track: var(--fac-sp-name-lt);
+    }
+
+    .machine__name-part {
+      display: inline-block;
+    }
+
+    /* A fullwidth （ sits at the right of its em, so opening a line it would
+       read as an indent; pulled back to the line's start, as in the comp. */
+    .machine__name-part--paren {
+      margin-left: -0.5em;
+    }
+
+    .machine__spec {
+      margin-top: var(--fac-sp-spec-top);
+      font-size: var(--fac-sp-spec-size);
+      line-height: 1.6;
+      letter-spacing: var(--fac-sp-spec-track);
+      --lt-track: var(--fac-sp-name-lt);
+    }
+
+    /* The notes run on as one passage, divided by ／ as in the comp. */
+    .machine__notes,
+    .machine__head + .machine__notes {
+      margin-top: var(--fac-sp-notes-top);
+      padding-right: var(--fac-sp-notes-right);
+      font-size: var(--fac-sp-note-size);
+      line-height: var(--fac-sp-note-line);
+      letter-spacing: var(--fac-sp-note-track);
+      --lt-track: var(--fac-sp-note-lt);
+    }
+
+    .machine__note {
+      display: inline;
+      font-size: inherit;
+      line-height: inherit;
+      letter-spacing: inherit;
+    }
+
+    .machine__note + .machine__note::before {
+      content: ' ／ ';
+    }
+
+    /* Every frame the same height; each keeps its own proportions. */
     .machine__frame {
-      width: 100%;
+      width: auto;
+      height: var(--fac-sp-frame-h);
+      margin-top: var(--fac-sp-frame-top);
+      border-width: 1px;
     }
   }
 </style>

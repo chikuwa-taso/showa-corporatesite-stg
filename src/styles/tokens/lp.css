@@ -315,35 +315,55 @@
     --service-stack-gap: var(--space-7);
     --rail-col: 0px;
 
-    /* 設備一覧 has no phone artboard: the tree keeps its shape, at sizes that
-       read on a phone rather than at the board's share of a 390px window. */
-    --fac-tree-x: var(--space-5);
-    --fac-text-x: 28px;
-    --fac-stub: 16px;
-    --fac-head-x: 64px;
-    --fac-icon: 48px;
-    --fac-title-top: 26px;
-    --fac-tag-size: 10px;
-    --fac-title-size: 20px;
-    --fac-body-size: 12px;
-    --fac-body-line: 2.2;
-    --fac-name-size: 15px;
-    --fac-note-size: 11px;
-    --fac-note-line: 2;
-    --fac-spec-gap: 12px;
-    --fac-page-top: 32px;
-    --fac-page-bottom: 48px;
-    --fac-section-gap: 64px;
-    --fac-head-to-tree: 24px;
-    --fac-body-lift: 0px;
-    --fac-body-to-divider: 20px;
-    --fac-divider-to-first: 24px;
-    --fac-tree-to-first: 20px;
-    --fac-name-to-notes: 6px;
-    --fac-to-frame: 14px;
-    --fac-item-gap: 18px;
-    --fac-after-frame: 20px;
-    --fac-nav-ring: 40px;
-    --fac-nav-icon: 20px;
+    /* 設備一覧, off the phone comp (a 375px screen, px ÷ 3.75 → vw). Type sizes
+       from ink ÷ 0.905, tracking from character pitch, line-heights from line
+       pitch; vertical gaps are ink-to-ink less each line's half-leading. */
+    --fac-sp-gutter: 5.57vw; /* 20.9: rules, title, body, tree */
+    --fac-sp-nav-top: 13.57vw; /* band → ring top, clear of the Latin line */
+    --fac-sp-nav-bottom: 9.2vw; /* ring → first rule */
+    --fac-sp-ring: 9.47vw; /* 35.5 */
+    --fac-sp-nav-icon: 4.8vw;
+    --fac-sp-index-h: calc(var(--fac-sp-nav-top) + var(--fac-sp-ring) + var(--fac-sp-nav-bottom));
+    --fac-sp-head-top: 9.12vw; /* rule → title */
+    --fac-sp-dept-bottom: 14.93vw; /* last line → next rule */
+    --fac-sp-page-bottom: 14.93vw;
+    --fac-sp-icon: 22.5vw; /* 84.4 */
+    --fac-sp-icon-top: 3.2vw;
+    --fac-sp-title-size: 7.6vw; /* 28.5, pitch 43.6 */
+    --fac-sp-title-track: 0.53em;
+    --fac-sp-title-line: 1.96;
+    --fac-sp-tag-top: 4.83vw;
+    --fac-sp-tag-pad-top: 3.33vw;
+    --fac-sp-tag-pad-bottom: 2.27vw;
+    --fac-sp-tag-x: 11.23vw; /* bar → text: 42.1 */
+    --fac-sp-tag-size: 3.07vw; /* 11.5, pitch 20.9 */
+    --fac-sp-tag-track: 0.82em;
+    --fac-sp-tag-line: 2.9;
+    --fac-sp-body-top: 6vw;
+    --fac-sp-body-size: 2.85vw; /* 10.7, pitch 14.5 */
+    --fac-sp-body-track: 0.35em;
+    --fac-sp-body-line: 2.76;
+    --fac-sp-body-lt: 0.15em; /* letters and figures run tighter than kana */
+    --fac-sp-tree-top: 6.8vw;
+    --fac-sp-text-x: 9.25vw; /* rule → name: 34.7 */
+    --fac-sp-stub: 4.72vw; /* 17.7 */
+    --fac-sp-first: 1.97vw;
+    --fac-sp-item-gap: 10.48vw; /* 39.3 after notes */
+    --fac-sp-after-frame: 12.72vw; /* 47.7 after a frame */
+    --fac-sp-name-size: 4.61vw; /* 17.3, pitch 24.3 */
+    --fac-sp-name-track: 0.4em;
+    --fac-sp-name-line: 1.95;
+    --fac-sp-name-lt: 0.3em;
+    --fac-sp-spec-top: 1.2vw;
+    --fac-sp-spec-size: 2.53vw; /* 9.5, pitch 12.8 */
+    --fac-sp-spec-track: 0.55em; /* pitch 15 */
+    --fac-sp-notes-top: 4.96vw;
+    --fac-sp-notes-right: 7.9vw;
+    --fac-sp-note-size: 2.16vw; /* 8.1, pitch 11.5 */
+    --fac-sp-note-track: 0.42em;
+    --fac-sp-note-line: 2.28;
+    --fac-sp-note-lt: 0.25em;
+    --fac-sp-frame-top: 7.44vw;
+    --fac-sp-frame-h: 22.72vw; /* 85.2 */
   }
 }

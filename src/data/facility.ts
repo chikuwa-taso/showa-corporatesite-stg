@@ -25,7 +25,15 @@ export interface Department {
   /** Pictogram slug, shared with SERVICE. */
   icon: string;
   tagline: string;
+  /** Phone only: the tagline's lines, as the phone comp breaks it. Joined, they
+      must equal `tagline` — PC shows the joined text. */
+  tagLines?: string[];
   title: string;
+  /** Phone only: the title's lines beside the pictogram. Joined = `title`. */
+  titleLines?: string[];
+  /** Phone only: tighter tracking for a title line that would otherwise run
+      into the pictogram. */
+  phoneTitleTrack?: string;
   /** Body copy, one entry per line of the comp. Omitted where the comp has none. */
   body?: string[];
   machines: Machine[];
@@ -36,7 +44,9 @@ export const DEPARTMENTS: Department[] = [
     id: 'offset',
     icon: 'offset-printing',
     tagline: '大量の印刷物を高速かつ効率的に印刷する部門',
+    tagLines: ['大量の印刷物を高速かつ', '効率的に印刷する部門'],
     title: 'オフセット輪転印刷',
+    titleLines: ['オフセット', '輪転印刷'],
     body: [
       '常に生産ラインの効率化を追求し、最新の高速オフセット輪転機を導入しております。',
       '24時間稼働により、短納期かつ大量の印刷ニーズにも柔軟に対応が可能です。',
@@ -78,6 +88,7 @@ export const DEPARTMENTS: Department[] = [
     id: 'sheetfed',
     icon: 'sheetfed-printing',
     tagline: '一枚ずつ印刷する小ロットや高品質なカラー印刷に適した部門',
+    tagLines: ['一枚ずつ印刷する小ロットや', '高品質なカラー印刷に', '適した部門'],
     title: '枚葉印刷',
     body: [
       '多様なプロモーション戦略に寄り添い、パンフレット、カタログ、',
@@ -103,7 +114,10 @@ export const DEPARTMENTS: Department[] = [
     id: 'ondemand',
     icon: 'on-demand',
     tagline: '小ロット・短納期に対応する即時印刷が可能なデジタル印刷を行う部門',
+    tagLines: ['小ロット・短納期に対応する', '即時印刷が可能な', 'デジタル印刷を行う部門'],
     title: 'オンデマンド印刷',
+    titleLines: ['オンデマンド', '印刷'],
+    phoneTitleTrack: '0.36em', // six kana must clear the pictogram's slanted strokes
     body: [
       '製版工程を省略できるオンデマンド印刷は、データ入稿から印刷までの時間を大幅に短縮。',
       '急なご要望にも迅速に対応します。1部からの小ロット印刷にも最適です。',
@@ -116,6 +130,7 @@ export const DEPARTMENTS: Department[] = [
     id: 'prepress',
     icon: 'prepress',
     tagline: 'データ制作・色調整・CTP出力など品質を左右する準備作業を行う部門',
+    tagLines: ['データ制作・色調整・', 'CTP出力など品質を左右する', '準備作業を行う部門'],
     title: 'プリプレス',
     body: [
       '高度な最先端技術を武器に、低コスト・スピーディな作業を実現させることで、',
@@ -135,7 +150,9 @@ export const DEPARTMENTS: Department[] = [
     id: 'binding',
     icon: 'bookbinding',
     tagline: '製品として仕上げる加工工程を担当する部門',
+    tagLines: ['製品として仕上げる', '加工工程を担当する部門'],
     title: '製本・折加工・PP加工・型抜き加工',
+    titleLines: ['製本・', '折加工・', 'PP加工・', '型抜き加工'],
     machines: [
       {
         name: 'OSAKO／368型全自動高速中綴機…3台',
