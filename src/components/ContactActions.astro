@@ -93,4 +93,34 @@ const mailHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}
   .actions--md .actions__tel {
     font-size: clamp(20px, 2.6vw, 32px);
   }
+
+  /* Phones (改修指示書2): RECRUIT's set takes CONTACT's sizes and layout, so
+     the two pages read alike; and the circle is drawn a touch left of the text
+     edge (6.8px at 375) — the round mark otherwise looks indented. OR follows
+     it; TEL wraps to its own line and keeps the edge. */
+  @media (max-width: 768px) {
+    .actions--md {
+      justify-content: flex-start;
+      gap: clamp(var(--space-5), 3.4vw, var(--space-8));
+    }
+
+    .actions--md .actions__mail img {
+      width: clamp(88px, 11vw, 132px);
+      height: clamp(88px, 11vw, 132px);
+    }
+
+    .actions--md .actions__or {
+      font-family: var(--font-nav);
+      font-size: clamp(18px, 2.2vw, 32px);
+      letter-spacing: var(--ls-nav-mono);
+    }
+
+    .actions--md .actions__tel {
+      font-size: clamp(24px, 3.4vw, 44px);
+    }
+
+    .actions__mail {
+      margin-left: -1.81vw;
+    }
+  }
 </style>

@@ -16,6 +16,8 @@ interface Props {
   railJp: string;
   /** RECRUIT opens tighter than CONTACT. */
   padTop?: string;
+  /** Phones: the footer button's left edge, when the content runs on another. */
+  footerInset?: string;
 }
 
 const {
@@ -26,6 +28,7 @@ const {
   railLatin,
   railJp,
   padTop = 'var(--space-10)',
+  footerInset,
 } = Astro.props;
 ---
 
@@ -40,7 +43,7 @@ const {
     </section>
   </main>
 
-  <footer class="page-footer">
+  <footer class="page-footer" style={footerInset ? `--footer-inset:${footerInset}` : undefined}>
     <LinkButton href={route('/#top')}>トップへ戻る</LinkButton>
   </footer>
 </BaseLayout>
@@ -88,8 +91,14 @@ const {
       padding-right: var(--space-5);
     }
 
+    /* 改修指示書2: the band is the header's depth, and the button sits on the
+       content's left edge rather than centred. --footer-inset lets a page
+       whose content runs on another edge (RECRUIT's table) line it up. */
     .page-footer {
-      padding: 0 var(--space-5) var(--space-9);
+      justify-content: flex-start;
+      align-items: center;
+      height: var(--header-h);
+      padding: 0 var(--footer-inset, var(--space-5));
     }
   }
 </style>

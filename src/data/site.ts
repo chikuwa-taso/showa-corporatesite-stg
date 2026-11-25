@@ -273,12 +273,29 @@ export const CONTACT_TEL = '0776-53-5353';
 /** Digits only — the display string above keeps its hyphens. */
 export const CONTACT_TEL_HREF = 'tel:0776535353';
 export const BUSINESS_HOURS = '営業時間　　平日 8:30 〜 17:30 （休業日：日・祝）';
+/** Phone only: the hours broken after their label (改修指示書2). */
+export const BUSINESS_HOURS_PHONE = ['営業時間', '平日 8:30 〜 17:30 （休業日：日・祝）'];
 
 export const CONTACT_INTRO = [
   '昭和美術印刷のウェブサイトにアクセスしていただき、誠にありがとうございます。',
   '弊社に関するご質問・お見積り・資料請求などの各種お問い合わせは',
   '以下のボタンよりメール送信、またはお電話をお願いいたします。',
   'お問い合わせの内容に応じて各担当者がご対応いたします。',
+];
+
+/**
+ * Phone only: the intro set as the 改修指示書2 marks it — three paragraphs, the
+ * middle one joining the second and third PC lines, each broken into lines.
+ */
+export const CONTACT_INTRO_PHONE = [
+  ['昭和美術印刷のウェブサイトに', 'アクセスしていただき、', '誠にありがとうございます。'],
+  [
+    '弊社に関するご質問・お見積り・',
+    '資料請求などの各種お問い合わせは',
+    '以下のボタンよりメール送信、',
+    'またはお電話をお願いいたします。',
+  ],
+  ['お問い合わせの内容に応じて', '各担当者がご対応いたします。'],
 ];
 
 export const CONTACT_NOTES = [

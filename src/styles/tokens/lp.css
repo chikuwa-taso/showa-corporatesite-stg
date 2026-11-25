@@ -302,8 +302,8 @@
     --rt-sp-pad-right: 2.4vw;
 
     /* Footer: the two buttons side by side, 45px in from each edge, in a band
-       100.5px deep. 15px type at 0.47em; the 1px rule 11px under the ink. */
-    --footer-sp-h: 26.8vw;
+       as deep as the header's. 15px type at 0.47em; the 1px rule 11px under the ink. */
+    --footer-sp-h: var(--header-h); /* 改修指示書2: every footer band is the header's depth */
     --footer-sp-inset: 12vw;
     --footer-sp-size: 4vw;
     --footer-sp-track: 0.47em;
@@ -327,7 +327,7 @@
     --fac-sp-head-top: 9.12vw; /* rule → title */
     --fac-sp-dept-bottom: 14.93vw; /* last line → next rule */
     --fac-sp-page-bottom: 14.93vw;
-    --fac-sp-icon: 22.5vw; /* 84.4 */
+    --fac-sp-icon: 16.5vw; /* 改修指示書2: 73% of the comp's 84.4, same top and right edge */
     --fac-sp-icon-top: 3.2vw;
     --fac-sp-title-size: 7.6vw; /* 28.5, pitch 43.6 */
     --fac-sp-title-track: 0.53em;

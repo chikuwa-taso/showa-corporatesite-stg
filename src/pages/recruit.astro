@@ -9,6 +9,8 @@ import {
   RECRUIT_MIDCAREER_HEADING,
   RECRUIT_MIDCAREER_ROWS,
   RECRUIT_MIDCAREER_NOTES,
+  BUSINESS_HOURS,
+  BUSINESS_HOURS_PHONE,
 } from '../data/site';
 ---
 
@@ -20,6 +22,7 @@ import {
   railLatin="RECRUIT"
   railJp="採用情報"
   padTop="var(--space-9)"
+  footerInset="var(--rt-sp-gutter)"
 >
   <div class="recruit">
     <p class="recruit__intro">{RECRUIT_INTRO}</p>
@@ -35,7 +38,18 @@ import {
     <section class="recruit__block recruit__block--mid">
       <h2 class="recruit__heading">{RECRUIT_MIDCAREER_HEADING}</h2>
       <SpecTable rows={RECRUIT_MIDCAREER_ROWS} fit />
-      {RECRUIT_MIDCAREER_NOTES.map((line) => <p class="recruit__note">{line}</p>)}
+      {
+        RECRUIT_MIDCAREER_NOTES.map((line) =>
+          line === BUSINESS_HOURS ? (
+            <p class="recruit__note">
+              <span class="pc-t">{line}</span>
+              <span class="sp-t">{BUSINESS_HOURS_PHONE.map((l, i) => (<>{i > 0 && <br />}{l}</>))}</span>
+            </p>
+          ) : (
+            <p class="recruit__note">{line}</p>
+          ),
+        )
+      }
     </section>
 
     <ContactActions subject="採用に関するお問い合わせ" size="md" />
@@ -109,6 +123,10 @@ import {
     letter-spacing: var(--ls-body);
   }
 
+  .sp-t {
+    display: none;
+  }
+
   /* Phones: everything else on the page lines up with the comp's table — the
      same edges (20.7px in, a little wider than the layout's gutter) and the
      same untracked type; the headings keep their PC proportion to it. */
@@ -118,11 +136,28 @@ import {
       margin-inline: calc(var(--rt-sp-gutter) - var(--space-5));
     }
 
-    .recruit__intro,
+    /* 改修指示書2: the intro and the closing notes take CONTACT's sizes, and
+       the contact set sits as far below them as it does on CONTACT. */
+    .recruit__intro {
+      font-size: var(--fs-body);
+      line-height: var(--lh-body);
+    }
+
     .recruit__note {
-      font-size: var(--rt-sp-text);
-      line-height: var(--rt-sp-line);
-      letter-spacing: 0;
+      font-size: var(--fs-small);
+      line-height: 2;
+    }
+
+    .recruit :global(.actions) {
+      margin-top: calc(var(--space-9) - var(--space-7));
+    }
+
+    .pc-t {
+      display: none;
+    }
+
+    .sp-t {
+      display: inline;
     }
 
     .recruit__heading {

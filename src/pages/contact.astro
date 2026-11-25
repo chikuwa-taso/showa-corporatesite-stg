@@ -1,7 +1,13 @@
 ---
 import PageLayout from '../layouts/PageLayout.astro';
 import ContactActions from '../components/ContactActions.astro';
-import { CONTACT_INTRO, CONTACT_NOTES } from '../data/site';
+import {
+  CONTACT_INTRO,
+  CONTACT_INTRO_PHONE,
+  CONTACT_NOTES,
+  BUSINESS_HOURS,
+  BUSINESS_HOURS_PHONE,
+} from '../data/site';
 ---
 
 <PageLayout
@@ -17,10 +23,26 @@ import { CONTACT_INTRO, CONTACT_NOTES } from '../data/site';
       {CONTACT_INTRO.map((line) => <p>{line}</p>)}
     </div>
 
+    {/* Phones: the same words, broken where the 改修指示書2 breaks them. */}
+    <div class="contact__intro contact__intro--sp">
+      {CONTACT_INTRO_PHONE.map((para) => <p>{para.map((line, i) => (<>{i > 0 && <br />}{line}</>))}</p>)}
+    </div>
+
     <ContactActions subject="お問い合わせ" />
 
     <div class="contact__notes">
-      {CONTACT_NOTES.map((line) => <p>{line}</p>)}
+      {
+        CONTACT_NOTES.map((line) =>
+          line === BUSINESS_HOURS ? (
+            <p>
+              <span class="pc-t">{line}</span>
+              <span class="sp-t">{BUSINESS_HOURS_PHONE.map((l, i) => (<>{i > 0 && <br />}{l}</>))}</span>
+            </p>
+          ) : (
+            <p>{line}</p>
+          ),
+        )
+      }
     </div>
   </div>
 </PageLayout>
@@ -65,9 +87,31 @@ import { CONTACT_INTRO, CONTACT_NOTES } from '../data/site';
     line-height: 2;
   }
 
+  .contact__intro--sp,
+  .sp-t {
+    display: none;
+  }
+
   @media (max-width: 768px) {
     .contact {
       gap: var(--space-9);
+    }
+
+    .contact__intro:not(.contact__intro--sp),
+    .pc-t {
+      display: none;
+    }
+
+    /* Full width, and no breaks but the marked ones — as a grid item it would
+       otherwise shrink to its first paragraph and re-wrap the rest. */
+    .contact__intro--sp {
+      display: grid;
+      justify-self: stretch;
+      white-space: nowrap;
+    }
+
+    .sp-t {
+      display: inline;
     }
   }
 </style>

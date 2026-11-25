@@ -488,6 +488,15 @@ const runs = (text: string): { t: string; latin: boolean }[] =>
       display: block;
     }
 
+    /* 改修指示書2: the button on the content's left edge, in a band the
+       header's depth. */
+    .page-footer {
+      justify-content: flex-start;
+      align-items: center;
+      height: var(--header-h);
+      padding: 0 var(--fac-sp-gutter);
+    }
+
     .fac-side {
       height: auto;
       padding: var(--fac-sp-nav-top) var(--fac-sp-gutter) var(--fac-sp-nav-bottom);
