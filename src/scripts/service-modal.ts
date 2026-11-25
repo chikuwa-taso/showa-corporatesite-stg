@@ -47,9 +47,16 @@ export function initServiceModal(): void {
     trigger.addEventListener('pointerenter', warm, { once: true });
     trigger.addEventListener('focus', warm, { once: true });
 
-    trigger.addEventListener('click', () => {
+    trigger.addEventListener('click', (event) => {
       warm();
-      if (!dialog.open) dialog.showModal();
+      if (dialog.open) return;
+      dialog.showModal();
+      // The dialog focuses itself so a tap leaves no ring on the ×. A click
+      // with no pointer behind it (detail 0) came from Enter or Space, and a
+      // keyboard user is better served starting on the control that closes.
+      if (event.detail === 0) {
+        dialog.querySelector<HTMLElement>('[data-modal-close]')?.focus();
+      }
     });
 
     for (const close of dialog.querySelectorAll('[data-modal-close]')) {
