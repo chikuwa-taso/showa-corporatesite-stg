@@ -10,6 +10,8 @@ interface Props {
 
 const { service } = Astro.props;
 const titleId = `service-modal-${service.slug}-title`;
+// Must match POPUP_WIDTHS in scripts/optimize-assets.sh.
+const POPUP_WIDTHS = [960, 1440, 2000, 2600, 3426];
 ---
 
 {/*
@@ -38,14 +40,17 @@ const titleId = `service-modal-${service.slug}-title`;
   </picture>
 
   <div class="modal__composition">
-    {/* One file, not a WebP/JPEG pair: this is the client's composite cropped at
-        its own 3426x1968 and stored losslessly, so a JPEG fallback could only be
-        a worse copy of it. Lazy inside a closed dialog costs nothing until it
-        opens; the icon warms it on hover so the panel is rarely caught
-        mid-load — which matters more now that the file runs to several MB. */}
+    {/* The client's composite, cropped at its own 3426x1968 and shipped as a
+        ladder of q90 WebPs (scripts/optimize-assets.sh, POPUP_WIDTHS). `sizes`
+        mirrors --popup-photo-w / --popup-sp-photo-w, so a phone fetches the
+        ~40–90KB rung and a Retina desktop the 2000px one rather than all 3426px.
+        Lazy inside a closed dialog costs nothing until it opens; the icon warms
+        it on hover (flipping loading to eager, which honours the same srcset). */}
     <img
       class="modal__photo"
-      src={asset(`/assets/service/${service.slug}.webp`)}
+      src={asset(`/assets/service/${service.slug}-2000.webp`)}
+      srcset={POPUP_WIDTHS.map((w) => `${asset(`/assets/service/${service.slug}-${w}.webp`)} ${w}w`).join(', ')}
+      sizes="(max-width: 768px) 82vw, 44.68vw"
       alt={service.photoAlt}
       loading="lazy"
       decoding="async"
