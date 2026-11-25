@@ -226,8 +226,14 @@
        taller, and a video sized to the small viewport (svh) then stopped short
        — the white page showed through the transparent ABOUT band as a strip
        along the bottom. With lvh the video always reaches the bottom edge; the
-       extra slice simply sits under the toolbar until it retracts. */
-    --band-hero-h: calc(100lvh - var(--header-h));
+       extra slice simply sits under the toolbar until it retracts.
+       lvh alone still fell short on some tall phones (6.9" class, Safari 26's
+       floating toolbar), leaving a white strip under the first view. So it is
+       also floored at the device's physical screen height (--screen-h, set by
+       TopSection on touch devices): no browser viewport can be taller than the
+       screen, so the video always runs off the bottom edge. Any overspill is
+       just cropped — the rotated video is object-fit: cover. */
+    --band-hero-h: calc(max(100lvh, var(--screen-h, 0px)) - var(--header-h));
 
     /* ABOUT, set live in vertical type over the video. 見出し: ink 40px → 44.5px
        em, char pitch 65.4px (0.47em), column pitch 81px (1.82). 本文: 12px em,

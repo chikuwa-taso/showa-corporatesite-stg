@@ -16,6 +16,32 @@ const { useVideo = CONFIG.useVideo } = Astro.props;
   {useVideo && <BackgroundVideo name={TOP_VIDEOS} />}
 </section>
 
+{/* The phone hero's floor: the physical screen height, in CSS px, for the
+    current orientation (iOS keeps screen.width/height in portrait terms, so the
+    long or short side is picked by orientation). Inline and synchronous so the
+    first paint already has it. Touch devices only — a narrowed desktop window
+    would otherwise get a hero as tall as the monitor. */}
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    var touch = matchMedia('(pointer: coarse)');
+    var portrait = matchMedia('(orientation: portrait)');
+    function sync() {
+      if (!touch.matches) {
+        root.style.removeProperty('--screen-h');
+        return;
+      }
+      var a = screen.width;
+      var b = screen.height;
+      var h = portrait.matches ? Math.max(a, b) : Math.min(a, b);
+      root.style.setProperty('--screen-h', h + 'px');
+    }
+    sync();
+    addEventListener('resize', sync);
+    addEventListener('orientationchange', sync);
+  })();
+</script>
+
 <script>
   import { initHeroPin } from '../scripts/hero-pin';
 
